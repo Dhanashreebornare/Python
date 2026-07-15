@@ -11,9 +11,8 @@ st.set_page_config(
     layout="centered"
 )
 
-# 2. Updated Helper function to generate PDF with flower decorations
+# 2. Helper function to generate PDF with flower decorations
 def generate_certificate(name, crime):
-    # FPDF natively supports standard Latin1 characters (like standard text and simple symbols)
     pdf = FPDF(orientation="L", unit="mm", format="A4")
     pdf.add_page()
     
@@ -24,7 +23,7 @@ def generate_certificate(name, crime):
     pdf.set_line_width(0.5)
     pdf.rect(13, 13, 271, 184)
     
-    # Add Flower Accents in the 4 Corners (Using standard symbols compatible with core fonts)
+    # Add Flower Accents in the 4 Corners
     pdf.set_font("Times", "B", 24)
     pdf.set_text_color(244, 63, 94)
     
@@ -33,7 +32,7 @@ def generate_certificate(name, crime):
     pdf.text(16, 190, "*")  # Bottom Left Flower
     pdf.text(272, 190, "*") # Bottom Right Flower
     
-    # Title Header (Edited for "APOLOGY GIVEN WITH A SMILE")
+    # Title Header (Apology given with a smile)
     pdf.set_font("Times", "B", 28)
     pdf.set_text_color(15, 23, 42) 
     pdf.cell(0, 30, "OFFICIAL APOLOGY GIVEN WITH A SMILE", ln=True, align="C")
@@ -49,7 +48,7 @@ def generate_certificate(name, crime):
     pdf.set_text_color(15, 23, 42)
     pdf.cell(0, 10, "Let it be known to all mortal beings across the cosmos that", ln=True, align="C")
     
-    # Royal Benefactor Name
+    # Royal Benefactor Name (The User)
     pdf.ln(5)
     pdf.set_font("Times", "B", 26)
     pdf.set_text_color(244, 63, 94)
@@ -79,7 +78,7 @@ def generate_certificate(name, crime):
     pdf.cell(80, 10, f"Date: {current_date}", border="T", align="C")
     
     pdf.set_xy(187, 160)
-    pdf.cell(80, 10, "Signature of the Overlord", border="T", align="C")
+    pdf.cell(80, 10, "Signature of Dhanashree", border="T", align="C")
     
     return bytes(pdf.output())
 
@@ -94,11 +93,13 @@ user_name = st.text_input("👑 Identify yourself, Your Majesty (Enter Your Name
 # 5. Lock random selections into Session State memory 
 if user_name:
     if "current_crime" not in st.session_state:
+        # Added your custom follow-up and mischief scenarios here!
         crimes = [
-            "breathing your oxygen without written permission",
-            "existing in a 5-mile radius of your perfection without a license",
-            "allowing the sun to shine too brightly directly into your magnificent eyes",
-            "not preemptively apologizing for things they haven't even done yet"
+            "constantly following you up and causing absolute mischief",
+            "overloading your schedule with continuous follow-ups",
+            "unapologetically orchestrating chaotic mischief in your pristine daily routine",
+            "breathing your oxygen without written permission and acting sneaky",
+            "existing in a 5-mile radius of your perfection without a proper license"
         ]
         openings = [
             "Breaking News: The universe has ground to a halt.",
@@ -117,11 +118,11 @@ if user_name:
 
     # Output text boxes
     st.error(f"### {st.session_state.current_opening}")
-    st.info(f"**Dearest {user_name},**\n\nAn unnamed offender hereby begs for your absolute mercy for the heinous crime of: \n\n👉 *{st.session_state.current_crime}*.")
+    st.info(f"**Dearest {user_name},**\n\n**Dhanashree** hereby begs for your absolute mercy for the heinous crime of: \n\n👉 *{st.session_state.current_crime}*.")
     st.warning(f"⚖️ **The Sentence:** The High Court of Karma has officially {st.session_state.current_punishment}.")
     
     st.write("---")
-    st.write(f"Do you, the flawless **{user_name}**, accept this groveling apology?")
+    st.write(f"Do you, the flawless **{user_name}**, accept this groveling apology from Dhanashree?")
     
     # Interactive Buttons
     col1, col2 = st.columns(2)
@@ -150,4 +151,4 @@ if user_name:
                 st.error(f"Could not build PDF data stream: {e}")
                 
         elif st.session_state.choice == "no":
-            st.error("🔥 Excellent choice. The LEGO bricks have been scattered. No certificate will be issued for this peasant.")
+            st.error("🔥 Excellent choice. The LEGO bricks have been scattered. No certificate will be issued for Dhanashree.")
