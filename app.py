@@ -1,6 +1,7 @@
 import datetime
 import textwrap
 import streamlit as st
+import time
 
 def generate_portal(your_name):
     offender_name = "Dhanashree"
@@ -27,7 +28,7 @@ def generate_portal(your_name):
         {offender_name}
     """).strip()
 
-    # 2. Forgiveness Certificate (From Your POV to Dhanashree)
+    # 2. Forgiveness Certificate Template
     certificate = textwrap.dedent(f"""
         📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜
                          OFFICIAL CERTIFICATE OF FORGIVENESS
@@ -67,8 +68,30 @@ def generate_portal(your_name):
     
     st.markdown("---") 
     
-    st.markdown("### 📜 Verdict: Official Decree of Cleared Grudges")
-    st.code(certificate, language="text") 
+    st.markdown("### ⚖️ Verdict Pending...")
+    st.write(f"Do you accept {offender_name}'s apology and wish to officially clear her record?")
+    
+    # Session state trick to keep the certificate visible after generation
+    if "generated" not in st.session_state:
+        st.session_state.generated = False
+
+    # Button to dynamically generate the certificate
+    if st.button("🌟 Grant Official Forgiveness & Generate Certificate 🌟"):
+        st.session_state.generated = True
+        
+        # Playful loading animation
+        with st.spinner("Processing official pardon paperwork..."):
+            time.sleep(1.5)
+            
+        # Celebration animations
+        st.balloons()
+        st.snow()
+        st.success(f"Absolution granted! {offender_name} is officially off the hook.")
+
+    # Show certificate only if the button was pressed
+    if st.session_state.generated:
+        st.markdown("### 📜 Verdict: Official Decree of Cleared Grudges")
+        st.code(certificate, language="text")
 
 # --- Streamlit Layout Configuration ---
 st.set_page_config(page_title="Pardon Portal", page_icon="🕊️", layout="centered")
@@ -81,9 +104,8 @@ st.markdown("---")
 # User Input
 user_input = st.text_input("Enter Your Name (The Person Granting Forgiveness):", value="Your Name Here")
 
-# Action Button
-if st.button("Review Case & Generate Documents"):
-    if user_input.strip() == "" or user_input == "Your Name Here":
-        st.warning("Please type your actual name first to sign the certificate!")
-    else:
-        generate_portal(your_name=user_input)
+# Initial Trigger Button
+if user_input.strip() == "" or user_input == "Your Name Here":
+    st.info("💡 Please type your actual name above to review Dhanashree's case file.")
+else:
+    generate_portal(your_name=user_input)
