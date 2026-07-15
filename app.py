@@ -2,6 +2,18 @@ import datetime
 import textwrap
 import streamlit as st
 import time
+import base64
+
+def get_chime_html():
+    """Generates an HTML5 audio element with an upbeat success chime notification."""
+    # Using an open-source, clean notification chime URL
+    sound_url = "https://mixkit.co"
+    return f"""
+        <iframe src="{sound_url}" allow="autoplay" style="display:none" id="iframeAudio"></iframe>
+        <audio autoplay style="display:none;">
+            <source src="{sound_url}" type="audio/wav">
+        </audio>
+    """
 
 def generate_portal(your_name):
     offender_name = "Dhanashree"
@@ -71,24 +83,28 @@ def generate_portal(your_name):
     st.markdown("### ⚖️ Verdict Pending...")
     st.write(f"Do you accept {offender_name}'s apology and wish to officially clear her record?")
     
-    # Session state trick to keep the certificate visible after generation
+    # Session state to track generation across clicks
     if "generated" not in st.session_state:
         st.session_state.generated = False
 
-    # Button to dynamically generate the certificate
+    # Button to accept apology and trigger audio/visual notifications
     if st.button("🌟 Grant Official Forgiveness & Generate Certificate 🌟"):
         st.session_state.generated = True
         
-        # Playful loading animation
         with st.spinner("Processing official pardon paperwork..."):
-            time.sleep(1.5)
+            time.sleep(1.0)
             
-        # Celebration animations
+        # 🔊 Instant Playful Audio Chime Notification
+        st.components.v1.html(get_chime_html(), height=0, width=0)
+        
+        # 🎈 Screen Animations
         st.balloons()
-        st.snow()
-        st.success(f"Absolution granted! {offender_name} is officially off the hook.")
+        
+        # 🔔 Styled Visual UI Popups
+        st.toast(f"🔔 ALERT: {offender_name}'s apology has been APPROVED!", icon="✅")
+        st.success(f"🎉 SUCCESS: Apology accepted! {offender_name} has been formally notified via sound and pop-up.")
 
-    # Show certificate only if the button was pressed
+    # Display certificate only after user approval
     if st.session_state.generated:
         st.markdown("### 📜 Verdict: Official Decree of Cleared Grudges")
         st.code(certificate, language="text")
@@ -96,15 +112,15 @@ def generate_portal(your_name):
 # --- Streamlit Layout Configuration ---
 st.set_page_config(page_title="Pardon Portal", page_icon="🕊️", layout="centered")
 
-# Main Header Area
+# Main Title Header
 st.title("🕊️ The Apology & Forgiveness Portal")
-st.caption("Resolving extreme tracking cases and mischievous behavior with total legal absolution.")
+st.caption("Resolving extreme tracking cases and mischievous behavior with audio-visual notifications.")
 st.markdown("---")
 
-# User Input
+# User Input Box
 user_input = st.text_input("Enter Your Name (The Person Granting Forgiveness):", value="Your Name Here")
 
-# Initial Trigger Button
+# Initial Trigger Validation
 if user_input.strip() == "" or user_input == "Your Name Here":
     st.info("💡 Please type your actual name above to review Dhanashree's case file.")
 else:
