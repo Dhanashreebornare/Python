@@ -78,7 +78,7 @@ def generate_portal(your_name):
     
     st.markdown("---") 
     
-    # 🕺 Fixed Dancing Bird GIF Section
+    # 🕺 Dancing Bird GIF Section
     st.markdown("### ⚖️ Verdict Pending...")
     
     bird_gif_url = "https://githubusercontent.com"
@@ -91,7 +91,7 @@ def generate_portal(your_name):
     if "generated" not in st.session_state:
         st.session_state.generated = False
 
-    # 🔵 Custom CSS to forcefully style the primary button with a clear blue colour palette
+    # 🔵 Fixed CSS Injection - Removed the broken parameter causing the crash
     st.markdown("""
         <style>
         div.stButton > button:first-child {
@@ -110,7 +110,7 @@ def generate_portal(your_name):
             color: white !important;
         }
         </style>
-    """, unsafe_allow_value=True, unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
     # Primary type activates the customized styles seamlessly
     if st.button("🌟 Grant Official Forgiveness & Generate Certificate 🌟", type="primary"):
