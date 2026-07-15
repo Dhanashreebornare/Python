@@ -91,7 +91,7 @@ def generate_portal(your_name):
     if "generated" not in st.session_state:
         st.session_state.generated = False
 
-    # 🔵 Fixed CSS Injection - Removed the broken parameter causing the crash
+    # 🔵 Clean CSS Injection for Blue Primary Button
     st.markdown("""
         <style>
         div.stButton > button:first-child {
@@ -119,15 +119,16 @@ def generate_portal(your_name):
         with st.spinner("Processing official pardon paperwork..."):
             time.sleep(1.0)
             
-        # 🔊 Instant Playful Audio Chime Notification
+        # 🔊 Playful Audio Chime Notification
         st.components.v1.html(get_chime_html(), height=0, width=0)
         
-        # 🎈 Screen Animations
+        # 🎈 Double Celebration: Balloons AND Snow Spray Effects combined!
         st.balloons()
+        st.snow()
         
         # 🔔 Styled Visual UI Popups
         st.toast(f"🔔 ALERT: {offender_name}'s apology has been APPROVED!", icon="✅")
-        st.success(f"🎉 SUCCESS: Apology accepted! {offender_name} has been formally notified via sound and pop-up.")
+        st.success(f"🎉 SUCCESS: Apology accepted! {offender_name} has been formally notified via sound and animations.")
 
     # Display certificate only after user approval
     if st.session_state.generated:
