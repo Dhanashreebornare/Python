@@ -81,7 +81,6 @@ def generate_portal(your_name):
     # 🕺 Fixed Dancing Bird GIF Section
     st.markdown("### ⚖️ Verdict Pending...")
     
-    # Using an absolute static path for a cute dancing pigeon/bird asset
     bird_gif_url = "https://githubusercontent.com"
     st.image(bird_gif_url, width=90)
     st.caption("Waiting for your absolute ruling...")
@@ -92,8 +91,29 @@ def generate_portal(your_name):
     if "generated" not in st.session_state:
         st.session_state.generated = False
 
-    # Button to accept apology and trigger audio/visual notifications
-    if st.button("🌟 Grant Official Forgiveness & Generate Certificate 🌟"):
+    # 🔵 Custom CSS to forcefully style the primary button with a clear blue colour palette
+    st.markdown("""
+        <style>
+        div.stButton > button:first-child {
+            background-color: #1E88E5 !important;
+            color: white !important;
+            border: 1px solid #1565C0 !important;
+            box-shadow: 0px 4px 10px rgba(30, 136, 229, 0.3) !important;
+        }
+        div.stButton > button:first-child:hover {
+            background-color: #1565C0 !important;
+            border-color: #0D47A1 !important;
+            color: white !important;
+        }
+        div.stButton > button:first-child:active {
+            background-color: #0D47A1 !important;
+            color: white !important;
+        }
+        </style>
+    """, unsafe_allow_value=True, unsafe_allow_html=True)
+
+    # Primary type activates the customized styles seamlessly
+    if st.button("🌟 Grant Official Forgiveness & Generate Certificate 🌟", type="primary"):
         st.session_state.generated = True
         
         with st.spinner("Processing official pardon paperwork..."):
@@ -119,7 +139,7 @@ st.set_page_config(page_title="Pardon Portal", page_icon="🕊️", layout="cent
 
 # Main Title Header
 st.title("🕊️ The Apology & Forgiveness Portal")
-st.caption("Resolving extreme tracking cases and mischievous behavior.")
+st.caption("Resolving extreme tracking cases and mischievous behavior with audio-visual animations.")
 st.markdown("---")
 
 # User Input Box
