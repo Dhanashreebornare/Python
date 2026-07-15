@@ -2,31 +2,32 @@ import datetime
 import textwrap
 import streamlit as st
 
-def generate_playful_pardon(your_name):
+def generate_portal(your_name):
     offender_name = "Dhanashree"
     today_date = datetime.date.today().strftime("%B %d, %Y")
     
-    # textwrap.dedent removes leading whitespace/blank tabs from the deployment output
+    # 1. Apology Message (From Dhanashree's POV)
     apology_message = textwrap.dedent(f"""
-        --- THE ACCUSED SPEAKS ---
         Date: {today_date}
+        From: {offender_name}
+        To: {your_name}
 
-        Hey {offender_name},
+        Hey {your_name},
 
         Alright, I am officially raising the white flag. 🏳️
         
         I am writing this to formally apologize for my absolute mischief and for being your 
         unofficial, highly persistent shadow. I know that continuously following you around 
         and being a general nuisance probably pushed your patience to the absolute limit. 
-        
         My bad! I promise to give your shadow a break and respect your personal space bubble 
         moving forward. To make amends for my chaotic energy, I have issued you a special 
-        document below. 
+        document below. Please don't block me!
 
-        Please don't block me,
-        {your_name}
+        Sincerely,
+        {offender_name}
     """).strip()
 
+    # 2. Forgiveness Certificate (From Your POV to Dhanashree)
     certificate = textwrap.dedent(f"""
         📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜
                          OFFICIAL CERTIFICATE OF FORGIVENESS
@@ -37,11 +38,11 @@ def generate_playful_pardon(your_name):
         
                                 🌟 {offender_name} 🌟
                                   
-        Is hereby granted 100% total immunity and forgiveness by:
+        Has been granted 100% total immunity and forgiveness by:
         
                                 👑 {your_name} 👑
                                  
-        For crimes including, but not limited to:
+        For past crimes including, but not limited to:
         - Unwarranted mischief and chaotic energy.
         - Operating as a full-time, unpaid personal stalker.
         - Disrupting the peace by constantly following {your_name} around.
@@ -60,20 +61,29 @@ def generate_playful_pardon(your_name):
         📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜
     """).strip()
 
-    # Streamlit UI Components
-    st.subheader("✉️ The Apology")
+    # --- Render Streamlit UI ---
+    st.markdown("### ✉️ Case File: The Apology Letter")
     st.text(apology_message)
     
-    st.markdown("---") # Visual divider line
+    st.markdown("---") 
     
-    st.subheader("📜 The Official Certificate")
-    st.code(certificate, language="text") # st.code preserves the exact ASCII layout without scaling alignment bugs
+    st.markdown("### 📜 Verdict: Official Decree of Cleared Grudges")
+    st.code(certificate, language="text") 
 
-# --- Streamlit App Entry Point ---
+# --- Streamlit Layout Configuration ---
+st.set_page_config(page_title="Pardon Portal", page_icon="🕊️", layout="centered")
+
+# Main Header Area
 st.title("🕊️ The Apology & Forgiveness Portal")
+st.caption("Resolving extreme tracking cases and mischievous behavior with total legal absolution.")
+st.markdown("---")
 
-# Sidebar or main input for your name
-user_input = st.text_input("Enter Your Name:", value="Your Name Here")
+# User Input
+user_input = st.text_input("Enter Your Name (The Person Granting Forgiveness):", value="Your Name Here")
 
-if st.button("Generate & Deploy Documents"):
-    generate_playful_pardon(your_name=user_input)
+# Action Button
+if st.button("Review Case & Generate Documents"):
+    if user_input.strip() == "" or user_input == "Your Name Here":
+        st.warning("Please type your actual name first to sign the certificate!")
+    else:
+        generate_portal(your_name=user_input)
