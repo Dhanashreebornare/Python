@@ -78,12 +78,13 @@ def generate_portal(your_name):
     
     st.markdown("---") 
     
-    # 🕺 Dancing Bird Section Added Here!
+    # 🕺 Fixed Dancing Bird GIF Section
     st.markdown("### ⚖️ Verdict Pending...")
     
-    # Using a universally supported, clean dancing bird animation URL
-    bird_gif_url = "https://giphy.com"
-    st.image(bird_gif_url, width=120, caption="Waiting for your absolute ruling...")
+    # Using an absolute static path for a cute dancing pigeon/bird asset
+    bird_gif_url = "https://githubusercontent.com"
+    st.image(bird_gif_url, width=90)
+    st.caption("Waiting for your absolute ruling...")
 
     st.write(f"Do you accept {offender_name}'s apology and wish to officially clear her record?")
     
