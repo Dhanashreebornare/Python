@@ -1,12 +1,13 @@
 import datetime
-import inspect
+import textwrap
+import streamlit as st
 
 def generate_playful_pardon(your_name):
     offender_name = "Dhanashree"
     today_date = datetime.date.today().strftime("%B %d, %Y")
     
-    # inspect.cleandoc removes the uniform indentation causing the blank space
-    apology_message = inspect.cleandoc(f"""
+    # textwrap.dedent removes leading whitespace/blank tabs from the deployment output
+    apology_message = textwrap.dedent(f"""
         --- THE ACCUSED SPEAKS ---
         Date: {today_date}
 
@@ -24,9 +25,9 @@ def generate_playful_pardon(your_name):
 
         Please don't block me,
         {your_name}
-    """)
+    """).strip()
 
-    certificate = inspect.cleandoc(f"""
+    certificate = textwrap.dedent(f"""
         📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜
                          OFFICIAL CERTIFICATE OF FORGIVENESS
                             (The "Stop Following Me" Edition)
@@ -57,11 +58,22 @@ def generate_playful_pardon(your_name):
         {your_name}
         
         📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜📜
-    """)
+    """).strip()
 
-    print(apology_message)
-    print("\n" + "="*64 + "\n")
-    print(certificate)
+    # Streamlit UI Components
+    st.subheader("✉️ The Apology")
+    st.text(apology_message)
+    
+    st.markdown("---") # Visual divider line
+    
+    st.subheader("📜 The Official Certificate")
+    st.code(certificate, language="text") # st.code preserves the exact ASCII layout without scaling alignment bugs
 
-# --- Run the Code ---
-generate_playful_pardon(your_name="Your Name Here")
+# --- Streamlit App Entry Point ---
+st.title("🕊️ The Apology & Forgiveness Portal")
+
+# Sidebar or main input for your name
+user_input = st.text_input("Enter Your Name:", value="Your Name Here")
+
+if st.button("Generate & Deploy Documents"):
+    generate_playful_pardon(your_name=user_input)
