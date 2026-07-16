@@ -140,7 +140,7 @@ st.set_page_config(page_title="Pardon Portal", page_icon="🕊️", layout="cent
 
 # Main Title Header
 st.title("🕊️ The Apology & Forgiveness Portal")
-st.caption("Resolving extreme tracking cases and mischievous behavior with audio-visual animations.")
+st.caption("Resolving extreme tracking cases and mischievous behavior.")
 st.markdown("---")
 
 # User Input Box
