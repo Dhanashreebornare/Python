@@ -137,20 +137,39 @@ def generate_portal(your_name, offender_name):
 # --- Streamlit Layout Configuration ---
 st.set_page_config(page_title="Pardon Portal", page_icon="🕊️", layout="centered")
 
+# Initialize session states if they don't exist
+if "sender_locked" not in st.session_state:
+    st.session_state.sender_locked = False
+if "locked_sender_name" not in st.session_state:
+    st.session_state.locked_sender_name = ""
+
 # Main Title Header
 st.title("🕊️ The Apology & Forgiveness Portal")
 st.caption("Resolving extreme tracking cases and mischievous behavior.")
 st.markdown("---")
 
-# 🔍 Fetch the sender's name automatically from the URL query parameters
-# Example: ://your-app-url.com
-offender_name = st.query_params.get("sender", "")
+# STEP 1: Sender Configuration Mode (Only shows if NOT locked)
+if not st.session_state.sender_locked:
+    st.subheader("⚙️ Sender Setup")
+    st.write("If you are the one sending or presenting this apology, lock your name in below.")
+    
+    sender_input = st.text_input("Your Name (The Person Apologising):", value="")
+    
+    if st.button("Lock Name & Prepare Portal"):
+        if sender_input.strip() == "":
+            st.error("Please enter a valid name before locking.")
+        else:
+            st.session_state.locked_sender_name = sender_input.strip()
+            st.session_state.sender_locked = True
+            st.rerun()
 
-if not offender_name:
-    # Fallback if someone opens the app raw without a custom sender link
-    st.warning("⚠️ No sender detected in the link. Please use a valid link containing a sender profile.")
-    st.info("💡 Senders: Generate your link by appending `?sender=YourName` to your deployed app URL.")
+# STEP 2: The Apology Portal Mode (Only shows AFTER sender locks their name)
 else:
+    offender_name = st.session_state.locked_sender_name
+    
+    # Visual confirmation that the sender's identity is active but uneditable
+    st.success(f"🔒 Portal locked with sender identity: **{offender_name}**")
+    
     # User Input Box for the person opening the link (The Receiver)
     user_input = st.text_input("Enter Your Name (The Person Granting Forgiveness):", value="Your Name Here")
 
@@ -159,3 +178,10 @@ else:
         st.info(f"💡 Please type your actual name above to review {offender_name}'s case file.")
     else:
         generate_portal(your_name=user_input, offender_name=offender_name)
+        
+    # Hidden reset button at the very bottom just in case you need to redo it
+    st.markdown("<br><br><br>", unsafe_allow_html=True)
+    if st.button("🔄 Reset Portal (Sender Only)", size="small"):
+        st.session_state.sender_locked = False
+        st.session_state.generated = False
+        st.rerun()
