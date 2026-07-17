@@ -179,9 +179,9 @@ else:
     else:
         generate_portal(your_name=user_input, offender_name=offender_name)
         
-    # Hidden reset button at the very bottom just in case you need to redo it
+    # Fixed Reset Button Section
     st.markdown("<br><br><br>", unsafe_allow_html=True)
-    if st.button("🔄 Reset Portal (Sender Only)", size="small"):
+    if st.button("🔄 Reset Portal (Sender Only)"):
         st.session_state.sender_locked = False
         st.session_state.generated = False
         st.rerun()
