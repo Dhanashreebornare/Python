@@ -142,12 +142,20 @@ st.title("🕊️ The Apology & Forgiveness Portal")
 st.caption("Resolving extreme tracking cases and mischievous behavior.")
 st.markdown("---")
 
-# User Input Boxes (Cleaned text inputs)
-offender_input = st.text_input("Enter Name of the Person Seeking Apology:", value="Apologizer's Name")
-user_input = st.text_input("Enter Your Name (The Person Granting Forgiveness):", value="Your Name Here")
+# 🔍 Fetch the sender's name automatically from the URL query parameters
+# Example: ://your-app-url.com
+offender_name = st.query_params.get("sender", "")
 
-# Initial Trigger Validation
-if user_input.strip() in ["", "Your Name Here"] or offender_input.strip() in ["", "Apologizer's Name"]:
-    st.info("💡 Please type the actual names above to review the case file.")
+if not offender_name:
+    # Fallback if someone opens the app raw without a custom sender link
+    st.warning("⚠️ No sender detected in the link. Please use a valid link containing a sender profile.")
+    st.info("💡 Senders: Generate your link by appending `?sender=YourName` to your deployed app URL.")
 else:
-    generate_portal(your_name=user_input, offender_name=offender_input)
+    # User Input Box for the person opening the link (The Receiver)
+    user_input = st.text_input("Enter Your Name (The Person Granting Forgiveness):", value="Your Name Here")
+
+    # Initial Trigger Validation
+    if user_input.strip() in ["", "Your Name Here"]:
+        st.info(f"💡 Please type your actual name above to review {offender_name}'s case file.")
+    else:
+        generate_portal(your_name=user_input, offender_name=offender_name)
