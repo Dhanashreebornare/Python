@@ -3,7 +3,7 @@ import textwrap
 import time
 import streamlit as st
 
-# --- 1. Streamlit Layout Configuration ---
+# --- 1. Streamlit Layout Configuration MUST BE FIRST ---
 st.set_page_config(page_title="Pardon Portal", page_icon="🕊️", layout="centered")
 
 # --- 2. Session State Initialization ---
@@ -132,45 +132,45 @@ def generate_portal(your_name, offender_name):
 # --- 4. Main Application Routing Workflow ---
 
 st.title("🕊️ The Apology & Forgiveness Portal")
-st.caption("A private communication channel.")
+st.caption("A private, secure communication channel.")
 st.markdown("---")
 
-# Read privacy parameters directly from secrets securely
+# Read privacy parameters directly from secrets configuration engine
 try:
     offender_name = st.secrets["portal_config"]["sender_name"]
     target_receiver = st.secrets["portal_config"]["target_receiver"]
     is_locked = st.secrets["portal_config"]["is_locked"]
 except KeyError:
-    # Fallback safe defaults if configuration isn't live yet
+    # Safe defaults if file system configurations are missing
     offender_name = "Sender"
     target_receiver = "Receiver"
     is_locked = False
 
-# Fallback Configuration instructions screen 
+# Fallback Configuration helper screen
 if not is_locked:
-    st.subheader("⚙️ Portal Setup")
-    st.info("💡 Configuration Required: Please populate your secrets values inside the Streamlit Cloud Dashboard dashboard to initialize privacy walls.")
+    st.subheader("⚙️ Portal Setup Required")
+    st.info("💡 Repository Setup Needed: Please ensure you have created a `.streamlit/secrets.toml` file inside your GitHub repository folder layout structure.")
     st.code(textwrap.dedent("""
         [portal_config]
         sender_name = "Dhanashree"
-        target_receiver = "The Specific Person's Name"
+        target_receiver = "The Target Recipient Name"
         is_locked = true
     """), language="toml")
 
-# Active Protected Portal Mode
+# Active Privacy Protected Portal Mode
 else:
-    # Ask the visitor for their identity
+    # Ask the visitor for their identity credentials
     user_input = st.text_input("Enter Your Name to Access Your Portal File:", value="Your Name Here")
 
     if user_input.strip() in ["", "Your Name Here"]:
-        st.info("💡 Identity check: Please enter your name to verify authorization clearance.")
+        st.info("💡 Identity confirmation: Please enter your name to authenticate directory folder access clearances.")
     
-    # 🔒 PRIVACY GATE: Check if the user's name matches the target receiver exactly (ignoring spacing/case capitalization)
+    # 🔒 PRIVACY GATE: Check user's name against the secret target receiver value
     elif user_input.strip().lower() != target_receiver.strip().lower():
-        st.error("⛔ ACCESS DENIED: This portal link is highly confidential and restricted to a single specific recipient.")
-        st.warning("If you believe this is an error, please ensure you spelled your name exactly how the sender intended.")
+        st.error("⛔ ACCESS DENIED: This application portal link is strictly confidential and locked to a single specific matching recipient string name indicator.")
+        st.warning("Ensure you typed the exact name configuration intended by the app creator initialization records.")
     
-    # Valid single authorized person clears security check
+    # Successful authorization check
     else:
-        st.success(f"🔓 Identity Confirmed: Hello **{user_input.strip()}**. You have one pending case file from **{offender_name}**.")
+        st.success(f"🔓 Identity Confirmed: Welcome **{user_input.strip()}**. You have one pending case file open request from **{offender_name}**.")
         generate_portal(your_name=user_input.strip(), offender_name=offender_name)
