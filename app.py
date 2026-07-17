@@ -13,11 +13,10 @@ def get_chime_html():
         </audio>
     """
 
-def generate_portal(your_name):
-    offender_name = "Dhanashree"
+def generate_portal(your_name, offender_name):
     today_date = datetime.date.today().strftime("%B %d, %Y")
     
-    # 1. Apology Message (From Dhanashree's POV)
+    # 1. Apology Message (From Offender's POV)
     apology_message = textwrap.dedent(f"""
         Date: {today_date}
         From: {offender_name}
@@ -143,11 +142,12 @@ st.title("🕊️ The Apology & Forgiveness Portal")
 st.caption("Resolving extreme tracking cases and mischievous behavior.")
 st.markdown("---")
 
-# User Input Box
+# User Input Boxes
+offender_input = st.text_input("Enter Name of the Person Seeking Apology:", value="Dhanashree")
 user_input = st.text_input("Enter Your Name (The Person Granting Forgiveness):", value="Your Name Here")
 
 # Initial Trigger Validation
-if user_input.strip() == "" or user_input == "Your Name Here":
-    st.info("💡 Please type your actual name above to review Dhanashree's case file.")
+if user_input.strip() == "" or user_input == "Your Name Here" or offender_input.strip() == "":
+    st.info("💡 Please fill out both names above to review the case file.")
 else:
-    generate_portal(your_name=user_input)
+    generate_portal(your_name=user_input, offender_name=offender_input)
