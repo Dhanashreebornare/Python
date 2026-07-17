@@ -16,7 +16,7 @@ def get_chime_html():
 def generate_portal(your_name, offender_name):
     today_date = datetime.date.today().strftime("%B %d, %Y")
     
-    # 1. Apology Message (From Offender's POV)
+    # 1. Apology Message (From Sender's POV)
     apology_message = textwrap.dedent(f"""
         Date: {today_date}
         From: {offender_name}
@@ -148,29 +148,29 @@ st.title("🕊️ The Apology & Forgiveness Portal")
 st.caption("Resolving extreme tracking cases and mischievous behavior.")
 st.markdown("---")
 
-# STEP 1: Sender Configuration Mode (Only shows if NOT locked)
+# STEP 1: Sender Setup (Only shows to the person preparing the link)
 if not st.session_state.sender_locked:
-    st.subheader("⚙️ Sender Setup")
-    st.write("If you are the one sending or presenting this apology, lock your name in below.")
+    st.subheader("⚙️ Portal Setup")
+    st.write("Type your name below to lock it into this apology file.")
     
-    sender_input = st.text_input("Your Name (The Person Apologising):", value="")
+    sender_input = st.text_input("Your Name (The Person Seeking Apology):", value="")
     
     if st.button("Lock Name & Prepare Portal"):
         if sender_input.strip() == "":
-            st.error("Please enter a valid name before locking.")
+            st.error("Please enter your name to proceed.")
         else:
             st.session_state.locked_sender_name = sender_input.strip()
             st.session_state.sender_locked = True
             st.rerun()
 
-# STEP 2: The Apology Portal Mode (Only shows AFTER sender locks their name)
+# STEP 2: The Original Apology Portal (Shows up after the Sender locks their name)
 else:
     offender_name = st.session_state.locked_sender_name
     
-    # Visual confirmation that the sender's identity is active but uneditable
+    # Simple alert to confirm the setup is complete
     st.success(f"🔒 Portal locked with sender identity: **{offender_name}**")
     
-    # User Input Box for the person opening the link (The Receiver)
+    # User Input Box for the Receiver
     user_input = st.text_input("Enter Your Name (The Person Granting Forgiveness):", value="Your Name Here")
 
     # Initial Trigger Validation
@@ -179,9 +179,9 @@ else:
     else:
         generate_portal(your_name=user_input, offender_name=offender_name)
         
-    # Fixed Reset Button Section
+    # Reset button at the bottom
     st.markdown("<br><br><br>", unsafe_allow_html=True)
-    if st.button("🔄 Reset Portal (Sender Only)"):
+    if st.button("🔄 Reset Portal"):
         st.session_state.sender_locked = False
         st.session_state.generated = False
         st.rerun()
