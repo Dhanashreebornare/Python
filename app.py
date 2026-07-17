@@ -66,8 +66,8 @@ def generate_portal(your_name, offender_name):
         
         TERMS & CONDITIONS:
         All past grudges are officially wiped clean. {offender_name} is free to roam 
-        without guilt, provided they keep a minimum distance of three steps and promise 
-        to reduce the mischief by at least 15%.
+        without guilt, provided she keeps a minimum distance of thousand miles and promises 
+        to reduce the mischief by at least 50%.
         
         Signed and sealed on this day: {today_date}
         
