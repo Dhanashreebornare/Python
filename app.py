@@ -59,7 +59,7 @@ def generate_portal(your_name, offender_name):
         
         TERMS & CONDITIONS:
         All past grudges are officially wiped clean. {offender_name} is free to roam 
-        without guilt, provided she keeps a minimum distance of three steps and promises 
+        without guilt, provided they keep a minimum distance of three steps and promise 
         to reduce the mischief by at least 15%.
         
         Signed and sealed on this day: {today_date}
@@ -84,7 +84,7 @@ def generate_portal(your_name, offender_name):
     st.image(bird_gif_url, width=90)
     st.caption("Waiting for your absolute ruling...")
 
-    st.write(f"Do you accept {offender_name}'s apology and wish to officially clear her record?")
+    st.write(f"Do you accept {offender_name}'s apology and wish to officially clear their record?")
     
     # Session state to track generation across clicks
     if "generated" not in st.session_state:
@@ -142,12 +142,12 @@ st.title("🕊️ The Apology & Forgiveness Portal")
 st.caption("Resolving extreme tracking cases and mischievous behavior.")
 st.markdown("---")
 
-# User Input Boxes
-offender_input = st.text_input("Enter Name of the Person Seeking Apology:", value="Dhanashree")
+# User Input Boxes (Cleaned text inputs)
+offender_input = st.text_input("Enter Name of the Person Seeking Apology:", value="Apologizer's Name")
 user_input = st.text_input("Enter Your Name (The Person Granting Forgiveness):", value="Your Name Here")
 
 # Initial Trigger Validation
-if user_input.strip() == "" or user_input == "Your Name Here" or offender_input.strip() == "":
-    st.info("💡 Please fill out both names above to review the case file.")
+if user_input.strip() in ["", "Your Name Here"] or offender_input.strip() in ["", "Apologizer's Name"]:
+    st.info("💡 Please type the actual names above to review the case file.")
 else:
     generate_portal(your_name=user_input, offender_name=offender_input)
