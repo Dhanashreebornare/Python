@@ -4,14 +4,13 @@ from huggingface_hub import InferenceClient
 # 1. Page Configuration
 st.set_page_config(page_title="Gaurav - Best Friend Chat", page_icon="🙄")
 st.title("🙄 Talk to Gaurav")
-st.caption("Your funny, easily annoyed AI best friend (Powered by Free Hugging Face API).")
+st.caption("Your funny, easily annoyed AI best friend.")
 
 # 2. Setup the Free Hugging Face Connection safely
 try:
-    # Pulls the free token securely from your Streamlit secrets dashboard
     hf_token = st.secrets["HF_TOKEN"]
-    # Using an excellent, fast, open-source model
-    client = InferenceClient(model="meta-llama/Llama-3.2-3B-Instruct", token=hf_token)
+    # CHANGED: Switched to an unrestricted open model (Qwen 2.5)
+    client = InferenceClient(model="Qwen/Qwen2.5-7B-Instruct", token=hf_token)
 except Exception:
     st.error("Missing HF_TOKEN! Please set it in your Streamlit Secrets Dashboard.")
     st.stop()
@@ -52,28 +51,30 @@ for message in st.session_state.messages:
 if user_input := st.chat_input("Say something to Gaurav..."):
     
     st.session_state.message_count += 1
+    st.session_state.messages.append({"role": "user", "content": user_input})
     
     with st.chat_message("user"):
         st.markdown(user_input)
-        
-    st.session_state.messages.append({"role": "user", "content": user_input})
 
-    # Prepare payload with the dynamic system persona injected at the beginning
-    api_messages = [{"role": "system", "content": best_friend_persona}] + st.session_state.messages
+    # Clean payload construction for Hugging Face
+    api_messages = [{"role": "system", "content": best_friend_persona}]
+    for msg in st.session_state.messages:
+        api_messages.append({"role": msg["role"], "content": msg["content"]})
 
     with st.chat_message("assistant"):
         with st.spinner("Gaurav is typing..."):
             try:
-                # Call the free Hugging Face inference API
+                # CHANGED: Updated target inference endpoint model
                 response = client.chat_completion(
                     messages=api_messages,
-                    max_tokens=500,
+                    max_tokens=250,
                     temperature=0.85
                 )
-                reply = response.choices[0].message.content
+                reply = response.choices.message.content
                 st.markdown(reply)
                 
                 st.session_state.messages.append({"role": "assistant", "content": reply})
+                st.rerun()
                 
             except Exception as e:
                 st.error(f"Error communicating with Gaurav: {e}")
