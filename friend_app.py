@@ -9,7 +9,6 @@ st.caption("Your funny, easily annoyed AI best friend.")
 # 2. Setup the Free Hugging Face Connection safely
 try:
     hf_token = st.secrets["HF_TOKEN"]
-    # CHANGED: Switched to an unrestricted open model (Qwen 2.5)
     client = InferenceClient(model="Qwen/Qwen2.5-7B-Instruct", token=hf_token)
 except Exception:
     st.error("Missing HF_TOKEN! Please set it in your Streamlit Secrets Dashboard.")
@@ -64,15 +63,24 @@ if user_input := st.chat_input("Say something to Gaurav..."):
     with st.chat_message("assistant"):
         with st.spinner("Gaurav is typing..."):
             try:
-                # CHANGED: Updated target inference endpoint model
                 response = client.chat_completion(
                     messages=api_messages,
                     max_tokens=250,
                     temperature=0.85
                 )
-                reply = response.choices.message.content
-                st.markdown(reply)
                 
+                # FIXED: Bulletproof response parsing handling both formats
+                if hasattr(response, "choices") and response.choices:
+                    choice = response.choices[0]
+                    if hasattr(choice, "message"):
+                        reply = choice.message.content
+                    else:
+                        reply = choice.get("message", {}).get("content", "")
+                else:
+                    # Fallback for old library formats
+                    reply = response["choices"][0]["message"]["content"]
+                
+                st.markdown(reply)
                 st.session_state.messages.append({"role": "assistant", "content": reply})
                 st.rerun()
                 
