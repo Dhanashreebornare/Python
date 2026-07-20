@@ -9,58 +9,89 @@ st.set_page_config(
     layout="centered"
 )
 
-# Custom CSS for a beautiful, premium dark chat interface
+# Deeply Customized CSS Inject for a Beautiful, Colorful, and Aesthetic Layout
 st.markdown("""
     <style>
-    /* Gradient Background covering the whole screen */
+    @import url('https://googleapis.com');
+    
+    /* 1. Full Page Vibrant Mesh Gradient */
     .stApp {
-        background: linear-gradient(135deg, #090d16 0%, #111827 50%, #1e1b4b 100%);
+        background: linear-gradient(135deg, #0d0b21 0%, #1a0b36 35%, #2a0845 70%, #0b1b36 100%) !important;
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
     }
-    /* Dynamic Glowing Gradient for Headers */
+    
+    /* 2. Top Banner Header Styling with Neon Glow Effects */
     h1 {
-        color: #f8fafc !important;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Plus Jakarta Sans', sans-serif;
         font-weight: 800 !important;
-        background: -webkit-linear-gradient(left, #818cf8, #c084fc);
+        background: linear-gradient(90deg, #ff007f, #7f00ff, #00f0ff);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+        text-shadow: 0px 0px 25px rgba(127, 0, 255, 0.35);
+        letter-spacing: -1px;
         margin-bottom: 0px !important;
     }
+    
     .subtitle-text {
-        color: #94a3b8;
-        font-size: 1.05rem;
-        margin-top: 5px;
+        color: #b4b8da;
+        font-size: 1.1rem;
+        margin-top: 8px;
         margin-bottom: 2.5rem;
+        font-weight: 400;
     }
-    /* Restructure padding for optimal layout layout */
-    .block-container {
-        padding-top: 3.5rem !important;
-        max-width: 680px !important;
+
+    /* 3. Aesthetic Makeover for Chat Avatars & Message Blocks */
+    div[data-testid="stChatMessage"] {
+        border-radius: 18px !important;
+        padding: 1.2rem !important;
+        margin-bottom: 1rem !important;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
     }
-    /* Premium Sidebar Styling */
+    
+    /* User Message Style: Vibrant Magenta Hint */
+    div[data-testid="stChatMessageUser"] {
+        background-color: rgba(255, 0, 127, 0.08) !important;
+        border-left: 5px solid #ff007f !important;
+    }
+    
+    /* Assistant Message Style: Electric Purple/Blue Hint */
+    div[data-testid="stChatMessageAssistant"] {
+        background-color: rgba(127, 0, 255, 0.08) !important;
+        border-left: 5px solid #7f00ff !important;
+    }
+
+    /* 4. Elegant Glassmorphism Sidebar Formatting */
     section[data-testid="stSidebar"] {
-        background-color: #0f172a !important;
-        border-right: 1px solid #1e293b;
+        background-color: rgba(10, 8, 26, 0.85) !important;
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
     }
-    /* Customising action buttons */
+    
+    /* 5. Custom Control Button Designing */
     .stButton>button {
-        background-color: #1e1b4b !important;
-        color: #e2e8f0 !important;
-        border: 1px solid #4338ca !important;
-        border-radius: 12px !important;
-        width: 100%;
-        font-weight: 600;
-        transition: all 0.3s ease;
+        background: linear-gradient(90deg, #7f00ff 0%, #ff007f 100%) !important;
+        color: #ffffff !important;
+        border: none !important;
+        border-radius: 14px !important;
+        padding: 0.6rem 1.5rem !important;
+        font-weight: 600 !important;
+        box-shadow: 0 4px 15px rgba(127, 0, 255, 0.3);
+        transition: all 0.3s ease-in-out !important;
     }
     .stButton>button:hover {
-        background-color: #4338ca !important;
-        color: #ffffff !important;
-        box-shadow: 0 0 15px rgba(129, 140, 248, 0.4);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 0, 127, 0.5) !important;
+    }
+
+    /* Fix layout width alignments */
+    .block-container {
+        padding-top: 4rem !important;
+        max-width: 700px !important;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# 2. Polished Sidebar Layout
+# 2. Sidebar Navigation Layout
 with st.sidebar:
     st.markdown("### ✨ Meet Your Best Friend")
     st.markdown(
@@ -74,18 +105,18 @@ with st.sidebar:
     st.caption("🦁 **Gujarati** (ગુજરાતી - પ્રોપર મિત્ર ભાવે)")
     st.write("---")
     
-    # Session reset action
+    # Session reset action button
     if st.button("🔄 Clear Conversation"):
         st.session_state.messages = []
         if "gemini_chat" in st.session_state:
             del st.session_state.gemini_chat
         st.rerun()
 
-# 3. App Header Interface
+# 3. App Header Interface Setup
 st.title("🤝 Chat with Gaurav")
 st.markdown("<p class='subtitle-text'>Your close, funny, and multilingual companion.</p>", unsafe_allow_html=True)
 
-# 4. Fetch the Key Safely from Streamlit Secrets
+# 4. Fetch the Key Safely from Streamlit Secrets Management
 api_key = st.secrets.get("GEMINI_API_KEY")
 
 if not api_key:
@@ -114,13 +145,13 @@ config = types.GenerateContentConfig(
     temperature=0.85, # Adds warm conversational variety to text generations
 )
 
-# 7. Persistent Memory Orchestration
+# 7. Persistent Memory Orchestration (Using Latest Gemini 2.5 Flash Engine)
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
 if "gemini_chat" not in st.session_state:
     st.session_state.gemini_chat = client.chats.create(
-        model="gemini-1.5-flash", 
+        model="gemini-2.5-flash", 
         config=config
     )
 
