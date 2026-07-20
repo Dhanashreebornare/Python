@@ -145,13 +145,13 @@ config = types.GenerateContentConfig(
     temperature=0.85, # Adds warm conversational variety to text generations
 )
 
-# 7. Persistent Memory Orchestration (Using Latest Gemini 2.5 Flash Engine)
+# 7. Persistent Memory Orchestration (Updated to Current Gemini 3.5 Frontier Engine)
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
 if "gemini_chat" not in st.session_state:
     st.session_state.gemini_chat = client.chats.create(
-        model="gemini-2.5-flash", 
+        model="gemini-3.5-flash", 
         config=config
     )
 
