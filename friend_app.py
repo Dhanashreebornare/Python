@@ -1,17 +1,19 @@
 import streamlit as st
 from google import genai
 from google.genai import types
+from google.genai.errors import APIError  # Imported for exact error catching
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
 # 1. Premium Visual Page Configuration
 st.set_page_config(
-    page_title="Chat with Gaurav", 
-    page_icon="✨", 
+    page_title="Chat with Gaurav",
+    page_icon="✨",
     layout="centered"
 )
 
 # Custom High-Contrast Aesthetic Light Theme Styling
 st.markdown("""
-    <style>
+<style>
     @import url('https://googleapis.com');
     
     /* 1. Light Dynamic Pastel Canvas Background */
@@ -30,7 +32,6 @@ st.markdown("""
         letter-spacing: -1px;
         margin-bottom: 0px !important;
     }
-    
     .subtitle-text {
         color: #475569;
         font-size: 1.1rem;
@@ -38,7 +39,7 @@ st.markdown("""
         margin-bottom: 2.5rem;
         font-weight: 600;
     }
-
+    
     /* 3. Deep High-Contrast Chat Message Text Containers */
     div[data-testid="stChatMessage"] {
         border-radius: 16px !important;
@@ -67,7 +68,7 @@ st.markdown("""
         border: 1px solid #ebdfff !important;
         border-left: 6px solid #7f00ff !important;
     }
-
+    
     /* 4. Balanced Light Sidebar Layout formatting */
     section[data-testid="stSidebar"] {
         background-color: #ffffff !important;
@@ -92,13 +93,13 @@ st.markdown("""
         transform: translateY(-1px);
         box-shadow: 0 6px 16px rgba(255, 0, 127, 0.35) !important;
     }
-
+    
     /* Standard container centering constraints */
     .block-container {
         padding-top: 4rem !important;
         max-width: 700px !important;
     }
-    </style>
+</style>
 """, unsafe_allow_html=True)
 
 # 2. Sidebar Navigation Layout Settings
@@ -128,7 +129,6 @@ st.markdown("<p class='subtitle-text'>Your close, funny, and multilingual compan
 
 # 4. Fetch the Active Authorization Key securely
 api_key = st.secrets.get("GEMINI_API_KEY")
-
 if not api_key:
     st.info("Please add your copied key to the Streamlit Advanced Secrets dashboard to begin.", icon="🔑")
     st.stop()
@@ -152,7 +152,7 @@ friend_personality = (
 
 config = types.GenerateContentConfig(
     system_instruction=friend_personality,
-    temperature=0.85, 
+    temperature=0.85,
 )
 
 # 7. Core Thread Memory Persistence (Syncing onto Gemini 3.5 Engine Endpoint)
@@ -161,7 +161,7 @@ if "messages" not in st.session_state:
 
 if "gemini_chat" not in st.session_state:
     st.session_state.gemini_chat = client.chats.create(
-        model="gemini-3.5-flash", 
+        model="gemini-3.5-flash",
         config=config
     )
 
@@ -170,9 +170,20 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+# --- Helper Function for Automatic Retries ---
+@retry(
+    stop=stop_after_attempt(4),                      # Try up to 4 times before giving up
+    wait=wait_exponential(multiplier=1, min=1, max=8), # Wait 1s, then 2s, then 4s, then 8s
+    retry=retry_if_exception_type(APIError),         # Only retry Google API specific issues
+    reraise=True                                    # If it still fails, pass the error onward
+)
+def send_message_with_retry(user_message):
+    """Sends a message to the active chat session with exponential backoff safety."""
+    return st.session_state.gemini_chat.send_message(user_message)
+
+
 # 9. Process Active Client Message Inputs
 if user_input := st.chat_input("Type a message to Gaurav..."):
-    
     with st.chat_message("user"):
         st.markdown(user_input)
     st.session_state.messages.append({"role": "user", "content": user_input})
@@ -181,11 +192,15 @@ if user_input := st.chat_input("Type a message to Gaurav..."):
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
         try:
-            response = st.session_state.gemini_chat.send_message(user_input)
+            # Replaced direct call with the wrapper function containing retry safety logic
+            response = send_message_with_retry(user_input)
             full_response = response.text
             message_placeholder.markdown(full_response)
-            
             st.session_state.messages.append({"role": "assistant", "content": full_response})
-            
+        except APIError as api_err:
+            if api_err.code == 503:
+                st.error("Gaurav's line is really busy right now due to high demand! 😅 Please wait a moment and try sending your message again.")
+            else:
+                st.error(f"Gaurav ran into a network hiccup: {api_err.message}")
         except Exception as e:
             st.error(f"Gaurav went offline for a second. Try again! Details: {e}")
