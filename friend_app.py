@@ -9,81 +9,91 @@ st.set_page_config(
     layout="centered"
 )
 
-# Deeply Customized CSS Inject for a Beautiful, Colorful, and Aesthetic Layout
+# Custom High-Contrast Aesthetic Light Theme Styling
 st.markdown("""
     <style>
     @import url('https://googleapis.com');
     
-    /* 1. Full Page Vibrant Mesh Gradient */
+    /* 1. Light Dynamic Pastel Canvas Background */
     .stApp {
-        background: linear-gradient(135deg, #0d0b21 0%, #1a0b36 35%, #2a0845 70%, #0b1b36 100%) !important;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%) !important;
         font-family: 'Plus Jakarta Sans', sans-serif !important;
     }
     
-    /* 2. Top Banner Header Styling with Neon Glow Effects */
+    /* 2. Bold Vibrant Header Styling */
     h1 {
         font-family: 'Plus Jakarta Sans', sans-serif;
         font-weight: 800 !important;
-        background: linear-gradient(90deg, #ff007f, #7f00ff, #00f0ff);
+        background: linear-gradient(90deg, #d90429, #6c5ce7, #00b4d8);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        text-shadow: 0px 0px 25px rgba(127, 0, 255, 0.35);
         letter-spacing: -1px;
         margin-bottom: 0px !important;
     }
     
     .subtitle-text {
-        color: #b4b8da;
+        color: #475569;
         font-size: 1.1rem;
         margin-top: 8px;
         margin-bottom: 2.5rem;
-        font-weight: 400;
+        font-weight: 600;
     }
 
-    /* 3. Aesthetic Makeover for Chat Avatars & Message Blocks */
+    /* 3. Deep High-Contrast Chat Message Text Containers */
     div[data-testid="stChatMessage"] {
-        border-radius: 18px !important;
+        border-radius: 16px !important;
         padding: 1.2rem !important;
         margin-bottom: 1rem !important;
-        border: 1px solid rgba(255, 255, 255, 0.06);
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+        box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
+        color: #0f172a !important; /* Forces Text Dark */
     }
     
-    /* User Message Style: Vibrant Magenta Hint */
+    /* Ensure markdown content within messages remains deeply readable */
+    div[data-testid="stChatMessage"] p, div[data-testid="stChatMessage"] span {
+        color: #0f172a !important;
+        font-weight: 500;
+    }
+    
+    /* User Message Frame: Light Pink with Deep Dark Text */
     div[data-testid="stChatMessageUser"] {
-        background-color: rgba(255, 0, 127, 0.08) !important;
-        border-left: 5px solid #ff007f !important;
+        background-color: #fff5f8 !important;
+        border: 1px solid #ffe3ec !important;
+        border-left: 6px solid #ff007f !important;
     }
     
-    /* Assistant Message Style: Electric Purple/Blue Hint */
+    /* Gaurav Message Frame: Light Lavender with Deep Dark Text */
     div[data-testid="stChatMessageAssistant"] {
-        background-color: rgba(127, 0, 255, 0.08) !important;
-        border-left: 5px solid #7f00ff !important;
+        background-color: #f7f4ff !important;
+        border: 1px solid #ebdfff !important;
+        border-left: 6px solid #7f00ff !important;
     }
 
-    /* 4. Elegant Glassmorphism Sidebar Formatting */
+    /* 4. Balanced Light Sidebar Layout formatting */
     section[data-testid="stSidebar"] {
-        background-color: rgba(10, 8, 26, 0.85) !important;
-        border-right: 1px solid rgba(255, 255, 255, 0.05);
+        background-color: #ffffff !important;
+        border-right: 1px solid #cbd5e1;
+    }
+    section[data-testid="stSidebar"] h3, section[data-testid="stSidebar"] p {
+        color: #0f172a !important;
     }
     
-    /* 5. Custom Control Button Designing */
+    /* 5. Custom Control Button Framework */
     .stButton>button {
-        background: linear-gradient(90deg, #7f00ff 0%, #ff007f 100%) !important;
+        background: linear-gradient(90deg, #6c5ce7 0%, #ff007f 100%) !important;
         color: #ffffff !important;
         border: none !important;
-        border-radius: 14px !important;
+        border-radius: 12px !important;
         padding: 0.6rem 1.5rem !important;
         font-weight: 600 !important;
-        box-shadow: 0 4px 15px rgba(127, 0, 255, 0.3);
-        transition: all 0.3s ease-in-out !important;
+        box-shadow: 0 4px 12px rgba(108, 92, 231, 0.2);
+        transition: all 0.2s ease-in-out !important;
     }
     .stButton>button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(255, 0, 127, 0.5) !important;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(255, 0, 127, 0.35) !important;
     }
 
-    /* Fix layout width alignments */
+    /* Standard container centering constraints */
     .block-container {
         padding-top: 4rem !important;
         max-width: 700px !important;
@@ -91,7 +101,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 2. Sidebar Navigation Layout
+# 2. Sidebar Navigation Layout Settings
 with st.sidebar:
     st.markdown("### ✨ Meet Your Best Friend")
     st.markdown(
@@ -105,32 +115,32 @@ with st.sidebar:
     st.caption("🦁 **Gujarati** (ગુજરાતી - પ્રોપર મિત્ર ભાવે)")
     st.write("---")
     
-    # Session reset action button
+    # Session data reset action
     if st.button("🔄 Clear Conversation"):
         st.session_state.messages = []
         if "gemini_chat" in st.session_state:
             del st.session_state.gemini_chat
         st.rerun()
 
-# 3. App Header Interface Setup
+# 3. Main Header Typography
 st.title("🤝 Chat with Gaurav")
 st.markdown("<p class='subtitle-text'>Your close, funny, and multilingual companion.</p>", unsafe_allow_html=True)
 
-# 4. Fetch the Key Safely from Streamlit Secrets Management
+# 4. Fetch the Active Authorization Key securely
 api_key = st.secrets.get("GEMINI_API_KEY")
 
 if not api_key:
     st.info("Please add your copied key to the Streamlit Advanced Secrets dashboard to begin.", icon="🔑")
     st.stop()
 
-# 5. Initialize the Cache Client Standard Framework
+# 5. Initialize the Cache Client Engine standard
 @st.cache_resource
 def get_genai_client(key):
     return genai.Client(api_key=key)
 
 client = get_genai_client(api_key)
 
-# 6. Deeply Defined Multilingual Friendly System Instructions
+# 6. Deeply Configured Behavioral Model Context Instructions
 friend_personality = (
     "You are Gaurav, a close, supportive, and funny friend. "
     "Keep your answers short, casual, and highly conversational—just like a friend texting back and forth. "
@@ -142,10 +152,10 @@ friend_personality = (
 
 config = types.GenerateContentConfig(
     system_instruction=friend_personality,
-    temperature=0.85, # Adds warm conversational variety to text generations
+    temperature=0.85, 
 )
 
-# 7. Persistent Memory Orchestration (Updated to Current Gemini 3.5 Frontier Engine)
+# 7. Core Thread Memory Persistence (Syncing onto Gemini 3.5 Engine Endpoint)
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -155,20 +165,19 @@ if "gemini_chat" not in st.session_state:
         config=config
     )
 
-# 8. Render Beautiful Chat UI Logs
+# 8. Render High-Contrast Chat History Cards
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# 9. Track Real-Time User Message Feed
+# 9. Process Active Client Message Inputs
 if user_input := st.chat_input("Type a message to Gaurav..."):
     
-    # Append & display immediately
     with st.chat_message("user"):
         st.markdown(user_input)
     st.session_state.messages.append({"role": "user", "content": user_input})
     
-    # Process Gaurav's multilingual reply stream
+    # Generate response turn using active connection
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
         try:
