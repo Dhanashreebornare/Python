@@ -1,7 +1,8 @@
 import streamlit as st
+import time
 from google import genai
 from google.genai import types
-from google.genai.errors import APIError  # Imported for exact error catching
+from google.genai.errors import APIError 
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
 # 1. Premium Visual Page Configuration
@@ -14,91 +15,90 @@ st.set_page_config(
 # Custom High-Contrast Aesthetic Light Theme Styling
 st.markdown("""
 <style>
-    @import url('https://googleapis.com');
-    
-    /* 1. Light Dynamic Pastel Canvas Background */
-    .stApp {
-        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%) !important;
-        font-family: 'Plus Jakarta Sans', sans-serif !important;
-    }
-    
-    /* 2. Bold Vibrant Header Styling */
-    h1 {
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        font-weight: 800 !important;
-        background: linear-gradient(90deg, #d90429, #6c5ce7, #00b4d8);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        letter-spacing: -1px;
-        margin-bottom: 0px !important;
-    }
-    .subtitle-text {
-        color: #475569;
-        font-size: 1.1rem;
-        margin-top: 8px;
-        margin-bottom: 2.5rem;
-        font-weight: 600;
-    }
-    
-    /* 3. Deep High-Contrast Chat Message Text Containers */
-    div[data-testid="stChatMessage"] {
-        border-radius: 16px !important;
-        padding: 1.2rem !important;
-        margin-bottom: 1rem !important;
-        box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
-        color: #0f172a !important; /* Forces Text Dark */
-    }
-    
-    /* Ensure markdown content within messages remains deeply readable */
-    div[data-testid="stChatMessage"] p, div[data-testid="stChatMessage"] span {
-        color: #0f172a !important;
-        font-weight: 500;
-    }
-    
-    /* User Message Frame: Light Pink with Deep Dark Text */
-    div[data-testid="stChatMessageUser"] {
-        background-color: #fff5f8 !important;
-        border: 1px solid #ffe3ec !important;
-        border-left: 6px solid #ff007f !important;
-    }
-    
-    /* Gaurav Message Frame: Light Lavender with Deep Dark Text */
-    div[data-testid="stChatMessageAssistant"] {
-        background-color: #f7f4ff !important;
-        border: 1px solid #ebdfff !important;
-        border-left: 6px solid #7f00ff !important;
-    }
-    
-    /* 4. Balanced Light Sidebar Layout formatting */
-    section[data-testid="stSidebar"] {
-        background-color: #ffffff !important;
-        border-right: 1px solid #cbd5e1;
-    }
-    section[data-testid="stSidebar"] h3, section[data-testid="stSidebar"] p {
-        color: #0f172a !important;
-    }
-    
-    /* 5. Custom Control Button Framework */
-    .stButton>button {
-        background: linear-gradient(90deg, #6c5ce7 0%, #ff007f 100%) !important;
-        color: #ffffff !important;
-        border: none !important;
-        border-radius: 12px !important;
-        padding: 0.6rem 1.5rem !important;
-        font-weight: 600 !important;
-        box-shadow: 0 4px 12px rgba(108, 92, 231, 0.2);
-        transition: all 0.2s ease-in-out !important;
-    }
-    .stButton>button:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 6px 16px rgba(255, 0, 127, 0.35) !important;
-    }
-    
-    /* Standard container centering constraints */
-    .block-container {
-        padding-top: 4rem !important;
-        max-width: 700px !important;
-    }
+@import url('https://googleapis.com');
+/* 1. Light Dynamic Pastel Canvas Background */
+.stApp {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%) !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+}
+/* 2. Bold Vibrant Header Styling */
+h1 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 800 !important;
+    background: linear-gradient(90deg, #d90429, #6c5ce7, #00b4d8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -1px;
+    margin-bottom: 0px !important;
+}
+.subtitle-text {
+    color: #475569;
+    font-size: 1.1rem;
+    margin-top: 8px;
+    margin-bottom: 2.5rem;
+    font-weight: 600;
+}
+/* 3. Deep High-Contrast Chat Message Text Containers */
+div[data-testid="stChatMessage"] {
+    border-radius: 16px !important;
+    padding: 1.2rem !important;
+    margin-bottom: 1rem !important;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
+    color: #0f172a !important; /* Forces Text Dark */
+}
+/* Ensure markdown content within messages remains deeply readable */
+div[data-testid="stChatMessage"] p, div[data-testid="stChatMessage"] span {
+    color: #0f172a !important;
+    font-weight: 500;
+}
+/* User Message Frame: Light Pink with Deep Dark Text */
+div[data-testid="stChatMessageUser"] {
+    background-color: #fff5f8 !important;
+    border: 1px solid #ffe3ec !important;
+    border-left: 6px solid #ff007f !important;
+}
+/* Gaurav Message Frame: Light Lavender with Deep Dark Text */
+div[data-testid="stChatMessageAssistant"] {
+    background-color: #f7f4ff !important;
+    border: 1px solid #ebdfff !important;
+    border-left: 6px solid #7f00ff !important;
+}
+/* 4. Balanced Light Sidebar Layout formatting */
+section[data-testid="stSidebar"] {
+    background-color: #ffffff !important;
+    border-right: 1px solid #cbd5e1;
+}
+section[data-testid="stSidebar"] h3, section[data-testid="stSidebar"] p {
+    color: #0f172a !important;
+}
+/* 5. Custom Control Button Framework */
+.stButton>button {
+    background: linear-gradient(90deg, #6c5ce7 0%, #ff007f 100%) !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 0.6rem 1.5rem !important;
+    font-weight: 600 !important;
+    box-shadow: 0 4px 12px rgba(108, 92, 231, 0.2);
+    transition: all 0.2s ease-in-out !important;
+}
+.stButton>button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(255, 0, 127, 0.35) !important;
+}
+/* Standard container centering constraints */
+.block-container {
+    padding-top: 4rem !important;
+    max-width: 700px !important;
+}
+/* Lightweight text formatting for token footer details */
+.token-footer {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin-top: 8px;
+    display: block;
+    text-align: right;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -115,13 +115,13 @@ with st.sidebar:
     st.caption("🇮🇳 **Hindi** (हिंदी - एकदम दोस्तों की तरह)")
     st.caption("🦁 **Gujarati** (ગુજરાતી - પ્રોપર મિત્ર ભાવે)")
     st.write("---")
-    
-    # Session data reset action
-    if st.button("🔄 Clear Conversation"):
-        st.session_state.messages = []
-        if "gemini_chat" in st.session_state:
-            del st.session_state.gemini_chat
-        st.rerun()
+
+# Session data reset action
+if st.button("🔄 Clear Conversation"):
+    st.session_state.messages = []
+    if "gemini_chat" in st.session_state:
+        del st.session_state.gemini_chat
+    st.rerun()
 
 # 3. Main Header Typography
 st.title("🤝 Chat with Gaurav")
@@ -169,38 +169,71 @@ if "gemini_chat" not in st.session_state:
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
+        # If token information exists from a previous turn, re-display it cleanly underneath
+        if "token_info" in message:
+            st.markdown(f"<span class='token-footer'>{message['token_info']}</span>", unsafe_allow_html=True)
 
 # --- Helper Function for Automatic Retries ---
 @retry(
-    stop=stop_after_attempt(4),                      # Try up to 4 times before giving up
-    wait=wait_exponential(multiplier=1, min=1, max=8), # Wait 1s, then 2s, then 4s, then 8s
-    retry=retry_if_exception_type(APIError),         # Only retry Google API specific issues
-    reraise=True                                    # If it still fails, pass the error onward
+    stop=stop_after_attempt(5),                                
+    wait=wait_exponential(multiplier=2, min=2, max=20),        
+    retry=retry_if_exception_type(APIError),                   
+    reraise=True                                               
 )
 def send_message_with_retry(user_message):
     """Sends a message to the active chat session with exponential backoff safety."""
     return st.session_state.gemini_chat.send_message(user_message)
-
 
 # 9. Process Active Client Message Inputs
 if user_input := st.chat_input("Type a message to Gaurav..."):
     with st.chat_message("user"):
         st.markdown(user_input)
     st.session_state.messages.append({"role": "user", "content": user_input})
-    
+
     # Generate response turn using active connection
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
-        try:
-            # Replaced direct call with the wrapper function containing retry safety logic
-            response = send_message_with_retry(user_input)
-            full_response = response.text
-            message_placeholder.markdown(full_response)
-            st.session_state.messages.append({"role": "assistant", "content": full_response})
-        except APIError as api_err:
-            if api_err.code == 503:
-                st.error("Gaurav's line is really busy right now due to high demand! 😅 Please wait a moment and try sending your message again.")
-            else:
-                st.error(f"Gaurav ran into a network hiccup: {api_err.message}")
-        except Exception as e:
-            st.error(f"Gaurav went offline for a second. Try again! Details: {e}")
+        token_placeholder = st.empty()
+        
+        with st.spinner("Gaurav is typing... 💬"):
+            try:
+                response = send_message_with_retry(user_input)
+                full_response = response.text
+                
+                # Extract token metrics safely from response metadata
+                input_tokens = response.usage_metadata.prompt_token_count if response.usage_metadata else 0
+                output_tokens = response.usage_metadata.candidates_token_count if response.usage_metadata else 0
+                token_string = f"⚡ Spent: {input_tokens} input | {output_tokens} output tokens"
+                
+                # --- Typing Simulation Engine ---
+                displayed_text = ""
+                # Split text into individual words to simulate fluid writing velocity
+                for word in full_response.split(" "):
+                    displayed_text += word + " "
+                    message_placeholder.markdown(displayed_text + "▌")
+                    time.sleep(0.06)  # Fluid pacing control delay
+                
+                # Final pass to drop typing cursor icon
+                message_placeholder.markdown(full_response)
+                token_placeholder.markdown(f"<span class='token-footer'>{token_string}</span>", unsafe_allow_html=True)
+                
+                # Save chat payload with token metadata appended
+                st.session_state.messages.append({
+                    "role": "assistant", 
+                    "content": full_response,
+                    "token_info": token_string
+                })
+                
+                # --- Forced Natural Cooling Delay ---
+                time.sleep(3)
+                
+            except APIError as api_err:
+                if api_err.code == 429:
+                    st.error("🚨 **Gaurav is completely out of breath!** The free tier rate limit was fully exhausted. Please wait 15-20 seconds before typing your next message.")
+                elif api_err.code == 503:
+                    st.error("Gaurav's line is really busy right now due to high demand! 😅 Please wait a moment and try sending your message again.")
+                else:
+                    st.error(f"Gaurav ran into a network hiccup: {api_err.message} (Status: {api_err.code})")
+                    
+            except Exception as e:
+                st.error(f"Gaurav went offline for a second. Try again! Details: {e}")
