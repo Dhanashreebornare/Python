@@ -232,7 +232,6 @@ if user_input := st.chat_input("Say something to Gaurav..."):
         with st.spinner("Gaurav is typing... 💬"):
             try:
                 # --- QUOTA MINIMIZER: Rolling Context Window ---
-                # Keeps only the last 6 messages to protect the free tier from blowing up
                 MAX_HISTORY_TURNS = 6
                 if len(st.session_state.api_history) > MAX_HISTORY_TURNS:
                     payload = st.session_state.api_history[-MAX_HISTORY_TURNS:]
@@ -251,3 +250,33 @@ if user_input := st.chat_input("Say something to Gaurav..."):
                 
             except APIError as api_err:
                 if api_err.code == 429:
+                    st.error("🚨 **Gaurav is out of breath, bro!** The free limits ran out. Give him 15-20 seconds to catch his breath before typing again!")
+                elif api_err.code == 503:
+                    st.error("Gaurav's line is locked up due to high traffic! 😅 Try hitting send again in a few seconds.")
+                else:
+                    st.error(f"Gaurav hit a network snag: {api_err.message} (Status: {api_err.code})")
+            except Exception as e:
+                st.error(f"Gaurav went offline for a second. Try again! Details: {e}")
+
+        # --- Smooth Fluid Typing Simulation Engine ---
+        if api_success and full_response:
+            words = full_response.split(" ")
+            for i in range(1, len(words) + 1):
+                message_placeholder.markdown(" ".join(words[:i]) + " ▌")
+                time.sleep(0.035) 
+                
+            # Final clean layout pass
+            message_placeholder.markdown(full_response)
+            token_placeholder.markdown(f"<span class='token-footer'>{token_string}</span>", unsafe_allow_html=True)
+            
+            # Save assistant output to visual UI log
+            st.session_state.messages.append({
+                "role": "assistant",
+                "content": full_response,
+                "token_info": token_string
+            })
+            
+            # Save assistant output structural payload to API history log
+            st.session_state.api_history.append(
+                types.Content(role="model", parts=[types.Part.from_text(text=full_response)])
+            )
