@@ -204,7 +204,7 @@ for message in st.session_state.messages:
 )
 def generate_content_with_retry(contents_payload):
     return client.models.generate_content(
-        model='gemini-2.5-flash',
+        model='gemini-3.5-flash',
         contents=contents_payload,
         config=config
     )
@@ -231,6 +231,7 @@ if user_input := st.chat_input("Say something to Gaurav..."):
         with st.spinner("Gaurav is typing... 💬"):
             try:
                 # --- QUOTA MINIMIZER: Rolling Context Window ---
+                # Keeps only the last 6 messages to protect the free tier from blowing up
                 MAX_HISTORY_TURNS = 6
                 if len(st.session_state.api_history) > MAX_HISTORY_TURNS:
                     payload = st.session_state.api_history[-MAX_HISTORY_TURNS:]
@@ -253,4 +254,3 @@ if user_input := st.chat_input("Say something to Gaurav..."):
                 elif api_err.code == 503:
                     st.error("Gaurav's line is locked up due to high traffic! 😅 Try hitting send again in a few seconds.")
                 else:
-                    st.error(f"Gaurav hit a network snag: {api_err.message} (Status: {api_err.code})")
