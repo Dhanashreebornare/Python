@@ -188,18 +188,30 @@ if "messages" not in st.session_state:
 if "api_history" not in st.session_state:
     st.session_state.api_history = []
 
-# 8. Render High-Contrast Chat History Cards with Custom Avatars
+# 8. Render High-Contrast Chat History Cards with Custom DP Assets
 for message in st.session_state.messages:
-    # Switch avatar icons to local repository image filenames
     avatar_icon = "periwinkle.png" if message["role"] == "user" else "gaurav.jpg"
     with st.chat_message(message["role"], avatar=avatar_icon):
         st.markdown(message["content"])
         if "token_info" in message:
             st.markdown(f"<span class='token-footer'>{message['token_info']}</span>", unsafe_allow_html=True)
 
+# --- Helper Function for Automatic Retries with Exponential Backoff ---
+@retry(
+    stop=stop_after_attempt(3), 
+    wait=wait_exponential(multiplier=2, min=2, max=10),
+    retry=retry_if_exception_type(APIError),
+    reraise=True
+)
+def generate_content_with_retry(contents_payload):
+    return client.models.generate_content(
+        model='gemini-3.5-flash',
+        contents=contents_payload,
+        config=config
+    )
+
 # 9. Process Active Client Message Inputs
 if user_input := st.chat_input("Say something to Gaurav..."):
-    # Updated to point to your flower asset
     with st.chat_message("user", avatar="periwinkle.png"):
         st.markdown(user_input)
     
@@ -208,13 +220,34 @@ if user_input := st.chat_input("Say something to Gaurav..."):
         types.Content(role="user", parts=[types.Part.from_text(text=user_input)])
     )
 
-    # Updated to point to Gaurav's portrait asset
+    # Generate response turn using active connection
     with st.chat_message("assistant", avatar="gaurav.jpg"):
         message_placeholder = st.empty()
         token_placeholder = st.empty()
+        
+        full_response = ""
+        token_string = ""
+        api_success = False
+        
+        with st.spinner("Gaurav is typing... 💬"):
+            try:
+                # --- QUOTA MINIMIZER: Rolling Context Window ---
+                MAX_HISTORY_TURNS = 6
+                if len(st.session_state.api_history) > MAX_HISTORY_TURNS:
+                    payload = st.session_state.api_history[-MAX_HISTORY_TURNS:]
+                else:
+                    payload = st.session_state.api_history
 
-            
-            # Save assistant output structural payload to API history log
-            st.session_state.api_history.append(
-                types.Content(role="model", parts=[types.Part.from_text(text=full_response)])
-            )
+                # Fire structured API request
+                response = generate_content_with_retry(payload)
+                full_response = response.text
+                
+                # Extract token metrics safely from response metadata
+                input_tokens = response.usage_metadata.prompt_token_count if response.usage_metadata else 0
+                output_tokens = response.usage_metadata.candidates_token_count if response.usage_metadata else 0
+                token_string = f"⚡ Usage Check: {input_tokens} in | {output_tokens} out tokens"
+                api_success = True
+                
+            except APIError as api_err:
+                if api_err.code == 429:
+                    st.error("🚨 **Gaurav is out of breath, bro!** The free limits ran out. Give him 15-20 seconds to catch his breath before typing again!")
