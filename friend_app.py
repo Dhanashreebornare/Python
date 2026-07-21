@@ -232,6 +232,7 @@ if user_input := st.chat_input("Say something to Gaurav..."):
         with st.spinner("Gaurav is typing... 💬"):
             try:
                 # --- QUOTA MINIMIZER: Rolling Context Window ---
+                # Keeps only the last 6 messages to protect the free tier from blowing up
                 MAX_HISTORY_TURNS = 6
                 if len(st.session_state.api_history) > MAX_HISTORY_TURNS:
                     payload = st.session_state.api_history[-MAX_HISTORY_TURNS:]
@@ -250,5 +251,3 @@ if user_input := st.chat_input("Say something to Gaurav..."):
                 
             except APIError as api_err:
                 if api_err.code == 429:
-                    st.error("🚨 **Gaurav is out of breath, bro!** The free limits ran out. Give him 15-20 seconds to catch his breath before typing again!")
-                elif api_err.code == 503:
