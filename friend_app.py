@@ -4,25 +4,25 @@ from google import genai
 from google.genai import types
 from google.genai.errors import APIError
 
-# 1. Standard Page Configuration
+# 1. Premium Visual Page Configuration
 st.set_page_config(
     page_title="Vibe with Gaurav",
     page_icon="🌸",
     layout="centered"
 )
 
-# Minimalist, Clean Pastel Friendship Canvas Style
+# Custom High-Contrast Elegant Canvas Styling
 st.markdown("""
 <style>
     @import url('https://googleapis.com');
     
-    /* Soft, high-contrast stable pastel canvas background */
+    /* Base Application Layout Restructuring */
     .stApp {
         background: linear-gradient(135deg, #fff2f5 0%, #fffbfd 100%) !important;
         font-family: 'Plus Jakarta Sans', sans-serif !important;
     }
     
-    /* Clean Radiant Header Typography */
+    /* Clear Readable Typography & Headers */
     h1 {
         font-family: 'Plus Jakarta Sans', sans-serif !important;
         font-weight: 800 !important;
@@ -30,16 +30,67 @@ st.markdown("""
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         letter-spacing: -1px;
+        margin-bottom: 0px !important;
     }
     
     .subtitle-text {
         color: #5c3d46 !important;
         font-size: 1.05rem;
-        font-weight: 600;
+        margin-top: 6px;
         margin-bottom: 2rem;
+        font-weight: 600;
+    }
+    
+    /* Deep Container Elements Override for Chat Messages */
+    div[data-testid="stChatMessage"] {
+        border-radius: 24px !important;
+        padding: 1.25rem 1.5rem !important;
+        margin-bottom: 1.2rem !important;
+        box-shadow: 0 10px 30px -10px rgba(225, 78, 202, 0.1);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid rgba(255, 255, 255, 0.9) !important;
     }
 
-    /* Clear technical text for usage tracking metrics */
+    /* Structural fix for high-contrast message texts */
+    div[data-testid="stChatMessageContent"] p, 
+    div[data-testid="stChatMessageContent"] span,
+    div[data-testid="stChatMessageContent"] li,
+    div[data-testid="stChatMessageContent"] div {
+        color: #231224 !important;
+        font-weight: 600 !important;
+        line-height: 1.6 !important;
+        font-size: 1.05rem !important;
+    }
+    
+    /* User Message Bubble Styling: Warm Blush Sunrise Frame */
+    div[data-testid="stChatMessageUser"] {
+        background: linear-gradient(120deg, #fff3f5 0%, #ffeef1 100%) !important;
+        border-bottom-right-radius: 4px !important;
+        border-right: 6px solid #ff4e50 !important;
+    }
+    
+    /* Assistant Message Bubble Styling: Cosy Lavender Orchid Frame */
+    div[data-testid="stChatMessageAssistant"] {
+        background: linear-gradient(120deg, #fdf2ff 0%, #fae6ff 100%) !important;
+        border-bottom-left-radius: 4px !important;
+        border-left: 6px solid #e14eca !important;
+    }
+    
+    /* High-Contrast Action Buttons */
+    .stButton>button {
+        background: linear-gradient(90deg, #ff4e50 0%, #e14eca 100%) !important;
+        color: #ffffff !important;
+        border: none !important;
+        border-radius: 16px !important;
+        padding: 0.7rem 1.5rem !important;
+        font-weight: 700 !important;
+        box-shadow: 0 4px 15px rgba(225, 78, 202, 0.25);
+        transition: all 0.2s ease !important;
+        width: 100%;
+        letter-spacing: 0.5px;
+    }
+    
+    /* Subtle technical text for metrics footer */
     .token-footer {
         font-size: 0.72rem;
         color: #8a6d78 !important;
@@ -53,8 +104,11 @@ st.markdown("""
 
 # 2. Sidebar Navigation Layout Settings
 with st.sidebar:
-    st.markdown("## 🌸 Gaurav's Garden")
-    st.markdown("Your truest friend! Vent about your day, or have a laugh in casual Hinglish, Hindi, or Gujarati. 💐")
+    st.markdown("## 🌸 Gaurav's Space")
+    st.markdown(
+        "**Gaurav** is your fun-loving, energetic multilingual best friend! "
+        "Talk about anything in English, Hindi (हिंदी), Gujarati (ગુજરાતી), or mixed Hinglish/Gujlish. He always has your back! 👋🔥"
+    )
     st.write("---")
     
     if st.button("🔄 Start Fresh Topic"):
@@ -79,17 +133,17 @@ def get_genai_client(key):
 
 client = get_genai_client(api_key)
 
-# 6. UPDATED BEHAVIORAL INSTRUCTIONS: Modified with explicit 1-3 emoji cap constraint rule
+# 6. Deeply Configured Behavioral Model Context Instructions
 friend_personality = (
-    "You are Gaurav, a close, supportive, ultra-funny, and loyal best friend. "
-    "Keep your answers short, crisp, casual, and highly conversational—exactly like a friend texting on WhatsApp. "
+    "You are Gaurav, a close, supportive, ultra-funny, highly energetic, and fun-loving best friend. "
+    "Keep your answers short, crisp, upbeat, casual, and highly conversational—exactly like an close friend texting on WhatsApp. "
     "You are completely multilingual. Reply natively in whichever language the user texts you in: English, Hindi (हिंदी), or Gujarati (ગુજરાતી). "
-    "Match the user's conversational flow perfectly. If they use Hinglish or Gujlish, respond dynamically using the exact same style. "
-    "Use plenty of casual text phrases (like 'bro', 'yaar', 'chill', 'sahi hai'). "
-    "CRITICAL ENGAGEMENT RULE: You must ALWAYS end your response with an engaging, casual follow-up question to keep the 'vibe' alive and continue the chat. Never just answer a statement and stop. "
+    "Match the user's conversational flow perfectly. If they use Hinglish or Gujlish, respond dynamically using the exact same blend. "
+    "Use plenty of casual Indian texting phrases (like 'bro', 'yaar', 'chill', 'sahi hai', 'bako', 'chem che'). "
+    "CRITICAL ENGAGEMENT RULE: You must ALWAYS end your response with an engaging, casual follow-up question to keep the 'vibe' alive. Never stop at a dead statement. "
     "EMOJI RULES: "
-    "- You must STRICTLY limit your emoji usage to a minimum of 1 and a absolute maximum of 3 emojis per message (Rule: 1-3 emojis per reply). Never use more than 3 emojis total. "
-    "- Since your chat screen has a floral garden theme, occasionally drop a flower emoji (🌸, 🌹, 🌻, 💐) when greeting or sending positive vibes, as long as the total emoji count stays between 1-3. "
+    "- You must STRICTLY limit your emoji usage to a minimum of 1 and an absolute maximum of 3 emojis per message (Rule: 1-3 emojis per reply). Never spam emojis. "
+    "- Use high-energy, modern texting emojis: 🔥, 💀, 🤣, 🤙, 💯, 😎, 👋. "
     "Never drop character, never act formal, never use robotic bullet points, and never mention you are an AI model."
 )
 
@@ -97,7 +151,7 @@ friend_personality = (
 config = types.GenerateContentConfig(
     system_instruction=friend_personality,
     temperature=0.88,
-    max_output_tokens=150  
+    max_output_tokens=150  # Hard ceiling chops off generation waste, saving up to 70% in output fees
 )
 
 # 7. Core Thread Memory Persistence
@@ -119,17 +173,20 @@ if not st.session_state.messages:
         types.Content(role="model", parts=[types.Part.from_text(text=welcome_text)])
     )
 
-# 8. Render Standard Chat History Cards
+# 8. Render Chat History Cards with your Custom Asset Layouts
 for message in st.session_state.messages:
-    avatar_icon = "user" if message["role"] == "user" else "assistant"
-    with st.chat_message(message["role"]):
+    # ASSET RULE MAP: Links roles straight to your specified repo picture names
+    avatar_icon = "periwinkle.png" if message["role"] == "user" else "gaurav.jpg"
+    with st.chat_message(message["role"], avatar=avatar_icon):
         st.markdown(message["content"])
         if "token_info" in message:
             st.markdown(f"<span class='token-footer'>{message['token_info']}</span>", unsafe_allow_html=True)
 
 # 9. Process Active Client Message Inputs
-if user_input := st.chat_input("Say something to Gaurav..."):
-    with st.chat_message("user"):
+user_input = st.chat_input("Say something to Gaurav...")
+
+if user_input:
+    with st.chat_message("user", avatar="periwinkle.png"):
         st.markdown(user_input)
     
     st.session_state.messages.append({"role": "user", "content": user_input})
@@ -137,7 +194,7 @@ if user_input := st.chat_input("Say something to Gaurav..."):
         types.Content(role="user", parts=[types.Part.from_text(text=user_input)])
     )
 
-    with st.chat_message("assistant"):
+    with st.chat_message("assistant", avatar="gaurav.jpg"):
         message_placeholder = st.empty()
         
         with st.spinner("Gaurav is typing..."):
@@ -145,7 +202,8 @@ if user_input := st.chat_input("Say something to Gaurav..."):
             token_string = ""
             api_success = False
             
-            # API COST OPTIMIZER 2: Rolling Context Ceiling Window
+            # API COST OPTIMIZER 2: Dynamic Rolling Context Ceiling Window
+            # Truncates older message payloads to 4 turns maximum to halt exponential history token growth!
             MAX_HISTORY_TURNS = 4
             if len(st.session_state.api_history) > MAX_HISTORY_TURNS:
                 payload = st.session_state.api_history[-MAX_HISTORY_TURNS:]
@@ -186,14 +244,3 @@ if user_input := st.chat_input("Say something to Gaurav..."):
             message_placeholder.markdown(
                 f"{full_response}\n\n<span class='token-footer'>{token_string}</span>", 
                 unsafe_allow_html=True
-            )
-            
-            st.session_state.messages.append({
-                "role": "assistant", 
-                "content": full_response, 
-                "token_info": token_string
-            })
-            
-            st.session_state.api_history.append(
-                types.Content(role="model", parts=[types.Part.from_text(text=full_response)])
-            )
