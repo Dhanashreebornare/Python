@@ -3,6 +3,7 @@ import time
 from google import genai
 from google.genai import types
 from google.genai.errors import APIError
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
 # 1. Premium Visual Page Configuration
 st.set_page_config(
@@ -11,56 +12,22 @@ st.set_page_config(
     layout="centered"
 )
 
-# Completely Revamped Layout Stylesheet with Dynamic Color-Cycling Glow and Spaced Backdrop
+# Custom High-Contrast Elegant Floral Friendship Styling
 st.markdown("""
 <style>
     @import url('https://googleapis.com');
     
-    /* Base Application Layout Restructuring */
+    /* 1. Soft Dynamic Warm Floral Pastel Canvas (Friendship Theme) */
     .stApp {
         background: linear-gradient(135deg, #fff0f3 0%, #fff9fc 50%, #f0f4ff 100%) !important;
         font-family: 'Plus Jakarta Sans', sans-serif !important;
-        position: relative;
-        overflow-x: hidden;
-    }
-
-    /* Tweaked Background Flowers Layer: Softer transparency and much wider layout spacing */
-    .stApp::before {
-        content: "🌸          💮          🌹          🌻          🌸          💐";
-        position: fixed;
-        top: -10%;
-        left: 5%;
-        width: 90%;
-        height: 120%;
-        font-size: 24px;
-        line-height: 8;          
-        word-spacing: 240px;     
-        opacity: 0.12;           
-        pointer-events: none;
-        z-index: -1 !important; 
-        white-space: pre-wrap;
-        animation: floatFlowers 45s linear infinite; 
-    }
-
-    @keyframes floatFlowers {
-        0% { transform: translateY(0) rotate(0deg); }
-        50% { transform: translateY(-50px) rotate(3deg); }
-        100% { transform: translateY(0) rotate(0deg); }
     }
     
-    /* Content wrapper safety layer */
-    .block-container {
-        position: relative;
-        z-index: 2 !important;
-        padding-top: 3.5rem !important;
-        max-width: 720px !important;
-    }
-    
-    /* Clear Readable Typography & Headers */
+    /* 2. Bold Radiant Header Typography with Floral Gradient Accents */
     h1 {
-        font-family: 'Plus Jakarta Sans', sans-serif !important;
+        font-family: 'Plus Jakarta Sans', sans-serif;
         font-weight: 800 !important;
-        background: linear-gradient(90deg, #ff4e50, #d6249f, #b116de);
+        background: linear-gradient(90deg, #ff4e50, #f9d423, #e14eca);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         letter-spacing: -1.5px;
@@ -68,69 +35,57 @@ st.markdown("""
     }
     
     .subtitle-text {
-        color: #5c3d46 !important;
+        color: #5c3d46;
         font-size: 1.1rem;
         margin-top: 6px;
         margin-bottom: 2rem;
         font-weight: 600;
     }
     
-    /* Deep Container Elements Override for Chat Messages */
+    /* 3. Rounded Elegant Chat Containers with Soft Rose Shadows */
     div[data-testid="stChatMessage"] {
         border-radius: 24px !important;
         padding: 1.25rem 1.5rem !important;
         margin-bottom: 1.2rem !important;
-        box-shadow: 0 10px 30px -10px rgba(225, 78, 202, 0.15);
+        box-shadow: 0 10px 30px -10px rgba(225, 78, 202, 0.1);
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        border: 1px solid rgba(255, 255, 255, 0.9) !important;
-        position: relative;
-        z-index: 5 !important;
+        border: 1px solid rgba(255, 255, 255, 0.7);
     }
     
     div[data-testid="stChatMessage"]:hover {
         transform: translateY(-2px);
-        box-shadow: 0 20px 40px -15px rgba(225, 78, 202, 0.25);
+        box-shadow: 0 20px 40px -15px rgba(225, 78, 202, 0.2);
     }
 
-    /* Structural fix for high-contrast message texts */
-    div[data-testid="stChatMessageContent"] p, 
-    div[data-testid="stChatMessageContent"] span,
-    div[data-testid="stChatMessageContent"] li,
-    div[data-testid="stChatMessageContent"] div {
-        color: #231224 !important;
-        font-weight: 600 !important;
-        line-height: 1.6 !important;
-        font-size: 1.05rem !important;
+    div[data-testid="stChatMessage"] p, div[data-testid="stChatMessage"] span {
+        color: #2d1e2f !important;
+        font-weight: 500;
+        line-height: 1.6;
+        font-size: 1.02rem;
     }
     
-    /* User Message Bubble Styling */
+    /* User Message Bubble: Warm Blush Cherry Blossom Sunrise Frame */
     div[data-testid="stChatMessageUser"] {
-        background: linear-gradient(120deg, #fff3f5 0%, #ffeef1 100%) !important;
+        background: linear-gradient(120deg, rgba(255, 240, 243, 0.95) 0%, rgba(255, 245, 247, 0.95) 100%) !important;
         border-bottom-right-radius: 4px !important;
-        border-right: 6px solid #ff4e50 !important;
+        border-right: 5px solid #ff4e50 !important;
     }
     
-    /* Assistant Message Bubble Styling */
+    /* Gaurav Message Bubble: Royal Cosy Lavender Orchid Frame */
     div[data-testid="stChatMessageAssistant"] {
-        background: linear-gradient(120deg, #fdf2ff 0%, #fae6ff 100%) !important;
+        background: linear-gradient(120deg, rgba(253, 240, 255, 0.95) 0%, rgba(250, 245, 255, 0.95) 100%) !important;
         border-bottom-left-radius: 4px !important;
-        border-left: 6px solid #e14eca !important;
+        border-left: 5px solid #e14eca !important;
     }
     
-    /* Glassmorphism High-Contrast Sidebar Formatting */
+    /* 4. Glassmorphism Floral Sidebar formatting */
     section[data-testid="stSidebar"] {
-        background-color: #fffafd !important;
-        border-right: 2px solid #ffd1df !important;
-        z-index: 100 !important;
+        background-color: rgba(255, 248, 250, 0.9) !important;
+        backdrop-filter: blur(10px);
+        border-right: 1px solid rgba(255, 220, 230, 0.8);
     }
     
-    section[data-testid="stSidebar"] h2,
-    section[data-testid="stSidebar"] p,
-    section[data-testid="stSidebar"] span {
-        color: #381a22 !important;
-    }
-    
-    /* Custom High Contrast Action Buttons */
+    /* 5. Custom Interactive Floral Buttons */
     .stButton>button {
         background: linear-gradient(90deg, #ff4e50 0%, #e14eca 100%) !important;
         color: #ffffff !important;
@@ -138,61 +93,31 @@ st.markdown("""
         border-radius: 16px !important;
         padding: 0.7rem 1.5rem !important;
         font-weight: 700 !important;
-        box-shadow: 0 4px 15px rgba(225, 78, 202, 0.3);
+        box-shadow: 0 4px 15px rgba(225, 78, 202, 0.25);
         transition: all 0.2s ease !important;
         width: 100%;
         letter-spacing: 0.5px;
     }
     
-    /* Chat Input Container Structural Baseline */
-    div[data-testid="stChatInput"] {
-        z-index: 99 !important;
-        position: relative;
-        background: transparent !important;
+    .stButton>button:hover {
+        transform: scale(1.02);
+        box-shadow: 0 8px 25px rgba(255, 78, 80, 0.4) !important;
     }
     
-    /* Embedded automated infinite keyframe loop to shift glow parameters smoothly */
-    div[data-testid="stChatInput"] > div {
-        background: rgba(255, 255, 255, 0.65) !important;
-        backdrop-filter: blur(10px);
-        border-radius: 20px !important;
-        padding: 4px;
-        animation: pulseInputGlow 8s ease-in-out infinite alternate;
-        transition: border 0.3s ease;
+    .block-container {
+        padding-top: 3.5rem !important;
+        max-width: 720px !important;
     }
     
-    @keyframes pulseInputGlow {
-        0% {
-            box-shadow: 0 -8px 30px -5px rgba(255, 78, 80, 0.15), 
-                        0 8px 25px -5px rgba(249, 212, 35, 0.12) !important;
-            border: 1px solid rgba(255, 220, 225, 0.8) !important;
-        }
-        50% {
-            box-shadow: 0 -12px 35px -5px rgba(225, 78, 202, 0.22), 
-                        0 12px 30px -5px rgba(214, 36, 159, 0.18) !important;
-            border: 1px solid rgba(255, 210, 235, 0.9) !important;
-        }
-        100% {
-            box-shadow: 0 -8px 30px -5px rgba(177, 22, 222, 0.18), 
-                        0 8px 25px -5px rgba(240, 244, 255, 0.1) !important;
-            border: 1px solid rgba(230, 215, 255, 0.8) !important;
-        }
-    }
-    
-    div[data-testid="stChatInput"] textarea {
-        color: #1c0b1d !important;
-        font-weight: 600 !important;
-    }
-    
+    /* Subtle minimalist token metrics display */
     .token-footer {
-        font-size: 0.75rem;
-        color: #7a5a68 !important;
-        margin-top: 12px;
+        font-size: 0.7rem;
+        color: #a08090;
+        margin-top: 10px;
         display: block;
         text-align: right;
         font-family: monospace;
-        letter-spacing: 0.4px;
-        font-weight: 700 !important;
+        letter-spacing: 0.3px;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -211,6 +136,7 @@ with st.sidebar:
     st.caption("💬 English, हिंदी & ગુજરાતી Spoken Fluidly")
     st.write("---")
     
+    # Session data reset action
     if st.button("🔄 Start Fresh Topic"):
         st.session_state.messages = []
         st.session_state.api_history = []
@@ -233,7 +159,7 @@ def get_genai_client(key):
 
 client = get_genai_client(api_key)
 
-# 6. Deeply Configured Behavioral Model Context Instructions
+# 6. Deeply Configured Behavioral Model Context Instructions with Floral and Emoji Adjustments
 friend_personality = (
     "You are Gaurav, a close, supportive, ultra-funny, and loyal best friend. "
     "Keep your answers short, crisp, casual, and highly conversational—exactly like a friend texting on WhatsApp. "
@@ -250,11 +176,9 @@ friend_personality = (
     "Never drop character, never act formal, never use robotic bullet points, and never mention you are an AI model."
 )
 
-# API OPTIMIZATION 1: Output Token Clamping
 config = types.GenerateContentConfig(
     system_instruction=friend_personality,
     temperature=0.88,
-    max_output_tokens=150  
 )
 
 # 7. Core Thread Memory Persistence
@@ -268,3 +192,62 @@ if "api_history" not in st.session_state:
 for message in st.session_state.messages:
     avatar_icon = "periwinkle.png" if message["role"] == "user" else "gaurav.jpg"
     with st.chat_message(message["role"], avatar=avatar_icon):
+        st.markdown(message["content"])
+        if "token_info" in message:
+            st.markdown(f"<span class='token-footer'>{message['token_info']}</span>", unsafe_allow_html=True)
+
+# --- Helper Function for Automatic Retries with Exponential Backoff ---
+@retry(
+    stop=stop_after_attempt(3), 
+    wait=wait_exponential(multiplier=2, min=2, max=10),
+    retry=retry_if_exception_type(APIError),
+    reraise=True
+)
+def generate_content_with_retry(contents_payload):
+    return client.models.generate_content(
+        model='gemini-3.5-flash',
+        contents=contents_payload,
+        config=config
+    )
+
+# 9. Process Active Client Message Inputs
+if user_input := st.chat_input("Say something to Gaurav..."):
+    with st.chat_message("user", avatar="periwinkle.png"):
+        st.markdown(user_input)
+    
+    st.session_state.messages.append({"role": "user", "content": user_input})
+    st.session_state.api_history.append(
+        types.Content(role="user", parts=[types.Part.from_text(text=user_input)])
+    )
+
+    # Generate response turn using active connection
+    with st.chat_message("assistant", avatar="gaurav.jpg"):
+        message_placeholder = st.empty()
+        token_placeholder = st.empty()
+        
+        full_response = ""
+        token_string = ""
+        api_success = False
+        
+        with st.spinner("Gaurav is typing... 💬"):
+            try:
+                # --- QUOTA MINIMIZER: Rolling Context Window ---
+                MAX_HISTORY_TURNS = 6
+                if len(st.session_state.api_history) > MAX_HISTORY_TURNS:
+                    payload = st.session_state.api_history[-MAX_HISTORY_TURNS:]
+                else:
+                    payload = st.session_state.api_history
+
+                # Fire structured API request
+                response = generate_content_with_retry(payload)
+                full_response = response.text
+                
+                # Extract token metrics safely from response metadata
+                input_tokens = response.usage_metadata.prompt_token_count if response.usage_metadata else 0
+                output_tokens = response.usage_metadata.candidates_token_count if response.usage_metadata else 0
+                token_string = f"⚡ Usage Check: {input_tokens} in | {output_tokens} out tokens"
+                api_success = True
+                
+            except APIError as api_err:
+                if api_err.code == 429:
+                    st.error("🚨 **Gaurav is out of breath, bro!** The free limits ran out. Give him 15-20 seconds to catch his breath before typing again!")
