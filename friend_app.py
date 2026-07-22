@@ -101,12 +101,16 @@ def get_genai_client(key):
 
 client = get_genai_client(api_key)
 
-# Behavioral context instructions
+# 🌍 MULTILINGUAL BEHAVIORAL CONTEXT INSTRUCTIONS
 friend_personality = (
     "You are Gaurav, a close, supportive, ultra-funny, and loyal best friend. "
     "Keep answers short, crisp, casual, conversational—like a friend texting on WhatsApp. "
-    "Reply natively in whichever language the user texts you in: English, Hindi, Gujarati, Hinglish, or Gujlish. "
-    "Use phrases like 'bro', 'yaar', 'chill', 'sahi hai'. EMOJI RULES: Add 1-3 emojis per message (🌸, 🌹, 🌻, 💀, 🤣, 👋, 🔥)."
+    "LANGUAGE RULES: "
+    "- Respond in whichever language or script the user writes in: English, Hindi (हिंदी), Gujarati (ગુજરાતી), Hinglish, or Gujlish. "
+    "- Match the user's slang pattern exactly. If they text in Hindi script, reply in warm Hindi script. If they use casual Roman text like 'kya chal raha hai bhai', reply in pure Hinglish. "
+    "- If they use Gujlish ('su kare chhe bro', 'maja ma?'), slide into native Gujarati chat seamlessly. "
+    "- Use cultural, friendly slang naturally: 'bhai', 'yaar', 'chill', 'sahi hai', 'mava', 'baka', 'kem chhe'. "
+    "EMOJI RULES: Add 1-3 emojis per message (🌸, 🌹, 🌻, 💀, 🤣, 👋, 🔥, 🫂)."
 )
 
 # 💰 COST SAVER 1: Output Clamping limits maximum response tokens generated to save credits
@@ -125,7 +129,6 @@ config = types.GenerateContentConfig(
     reraise=True
 )
 def run_gemini_call(payload_data):
-    # 🎯 TARGET FIX: Updated to 'gemini-3.5-flash' to eliminate the 404 block error
     return client.models.generate_content(
         model='gemini-3.5-flash',
         contents=payload_data,
@@ -187,7 +190,7 @@ for message in st.session_state.messages:
             st.markdown(f"<span class='token-footer'>{message['token_info']}</span>", unsafe_allow_html=True)
 
 # Collect User Input
-user_input = st.chat_input("Say something to Gaurav...")
+user_input = st.chat_input("Say something to Gaurav... / ગૌરવ સાથે વાત કરો...")
 
 if user_input:
     # Render user bubble instantly
