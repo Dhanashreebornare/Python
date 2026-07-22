@@ -255,9 +255,13 @@ for message in st.session_state.messages:
             st.markdown(f"<span class='token-footer'>{message['token_info']}</span>", unsafe_allow_html=True)
 
 # --- ISOLATED SAFEHOUSE API CONTROLLER FUNCTION ---
-# Cleaned up and removed the upper structural decorator to avoid parenthesis compiling anomalies
 def get_gaurav_response(history_list):
     """Safely extracts a rolling window context and updates token calculations."""
     # API Payloads are strictly restricted to 4 items max to keep your inputs minimized!
     MAX_HISTORY_TURNS = 4
     if len(history_list) > MAX_HISTORY_TURNS:
+        payload = history_list[-MAX_HISTORY_TURNS:]
+    else:
+        payload = history_list
+
+    try:
