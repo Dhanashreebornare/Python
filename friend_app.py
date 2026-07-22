@@ -17,7 +17,7 @@ st.markdown("""
 <style>
     @import url('https://googleapis.com');
     
-    /* 1. Base Application Layout Restructuring */
+    /* Base Application Layout Restructuring */
     .stApp {
         background: linear-gradient(135deg, #fff0f3 0%, #fff9fc 50%, #f0f4ff 100%) !important;
         font-family: 'Plus Jakarta Sans', sans-serif !important;
@@ -36,7 +36,7 @@ st.markdown("""
         font-size: 26px;
         line-height: 5;
         word-spacing: 140px;
-        opacity: 0.25;  /* Increased opacity for better clear view */
+        opacity: 0.25;
         pointer-events: none;
         z-index: 0;
         white-space: pre-wrap;
@@ -57,7 +57,7 @@ st.markdown("""
         max-width: 720px !important;
     }
     
-    /* 2. Clear Readable Typography & Headers */
+    /* Clear Readable Typography & Headers */
     h1 {
         font-family: 'Plus Jakarta Sans', sans-serif !important;
         font-weight: 800 !important;
@@ -76,7 +76,7 @@ st.markdown("""
         font-weight: 600;
     }
     
-    /* 3. Deep Container Elements Override for Chat Messages */
+    /* Deep Container Elements Override for Chat Messages */
     div[data-testid="stChatMessage"] {
         border-radius: 24px !important;
         padding: 1.25rem 1.5rem !important;
@@ -98,8 +98,8 @@ st.markdown("""
     div[data-testid="stChatMessageContent"] span,
     div[data-testid="stChatMessageContent"] li,
     div[data-testid="stChatMessageContent"] div {
-        color: #231224 !important; /* Rich obsidian deep plum color for perfect contrast */
-        font-weight: 600 !important; /* Thickened weight for easier visibility */
+        color: #231224 !important;
+        font-weight: 600 !important;
         line-height: 1.6 !important;
         font-size: 1.05rem !important;
     }
@@ -118,7 +118,7 @@ st.markdown("""
         border-left: 6px solid #e14eca !important;
     }
     
-    /* 4. Glassmorphism High-Contrast Sidebar Formatting */
+    /* Glassmorphism High-Contrast Sidebar Formatting */
     section[data-testid="stSidebar"] {
         background-color: #fffafd !important;
         border-right: 2px solid #ffd1df !important;
@@ -130,7 +130,7 @@ st.markdown("""
         color: #381a22 !important;
     }
     
-    /* 5. Custom High Contrast Action Buttons */
+    /* Custom High Contrast Action Buttons */
     .stButton>button {
         background: linear-gradient(90deg, #ff4e50 0%, #e14eca 100%) !important;
         color: #ffffff !important;
@@ -177,7 +177,6 @@ with st.sidebar:
     st.caption("💬 English, हिंदी & ગુજરાતી Spoken Fluidly")
     st.write("---")
     
-    # Session data reset action
     if st.button("🔄 Start Fresh Topic"):
         st.session_state.messages = []
         st.session_state.api_history = []
@@ -200,7 +199,7 @@ def get_genai_client(key):
 
 client = get_genai_client(api_key)
 
-# 6. Deeply Configured Behavioral Model Context Instructions with Floral and Emoji Adjustments
+# 6. Deeply Configured Behavioral Model Context Instructions
 friend_personality = (
     "You are Gaurav, a close, supportive, ultra-funny, and loyal best friend. "
     "Keep your answers short, crisp, casual, and highly conversational—exactly like a friend texting on WhatsApp. "
@@ -270,3 +269,7 @@ def get_gaurav_response(history_list):
         else:
             in_t, out_t = 0, 0
             
+        footer = f"⚡ Usage Check: {in_t} in | {out_t} out tokens"
+        return txt, footer, True
+    except APIError as api_err:
+        if api_err.code == 429:
