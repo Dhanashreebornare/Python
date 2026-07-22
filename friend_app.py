@@ -210,7 +210,6 @@ with st.sidebar:
     
     if st.button("🔄 Start Fresh Topic"):
         st.session_state.messages = []
-        st.session_state.api_history = []
         st.rerun()
 
 # 3. Main Header Typography
@@ -257,8 +256,6 @@ config = types.GenerateContentConfig(
 # 7. Core Thread Memory Persistence
 if "messages" not in st.session_state:
     st.session_state.messages = []
-if "api_history" not in st.session_state:
-    st.session_state.api_history = []
 
 # 8. Render High-Contrast Chat History Cards with Custom DP Assets
 for message in st.session_state.messages:
@@ -269,15 +266,14 @@ for message in st.session_state.messages:
 user_input = st.chat_input("Say something to Gaurav...")
 
 if user_input:
-    # 1. Instantly display user input message
+    # Display user input message instantly
     with st.chat_message("user"):
         st.write(user_input)
     st.session_state.messages.append({"role": "user", "content": user_input})
     
-    # 💰 API CREDIT SAVER: Trim historical tracking to send only the last 5 statements
+    # API CREDIT SAVER: Limits context payload to the last 5 messages
     recent_history = st.session_state.messages[-5:]
     
-    # 2. Build structured payload list
     api_contents = []
     for msg in recent_history:
         api_contents.append(
@@ -287,9 +283,16 @@ if user_input:
             )
         )
         
-    # 3. Stream model outputs natively using simple write streams
     with st.chat_message("assistant"):
+        message_placeholder = st.empty()
+        full_response = ""
+        
         try:
+            # Generate the stream instance
             response_stream = client.models.generate_content_stream(
                 model='gemini-2.5-flash',
                 contents=api_contents,
+                config=config
+            )
+            
+            # Use a robust Python manual iterator block to render tokens safely
