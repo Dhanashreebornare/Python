@@ -151,7 +151,7 @@ div[data-testid="stChatInput"] {
     background: transparent !important;
 }
 
-/* FIX: Embedded automated infinite keyframe loop to shift glow parameters smoothly */
+/* Embedded automated infinite keyframe loop to shift glow parameters smoothly */
 div[data-testid="stChatInput"] > div {
     background: rgba(255, 255, 255, 0.65) !important;
     backdrop-filter: blur(10px);
@@ -266,14 +266,18 @@ for message in st.session_state.messages:
         st.write(message["content"])
 
 # 9. Handle New Chat Interactions
-if user_input := st.chat_input("Say something to Gaurav..."):
+user_input = st.chat_input("Say something to Gaurav...")
+
+if user_input:
+    # 1. Instantly display user input message
     with st.chat_message("user"):
         st.write(user_input)
     st.session_state.messages.append({"role": "user", "content": user_input})
     
-    # 💰 API CREDIT SAVER: Limits context payload to the last 5 messages
+    # 💰 API CREDIT SAVER: Trim historical tracking to send only the last 5 statements
     recent_history = st.session_state.messages[-5:]
     
+    # 2. Build structured payload list
     api_contents = []
     for msg in recent_history:
         api_contents.append(
@@ -283,15 +287,9 @@ if user_input := st.chat_input("Say something to Gaurav..."):
             )
         )
         
+    # 3. Stream model outputs natively using simple write streams
     with st.chat_message("assistant"):
-        message_placeholder = st.empty()
-        full_response = ""
-        
         try:
             response_stream = client.models.generate_content_stream(
                 model='gemini-2.5-flash',
                 contents=api_contents,
-                config=config
-            )
-            
-            for chunk in response_stream:
