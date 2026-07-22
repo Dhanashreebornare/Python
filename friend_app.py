@@ -233,11 +233,12 @@ friend_personality = (
     "Never drop character, never act formal, never use robotic bullet points, and never mention you are an AI model."
 )
 
-# NEW LOGIC OPTIMIZATION: Implemented max_output_tokens constraint ceiling to protect output quotas
+# API OPTIMIZATION 1: Output Token Clamping
+# Forces Gaurav to be short and WhatsApp-style, instantly lowering output token costs up to 70%!
 config = types.GenerateContentConfig(
     system_instruction=friend_personality,
     temperature=0.88,
-    max_output_tokens=150  # Hard ceiling limits generation waste, lowering output costs up to 70%!
+    max_output_tokens=150  
 )
 
 # 7. Core Thread Memory Persistence
@@ -255,9 +256,12 @@ for message in st.session_state.messages:
         if "token_info" in message:
             st.markdown(f"<span class='token-footer'>{message['token_info']}</span>", unsafe_allow_html=True)
 
-# --- NEW OPTIMIZED SAFEHOUSE API CONTROLLER FUNCTION ---
-def get_gaurav_response(history_list):
-    """Extracts a tight context loop and executes a flat structural token payload request."""
-    # Strict history truncation ceiling protects inputs from scaling or compounding fees
-    MAX_HISTORY_TURNS = 4
-    if len(history_list) > MAX_HISTORY_TURNS:
+# 9. Process Active Client Message Inputs
+user_input = st.chat_input("Say something to Gaurav...")
+
+if user_input:
+    with st.chat_message("user", avatar="periwinkle.png"):
+        st.markdown(user_input)
+    
+    st.session_state.messages.append({"role": "user", "content": user_input})
+    st.session_state.api_history.append(
