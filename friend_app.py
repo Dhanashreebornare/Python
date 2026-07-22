@@ -11,7 +11,7 @@ st.set_page_config(
     layout="centered"
 )
 
-# Completely Revamped Layout Stylesheet with Text Box Gradient Glow and Optimized Background Spacing
+# Completely Revamped Layout Stylesheet with Dynamic Color-Cycling Glow and Spaced Backdrop
 st.markdown("""
 <style>
     @import url('https://googleapis.com');
@@ -144,22 +144,39 @@ st.markdown("""
         letter-spacing: 0.5px;
     }
     
-    /* Chat Input Container Visibility & Custom Radiant Gradient Glow Fix */
+    /* Chat Input Container Structural Baseline */
     div[data-testid="stChatInput"] {
         z-index: 99 !important;
         position: relative;
         background: transparent !important;
     }
     
-    /* Warm blurred gradient glow backing specifically anchoring behind the chat input box */
+    /* FIX: Embedded automated infinite keyframe loop to shift glow parameters smoothly */
     div[data-testid="stChatInput"] > div {
-        background: rgba(255, 255, 255, 0.6) !important;
-        backdrop-filter: blur(8px);
+        background: rgba(255, 255, 255, 0.65) !important;
+        backdrop-filter: blur(10px);
         border-radius: 20px !important;
-        box-shadow: 0 -15px 40px -10px rgba(225, 78, 202, 0.15), 
-                    0 15px 30px -10px rgba(255, 78, 80, 0.2) !important;
-        border: 1px solid rgba(255, 224, 230, 0.8) !important;
         padding: 4px;
+        animation: pulseInputGlow 8s ease-in-out infinite alternate;
+        transition: border 0.3s ease;
+    }
+    
+    @keyframes pulseInputGlow {
+        0% {
+            box-shadow: 0 -8px 30px -5px rgba(255, 78, 80, 0.15), 
+                        0 8px 25px -5px rgba(249, 212, 35, 0.12) !important;
+            border: 1px solid rgba(255, 220, 225, 0.8) !important;
+        }
+        50% {
+            box-shadow: 0 -12px 35px -5px rgba(225, 78, 202, 0.22), 
+                        0 12px 30px -5px rgba(214, 36, 159, 0.18) !important;
+            border: 1px solid rgba(255, 210, 235, 0.9) !important;
+        }
+        100% {
+            box-shadow: 0 -8px 30px -5px rgba(177, 22, 222, 0.18), 
+                        0 8px 25px -5px rgba(240, 244, 255, 0.1) !important;
+            border: 1px solid rgba(230, 215, 255, 0.8) !important;
+        }
     }
     
     div[data-testid="stChatInput"] textarea {
@@ -250,18 +267,3 @@ if "api_history" not in st.session_state:
 
 # 8. Render High-Contrast Chat History Cards with Custom DP Assets
 for message in st.session_state.messages:
-    avatar_icon = "periwinkle.png" if message["role"] == "user" else "gaurav.jpg"
-    with st.chat_message(message["role"], avatar=avatar_icon):
-        st.markdown(message["content"])
-        if "token_info" in message:
-            st.markdown(f"<span class='token-footer'>{message['token_info']}</span>", unsafe_allow_html=True)
-
-# 9. Process Active Client Message Inputs
-user_input = st.chat_input("Say something to Gaurav...")
-
-if user_input:
-    with st.chat_message("user", avatar="periwinkle.png"):
-        st.markdown(user_input)
-    
-    st.session_state.messages.append({"role": "user", "content": user_input})
-    st.session_state.api_history.append(
