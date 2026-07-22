@@ -16,7 +16,6 @@ BOT_AVATAR = "gaurav.jpg" if os.path.exists("gaurav.jpg") else "👦"
 
 # 🔐 Initialize Google Gemini API client securely
 def get_gemini_client():
-    # Looks for GEMINI_API_KEY in Streamlit Cloud Secrets or local environment variables
     if "GEMINI_API_KEY" in st.secrets:
         api_key = st.secrets["GEMINI_API_KEY"]
     elif os.environ.get("GEMINI_API_KEY"):
@@ -41,7 +40,7 @@ if "messages" not in st.session_state:
     st.session_state.messages = [
         {
             "role": "assistant",
-            "content": "Yo! Kem cho? Finally you remembered your best friend. Aur bata, what's up today?",
+            "content": "Yo! Kem cho? Finally you remembered your best friend. 👋 Aur bata, what's up today? 🤔",
         }
     ]
 
@@ -61,26 +60,28 @@ if user_query := st.chat_input("Say something to Gaurav..."):
     # Add user message to local history
     st.session_state.messages.append({"role": "user", "content": user_query})
 
-    # Initialize client and generate dynamic response
+    # Initialize client
     client = get_gemini_client()
 
-    # Formulate conversational history context for the API
+    # Convert conversation history cleanly for the API structure
     api_contents = []
     for msg in st.session_state.messages:
         role_type = "user" if msg["role"] == "user" else "model"
         api_contents.append(
             types.Content(
-                role=role_type, parts=[types.Part.from_text(msg["content"])]
+                role=role_type, parts=[types.Part(text=msg["content"])]
             )
         )
 
-    # Define Gaurav's personality system instructions
+    # 🔥 UPDATED: Personality system instructions to enforce heavy, natural emoji usage
     system_instruction = (
         "You are Gaurav, a funny, witty, sarcastic, and deeply loyal close best friend. "
-        "You must chat casually. Use informal internet slang, abbreviations, and emojis. "
-        "Crucially, you must speak naturally in a mix of English, Hinglish (Hindi + English), "
-        "and Gujlish (Gujarati + English). Frequently use local friendly slang terms like "
-        "'Bhai', 'Yaar', 'Bro', 'Kem cho', 'Majama', 'Shu vaat che', 'Chal ne', 'Jalsa kar', 'tension mat le'. "
+        "You must chat casually. Use informal internet slang, abbreviations, and plenty of emojis. "
+        "Crucially, you must heavily sprinkle relevant, expressive emojis throughout your messages "
+        "(e.g., 😂, 💀, 🤣, 🤦‍♂️, 🤫, 👀, ☕, 🔥) wherever necessary to emphasize your jokes and emotions. "
+        "You speak naturally in a mix of English, Hinglish (Hindi + English), and Gujlish (Gujarati + English). "
+        "Frequently use local friendly slang terms like 'Bhai', 'Yaar', 'Bro', 'Kem cho', 'Majama', "
+        "'Shu vaat che', 'Chal ne', 'Jalsa kar', 'tension mat le'. "
         "Keep your responses relatively punchy and short, exactly like a friend texting over WhatsApp. "
         "Never sound like a formal corporate AI assistant or robot."
     )
@@ -91,21 +92,21 @@ if user_query := st.chat_input("Say something to Gaurav..."):
         full_response = ""
 
         try:
-            # Fetch dynamic response using the recommended flash model
+            # Fetch dynamic response using the flash model
             response = client.models.generate_content(
                 model="gemini-2.5-flash",
                 contents=api_contents,
                 config=types.GenerateContentConfig(
                     system_instruction=system_instruction,
-                    temperature=1.0,  # Higher temperature makes him more creative and funny
+                    temperature=1.0,
                 ),
             )
             bot_response = response.text
 
-            # Simulate typing effect
+            # Simulate typing effect (Slower pace)
             for chunk in bot_response.split():
                 full_response += chunk + " "
-                time.sleep(0.06)
+                time.sleep(0.25)  # ⏱️ Slower word delay
                 message_placeholder.markdown(full_response + "▌")
 
             message_placeholder.markdown(full_response)
