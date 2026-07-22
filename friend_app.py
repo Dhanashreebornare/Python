@@ -8,64 +8,70 @@ from google.genai import types
 # Configure the web page
 st.set_page_config(page_title="Chat with Gaurav", page_icon="🪻")
 
-# 🌸 Premium Floral Aesthetic Design & Headings via CSS Injection
+# 🪻 Curated Periwinkle & Pastel Lavender Theme Design via CSS
 st.markdown(
     """
     <style>
-    /* 1. Backdrop Wallpaper of soft, aesthetic periwinkle flowers */
+    /* 1. Base app background with soft indigo/lavender geometric dot accent */
     .stApp {
-        background-color: #f6f7fb;
+        background-color: #f5f6fa;
         background-image: 
-            radial-gradient(rgba(174, 182, 255, 0.25) 1.5px, transparent 1.5px),
-            radial-gradient(rgba(235, 186, 255, 0.2) 2px, transparent 2px);
-        background-size: 45px 45px;
-        background-position: 0 0, 22.5px 22.5px;
+            radial-gradient(rgba(145, 157, 255, 0.2) 1.5px, transparent 1.5px),
+            radial-gradient(rgba(220, 180, 255, 0.15) 2px, transparent 2px);
+        background-size: 40px 40px;
+        background-position: 0 0, 20px 20px;
     }
     
-    /* 2. Frosted Glass Modern Title Header Container */
+    /* 2. Frosted glass card header with subtle border styling */
     .aesthetic-header {
         text-align: center;
         padding: 24px;
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
         border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(162, 168, 255, 0.15);
-        border: 1px solid rgba(255, 255, 255, 0.6);
-        margin-bottom: 20px;
+        box-shadow: 0 10px 25px rgba(145, 157, 255, 0.1);
+        border: 1px solid rgba(145, 157, 255, 0.25);
+        margin-bottom: 25px;
     }
     
-    /* 3. Redesigned Heading Typography */
+    /* 3. Deep periwinkle to orchid gradient typography */
     .aesthetic-title {
-        font-family: 'Helvetica Neue', sans-serif;
-        font-weight: 800;
-        letter-spacing: -0.5px;
-        background: linear-gradient(135deg, #5058df 0%, #a46ae8 100%);
+        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        font-weight: 700;
+        letter-spacing: -0.3px;
+        background: linear-gradient(135deg, #4d55cc 0%, #905ddc 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         margin: 0;
-        font-size: 2.3rem;
+        font-size: 2.2rem;
     }
     
     .aesthetic-subtitle {
-        color: #787ec2;
+        color: #6970b5;
         font-size: 0.95rem;
-        margin-top: 6px;
+        margin-top: 5px;
         font-weight: 500;
-        letter-spacing: 0.2px;
     }
     
-    /* 4. Elegant Bottom Chat-Input Customization */
+    /* 4. Soft themed colors for user vs assistant chat bubbles */
+    div[data-testid="stChatMessage"]:nth-child(even) div[data-testid="stChatMessageContent"] {
+        background-color: #e2e5ff !important;  /* Soft Periwinkle for User */
+        color: #21255e !important;
+        border-radius: 18px 18px 2px 18px !important;
+    }
+    
+    div[data-testid="stChatMessage"]:nth-child(odd) div[data-testid="stChatMessageContent"] {
+        background-color: #f1e6ff !important;  /* Soft Lavender for Gaurav */
+        color: #422a63 !important;
+        border-radius: 18px 18px 18px 2px !important;
+    }
+    
+    /* 5. Minimal styling for the bottom inputs */
     div[data-testid="stChatInput"] {
-        border-radius: 30px !important;
-        border: 1px solid rgba(162, 168, 255, 0.4) !important;
-        box-shadow: 0 4px 15px rgba(162, 168, 255, 0.08) !important;
-    }
-    
-    /* 5. Custom Themed Periwinkle Chat Bubbles */
-    div[data-testid="stChatMessageContent"] {
-        border-radius: 16px !important;
-        padding: 12px 16px !important;
+        border-radius: 25px !important;
+        border: 1px solid rgba(145, 157, 255, 0.3) !important;
+        background-color: #ffffff !important;
     }
     </style>
     """,
@@ -93,8 +99,8 @@ def get_gemini_client():
 st.markdown(
     """
     <div class="aesthetic-header">
-        <h1 class="aesthetic-title">🌸 Gaurav's Garden 🪻</h1>
-        <div class="aesthetic-subtitle">Your Hinglish & Gujlish bestie • Available 24/7 ☕✨</div>
+        <h1 class="aesthetic-title">Gaurav's Garden</h1>
+        <div class="aesthetic-subtitle">Your Hinglish & Gujlish bestie • Available 24/7</div>
     </div>
     """, 
     unsafe_allow_html=True
@@ -105,7 +111,7 @@ if "messages" not in st.session_state:
     st.session_state.messages = [
         {
             "role": "assistant",
-            "content": "Yo! Kem cho? Finally you remembered your best friend. Aur bata, what's up today?",
+            "content": "Yo! Kem cho? Finally you remembered your best friend. Aur bata, what's up today? 🤔",
         }
     ]
 
@@ -136,12 +142,12 @@ if user_query := st.chat_input("Say something to Gaurav..."):
         # 🛑 STEP 1: Local Python check for simple greetings to save quota
         if any(word in clean_input for word in ["hey", "hello", "hi", "yo", "kem cho", "ram ram", "namaste"]):
             bot_response = random.choice([
-                "Yo! What's cracking, my friend? Kem cho?",
-                "Kevo che bhai? What's up today?",
-                "Yo! Finally you remembered your best friend. Aur bata, shu khabar?"
+                "Yo! What's cracking, my friend? Kem cho? 🙌",
+                "Kevo che bhai? What's up today? 😎",
+                "Yo! Finally you remembered your best friend. Aur bata, shu khabar? 😉"
             ])
         elif any(word in clean_input for word in ["bye", "see ya", "aavjo", "chalo", "chal"]):
-            bot_response = "Don't leave me alone, yaar! Just kidding, aavjo! Take care, bro."
+            bot_response = "Don't leave me alone, yaar! Just kidding, aavjo! Take care, bro. 👋"
 
         # 🌐 STEP 2: Call API if it's a complex message
         if not bot_response:
@@ -155,12 +161,14 @@ if user_query := st.chat_input("Say something to Gaurav..."):
                         types.Content(role=role_type, parts=[types.Part(text=msg["content"])])
                     )
 
-                # 🛠️ FIXED: Reduced emoji priority instructions
+                # 🛠️ REFINED: Instruction to use exactly one relevant emoji per turn
                 system_instruction = (
                     "You are Gaurav, a funny, witty, sarcastic, and deeply loyal close best friend. "
                     "You must chat casually. Use informal internet slang and abbreviations. "
-                    "Do NOT use unnecessary or spammy emojis. Only use a single emoji if it is absolutely necessary "
-                    "to convey a specific emotion (like a laugh 😂 or joke), but keep most sentences plain text. "
+                    "Crucially, you MUST include exactly ONE highly relevant emoji at the end of your response "
+                    "or inside your message (e.g., 😂 if making a joke, 💀 if reacting to something crazy, "
+                    "🔥 for something cool, or 🤦‍♂️ for a facepalm moment) to sound like a natural human friend. "
+                    "Do not leave the message as completely plain text, but do not spam multiple emojis either. "
                     "You speak naturally in a mix of English, Hinglish (Hindi + English), and Gujlish (Gujarati + English). "
                     "Frequently use local friendly slang terms like 'Bhai', 'Yaar', 'Bro', 'Kem cho', 'Majama', "
                     "'Shu vaat che', 'Chal ne', 'Jalsa kar', 'tension mat le'. "
@@ -181,10 +189,10 @@ if user_query := st.chat_input("Say something to Gaurav..."):
             # 🛠️ STEP 3: Fallback mechanism if the API is exhausted (429 Error)
             except Exception as e:
                 bot_response = random.choice([
-                    "Bhai, thoda busy hoon! Mummy ne kaam saupa hai, thodi der baad baat karte hain!",
-                    "Arey yaar, internet bohot slow chal raha hai yahan... Badhu saru thai jase, chill mar!",
-                    "Bro, phone ki battery khatam hone wali hai! Tarat j jalsa kar ne yaar, late text karu!",
-                    "Tension mat le bhai, main yahin hoon. Par abhi thoda dimaag thak gaya hai, breaks chahiye!"
+                    "Bhai, thoda busy hoon! Mummy ne kaam saupa hai, thodi der baad baat karte hain! 🏃‍♂️",
+                    "Arey yaar, internet bohot slow chal raha hai yahan... Badhu saru thai jase, chill mar! ☕",
+                    "Bro, phone ki battery khatam hone wali hai! Tarat j jalsa kar ne yaar, late text karu! 😉",
+                    "Tension mat le bhai, main yahin hoon. Par abhi thoda dimaag thak gaya hai, breaks chahiye! 😂"
                 ])
 
         # ⏱️ STEP 4: Animate output (Slower word pacing)
