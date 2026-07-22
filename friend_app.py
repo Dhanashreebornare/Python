@@ -251,8 +251,14 @@ def get_gaurav_response(history_list):
     try:
         response = generate_content_with_retry(payload)
         txt = response.text
-        in_t = response.usage_metadata.prompt_token_count if response.usage_metadata else 0
-        out_t = response.usage_metadata.candidates_token_count if response.usage_metadata else 0
+        
+        # Bug Fix: Guard against completely missing usage metadata objects
+        if response.usage_metadata:
+            in_t = response.usage_metadata.prompt_token_count
+            out_t = response.usage_metadata.candidates_token_count
+        else:
+            in_t, out_t = 0, 0
+            
         footer = f"⚡ Usage Check: {in_t} in | {out_t} out tokens"
         return txt, footer, True
     except APIError as api_err:
@@ -262,5 +268,3 @@ def get_gaurav_response(history_list):
             st.error(f"Error connecting to API: {api_err.message}")
         return "", "", False
 
-# 9. Process Active Client Message Inputs
-if user_input := st.chat_input("Say something to Gaurav..."):
