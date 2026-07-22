@@ -73,7 +73,7 @@ if user_query := st.chat_input("Say something to Gaurav..."):
             )
         )
 
-    # 🔥 UPDATED: Personality system instructions to enforce heavy, natural emoji usage
+    # Personality system instructions to enforce heavy, natural emoji usage
     system_instruction = (
         "You are Gaurav, a funny, witty, sarcastic, and deeply loyal close best friend. "
         "You must chat casually. Use informal internet slang, abbreviations, and plenty of emojis. "
@@ -92,9 +92,9 @@ if user_query := st.chat_input("Say something to Gaurav..."):
         full_response = ""
 
         try:
-            # Fetch dynamic response using the flash model
+            # 🚀 UPDATED: Set to the latest production Flash model
             response = client.models.generate_content(
-                model="gemini-2.5-flash",
+                model="gemini-2.5-flash",  # Change this to "gemini-1.5-flash" if required
                 contents=api_contents,
                 config=types.GenerateContentConfig(
                     system_instruction=system_instruction,
@@ -106,7 +106,7 @@ if user_query := st.chat_input("Say something to Gaurav..."):
             # Simulate typing effect (Slower pace)
             for chunk in bot_response.split():
                 full_response += chunk + " "
-                time.sleep(0.25)  # ⏱️ Slower word delay
+                time.sleep(0.25)  # Slower word delay
                 message_placeholder.markdown(full_response + "▌")
 
             message_placeholder.markdown(full_response)
