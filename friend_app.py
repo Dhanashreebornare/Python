@@ -5,25 +5,25 @@ from google.genai import types
 from google.genai.errors import APIError
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
-# 1. Premium Visual Page Configuration
+# ====================================================================
+# 1. PREMIUM VISUAL LAYOUT & CSS STYLING OVERRIDES
+# ====================================================================
 st.set_page_config(
     page_title="Vibe with Gaurav",
     page_icon="🌸",
     layout="centered"
 )
 
-# Custom High-Contrast Elegant Floral Friendship Styling
+# Custom High-Contrast Elegant Floral Friendship Styling Sheet
 st.markdown("""
 <style>
 @import url('https://googleapis.com');
 
-/* 1. Soft Dynamic Warm Floral Pastel Canvas (Friendship Theme) */
 .stApp {
     background: linear-gradient(135deg, #fff0f3 0%, #fff9fc 50%, #f0f4ff 100%) !important;
     font-family: 'Plus Jakarta Sans', sans-serif !important;
 }
 
-/* 2. Bold Radiant Header Typography with Floral Gradient Accents */
 h1 {
     font-family: 'Plus Jakarta Sans', sans-serif;
     font-weight: 800 !important;
@@ -42,7 +42,6 @@ h1 {
     font-weight: 600;
 }
 
-/* 3. Rounded Elegant Chat Containers with Soft Rose Shadows */
 div[data-testid="stChatMessage"] {
     border-radius: 24px !important;
     padding: 1.25rem 1.5rem !important;
@@ -65,28 +64,24 @@ div[data-testid="stChatMessage"] span {
     font-size: 1.02rem;
 }
 
-/* User Message Bubble: Warm Blush Cherry Blossom Sunrise Frame */
 div[data-testid="stChatMessageUser"] {
     background: linear-gradient(120deg, rgba(255, 240, 243, 0.95) 0%, rgba(255, 245, 247, 0.95) 100%) !important;
     border-bottom-right-radius: 4px !important;
     border-right: 5px solid #ff4e50 !important;
 }
 
-/* Gaurav Message Bubble: Royal Cosy Lavender Orchid Frame */
 div[data-testid="stChatMessageAssistant"] {
     background: linear-gradient(120deg, rgba(253, 240, 255, 0.95) 0%, rgba(250, 245, 255, 0.95) 100%) !important;
     border-bottom-left-radius: 4px !important;
     border-left: 5px solid #e14eca !important;
 }
 
-/* 4. Glassmorphism Floral Sidebar formatting */
 section[data-testid="stSidebar"] {
     background-color: rgba(255, 248, 250, 0.9) !important;
     backdrop-filter: blur(10px);
     border-right: 1px solid rgba(255, 220, 230, 0.8);
 }
 
-/* 5. Custom Interactive Floral Buttons */
 .stButton>button {
     background: linear-gradient(90deg, #ff4e50 0%, #e14eca 100%) !important;
     color: #ffffff !important;
@@ -110,7 +105,6 @@ section[data-testid="stSidebar"] {
     max-width: 720px !important;
 }
 
-/* Subtle minimalist token metrics display */
 .token-footer {
     font-size: 0.7rem;
     color: #a08090;
@@ -123,7 +117,9 @@ section[data-testid="stSidebar"] {
 </style>
 """, unsafe_allow_html=True)
 
-# 2. Sidebar Navigation Layout Settings
+# ====================================================================
+# 2. SIDEBAR INTERFACE & SESSION MANAGEMENT
+# ====================================================================
 with st.sidebar:
     st.markdown("## 🌸 Gaurav's Floral Garden")
     st.markdown(
@@ -137,30 +133,31 @@ with st.sidebar:
     st.caption("💬 English, हिंदी & ગુજરાતી Spoken Fluidly")
     st.write("---")
     
-    # Session data reset action
     if st.button("🔄 Start Fresh Topic"):
         st.session_state.messages = []
         st.session_state.api_history = []
         st.rerun()
 
-# 3. Main Header Typography
+# ====================================================================
+# 3. INTERFACE HEADERS & CACHED API CLIENT CONNECTION
+# ====================================================================
 st.title("💐 Vibe with Gaurav")
 st.markdown("<p class='subtitle-text'>Your close, funny, and multilingual companion.</p>", unsafe_allow_html=True)
 
-# 4. Fetch the Active Authorization Key securely
 api_key = st.secrets.get("GEMINI_API_KEY")
 if not api_key:
     st.info("Please add your copied key to the Streamlit Advanced Secrets dashboard to begin.", icon="🔑")
     st.stop()
 
-# 5. Initialize the Cache Client Engine standard
 @st.cache_resource
 def get_genai_client(key):
     return genai.Client(api_key=key)
 
 client = get_genai_client(api_key)
 
-# 6. Deeply Configured Behavioral Model Context Instructions with Floral and Emoji Adjustments
+# ====================================================================
+# 4. CREDITS SAVER CONFIGURATION & SYSTEM INSTRUCTIONS
+# ====================================================================
 friend_personality = (
     "You are Gaurav, a close, supportive, ultra-funny, and loyal best friend. "
     "Keep your answers short, crisp, casual, and highly conversational—exactly like a friend texting on WhatsApp. "
@@ -177,20 +174,56 @@ friend_personality = (
     "Never drop character, never act formal, never use robotic bullet points, and never mention you are an AI model."
 )
 
-# 💰 COST SAVER: Output Clamping limits max tokens generated, cutting costs dramatically
+# 💰 CREDIT SAVER 1: max_output_tokens stops billing bleeding up to 70%!
 config = types.GenerateContentConfig(
     system_instruction=friend_personality,
     temperature=0.88,
     max_output_tokens=150
 )
 
-# 7. Core Thread Memory Persistence
+# Initialize global session tracking data structures
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "api_history" not in st.session_state:
     st.session_state.api_history = []
 
-# 8. Render High-Contrast Chat History Cards with Custom DP Assets
+# ====================================================================
+# 5. ISOLATED RETRY LOGIC & RUNTIME ENGINE FUNCTION
+# ====================================================================
+@retry(
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=2, min=2, max=10),
+    retry=retry_if_exception_type(APIError),
+    reraise=True
+)
+def run_api_call(payload):
+    # Using cost-optimized gemini-2.5-flash for maximum savings
+    return client.models.generate_content(
+        model='gemini-2.5-flash',
+        contents=payload,
+        config=config
+    )
+
+def get_gaurav_response(payload_data):
+    try:
+        response = run_api_call(payload_data)
+        if response and response.text:
+            return response
+        return None
+    except APIError as api_err:
+        if api_err.code == 429:
+            st.error("🚨 Gaurav is out of breath, bro! Free usage limits reached. Give him 15 seconds to relax!")
+        else:
+            st.error(f"GenAI Connection Error: {api_err}")
+        return None
+    except Exception as e:
+        st.error(f"Something went sideways: {e}")
+        return None
+
+# ====================================================================
+# 6. APPLICATION DISPLAY CONTAINER & INPUT LOOP
+# ====================================================================
+# Draw persistent local interface chat canvas cards
 for message in st.session_state.messages:
     avatar_icon = "periwinkle.png" if message["role"] == "user" else "gaurav.jpg"
     with st.chat_message(message["role"], avatar=avatar_icon):
@@ -198,61 +231,36 @@ for message in st.session_state.messages:
         if "token_info" in message and message["token_info"]:
             st.markdown(f"<span class='token-footer'>{message['token_info']}</span>", unsafe_allow_html=True)
 
-# --- Helper Function for Automatic Retries with Exponential Backoff ---
-@retry(
-    stop=stop_after_attempt(3),
-    wait=wait_exponential(multiplier=2, min=2, max=10),
-    retry=retry_if_exception_type(APIError),
-    reraise=True
-)
-def generate_content_with_retry(contents_payload):
-    # Fixed model name string target from 3.5 to the hyper-efficient gemini-2.5-flash
-    return client.models.generate_content(
-        model='gemini-2.5-flash',
-        contents=contents_payload,
-        config=config
-    )
+# Capture active incoming interactions
+user_input = st.chat_input("Say something to Gaurav...")
 
-# 9. Process Active Client Message Inputs
-if user_input := st.chat_input("Say something to Gaurav..."):
+if user_input:
+    # 1. Update UI canvas instantly
     with st.chat_message("user", avatar="periwinkle.png"):
         st.markdown(user_input)
         
+    # 2. Append incoming parameters to local history
     st.session_state.messages.append({"role": "user", "content": user_input, "token_info": ""})
-    st.session_state.api_history.append(
-        types.Content(role="user", parts=[types.Part.from_text(text=user_input)])
-    )
     
-    # Generate response turn using active connection
+    # 3. Construct a completely flat context item to pass to history payload safely
+    new_user_part = types.Part.from_text(text=user_input)
+    new_user_content = types.Content(role="user", parts=[new_user_part])
+    st.session_state.api_history.append(new_user_content)
+    
+    # 4. Process API feedback pipeline
     with st.chat_message("assistant", avatar="gaurav.jpg"):
-        message_placeholder = st.empty()
-        full_response = ""
-        token_string = ""
-        
         with st.spinner("Gaurav is typing... 💬"):
-            try:
-                # 💰 QUOTA MINIMIZER: Hard ceiling rolling sliding window cuts token overhead
-                MAX_HISTORY_TURNS = 4
-                if len(st.session_state.api_history) > MAX_HISTORY_TURNS:
-                    payload = st.session_state.api_history[-MAX_HISTORY_TURNS:]
-                else:
-                    payload = st.session_state.api_history
+            
+            # 💰 CREDIT SAVER 2: Core sliding history tracking ceiling limits context size
+            MAX_HISTORY_TURNS = 4
+            if len(st.session_state.api_history) > MAX_HISTORY_TURNS:
+                payload_slice = st.session_state.api_history[-MAX_HISTORY_TURNS:]
+            else:
+                payload_slice = st.session_state.api_history
                 
-                # Fire structured API request
-                response = generate_content_with_retry(payload)
-                full_response = response.text if response.text else "Chill bro, my system hiccuped! Trigger me again. 🤙"
+            # Fire isolated function worker
+            api_response = get_gaurav_response(payload_slice)
+            
+            if api_response:
+                gaurav_text = api_response.text
                 
-                # Extract token metrics safely from response metadata
-                input_tokens = response.usage_metadata.prompt_token_count if response.usage_metadata else 0
-                output_tokens = response.usage_metadata.candidates_token_count if response.usage_metadata else 0
-                token_string = f"⚡ Usage Check: {input_tokens} in | {output_tokens} out tokens"
-                
-                message_placeholder.markdown(full_response)
-                
-                # Save assistant response along with its specific token footer data
-                st.session_state.messages.append({
-                    "role": "assistant", 
-                    "content": full_response, 
-                    "token_info": token_string
-                })
-                st.session_state.api_history.append(
