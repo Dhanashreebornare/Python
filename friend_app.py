@@ -4,19 +4,20 @@ from google import genai
 from google.genai import types
 from google.genai.errors import APIError
 
-# 1. Premium Visual Page Configuration
+# ==========================================
+# 1. VISUAL PAGE CONFIGURATION & STYLING
+# ==========================================
 st.set_page_config(
     page_title="Vibe with Gaurav",
     page_icon="🌸",
     layout="centered"
 )
 
-# Completely Revamped Layout Stylesheet with Dynamic Color-Cycling Glow and Spaced Backdrop
+# Injected Custom Layout CSS
 st.markdown("""
 <style>
 @import url('https://googleapis.com');
 
-/* Base Application Layout Restructuring */
 .stApp {
     background: linear-gradient(135deg, #fff0f3 0%, #fff9fc 50%, #f0f4ff 100%) !important;
     font-family: 'Plus Jakarta Sans', sans-serif !important;
@@ -24,7 +25,6 @@ st.markdown("""
     overflow-x: hidden;
 }
 
-/* Tweaked Background Flowers Layer: Softer transparency and much wider layout spacing */
 .stApp::before {
     content: "🌸 💮 🌹 🌻 🌸 💐";
     position: fixed;
@@ -48,7 +48,6 @@ st.markdown("""
     100% { transform: translateY(0) rotate(0deg); }
 }
 
-/* Content wrapper safety layer */
 .block-container {
     position: relative;
     z-index: 2 !important;
@@ -56,7 +55,6 @@ st.markdown("""
     max-width: 720px !important;
 }
 
-/* Clear Readable Typography & Headers */
 h1 {
     font-family: 'Plus Jakarta Sans', sans-serif !important;
     font-weight: 800 !important;
@@ -75,12 +73,11 @@ h1 {
     font-weight: 600;
 }
 
-/* Deep Container Elements Override for Chat Messages */
 div[data-testid="stChatMessage"] {
     border-radius: 24px !important;
     padding: 1.25rem 1.5rem !important;
     margin-bottom: 1.2rem !important;
-    box-shadow: 0 10px 30px -10px rgba(225, 78, 202, 0.15);
+    box-shadow: 0 10px 30px -10 rgba(225, 78, 202, 0.15);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid rgba(255, 255, 255, 0.9) !important;
     position: relative;
@@ -92,7 +89,6 @@ div[data-testid="stChatMessage"]:hover {
     box-shadow: 0 20px 40px -15px rgba(225, 78, 202, 0.25);
 }
 
-/* Structural fix for high-contrast message texts */
 div[data-testid="stChatMessageContent"] p, 
 div[data-testid="stChatMessageContent"] span, 
 div[data-testid="stChatMessageContent"] li, 
@@ -103,21 +99,18 @@ div[data-testid="stChatMessageContent"] div {
     font-size: 1.05rem !important;
 }
 
-/* User Message Bubble Styling */
 div[data-testid="stChatMessageUser"] {
     background: linear-gradient(120deg, #fff3f5 0%, #ffeef1 100%) !important;
     border-bottom-right-radius: 4px !important;
     border-right: 6px solid #ff4e50 !important;
 }
 
-/* Assistant Message Bubble Styling */
 div[data-testid="stChatMessageAssistant"] {
     background: linear-gradient(120deg, #fdf2ff 0%, #fae6ff 100%) !important;
     border-bottom-left-radius: 4px !important;
     border-left: 6px solid #e14eca !important;
 }
 
-/* Glassmorphism High-Contrast Sidebar Formatting */
 section[data-testid="stSidebar"] {
     background-color: #fffafd !important;
     border-right: 2px solid #ffd1df !important;
@@ -130,7 +123,6 @@ section[data-testid="stSidebar"] span {
     color: #381a22 !important;
 }
 
-/* Custom High Contrast Action Buttons */
 .stButton>button {
     background: linear-gradient(90deg, #ff4e50 0%, #e14eca 100%) !important;
     color: #ffffff !important;
@@ -144,14 +136,12 @@ section[data-testid="stSidebar"] span {
     letter-spacing: 0.5px;
 }
 
-/* Chat Input Container Structural Baseline */
 div[data-testid="stChatInput"] {
     z-index: 99 !important;
     position: relative;
     background: transparent !important;
 }
 
-/* Embedded automated infinite keyframe loop to shift glow parameters smoothly */
 div[data-testid="stChatInput"] > div {
     background: rgba(255, 255, 255, 0.65) !important;
     backdrop-filter: blur(10px);
@@ -180,21 +170,12 @@ div[data-testid="stChatInput"] textarea {
     color: #1c0b1d !important;
     font-weight: 600 !important;
 }
-
-.token-footer {
-    font-size: 0.75rem;
-    color: #7a5a68 !important;
-    margin-top: 12px;
-    display: block;
-    text-align: right;
-    font-family: monospace;
-    letter-spacing: 0.4px;
-    font-weight: 700 !important;
-}
 </style>
 """, unsafe_allow_html=True)
 
-# 2. Sidebar Navigation Layout Settings
+# ==========================================
+# 2. SIDEBAR NAVIGATION
+# ==========================================
 with st.sidebar:
     st.markdown("## 🌸 Gaurav's Floral Garden")
     st.markdown(
@@ -210,27 +191,33 @@ with st.sidebar:
     
     if st.button("🔄 Start Fresh Topic"):
         st.session_state.messages = []
-        st.session_state.api_history = []
         st.rerun()
 
-# 3. Main Header Typography
+# ==========================================
+# 3. TYPOGRAPHY & ENGINE CACHING
+# ==========================================
 st.title("💐 Vibe with Gaurav")
 st.markdown("<p class='subtitle-text'>Your close, funny, and multilingual companion.</p>", unsafe_allow_html=True)
 
-# 4. Fetch the Active Authorization Key securely
+# Secure Key Setup
 api_key = st.secrets.get("GEMINI_API_KEY")
 if not api_key:
     st.info("Please add your copied key to the Streamlit Advanced Secrets dashboard to begin.", icon="🔑")
     st.stop()
 
-# 5. Initialize the Cache Client Engine standard
+# Modular API Engine Handshake
 @st.cache_resource
-def get_genai_client(key):
+def load_api_engine(key):
     return genai.Client(api_key=key)
 
-client = get_genai_client(api_key)
+client = load_api_engine(api_key)
 
-# 6. Deeply Configured Behavioral Model Context Instructions
+# ==========================================
+# 4. CHAT STATE & PERSONALITY CONFIGURATION
+# ==========================================
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
 friend_personality = (
     "You are Gaurav, a close, supportive, ultra-funny, and loyal best friend. "
     "Keep your answers short, crisp, casual, and highly conversational—exactly like a friend texting on WhatsApp. "
@@ -247,46 +234,65 @@ friend_personality = (
     "Never drop character, never act formal, never use robotic bullet points, and never mention you are an AI model."
 )
 
-# API OPTIMIZATION 1: Output Token Clamping
 config = types.GenerateContentConfig(
     system_instruction=friend_personality,
     temperature=0.88,
     max_output_tokens=150
 )
 
-# 7. Core Thread Memory Persistence
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-if "api_history" not in st.session_state:
-    st.session_state.api_history = []
+# ==========================================
+# 5. MODULAR CONTENT DRAWING ENGINE
+# ==========================================
+# Using an isolated canvas container avoids nested block alignment corruption
+chat_history_canvas = st.container()
 
-# 8. Render High-Contrast Chat History Cards with Custom DP Assets
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.write(message["content"])
+with chat_history_canvas:
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.write(message["content"])
 
-# 9. Handle New Chat Interactions
-if user_input := st.chat_input("Say something to Gaurav..."):
-    # Render user message instantly
-    with st.chat_message("user"):
-        st.write(user_input)
-    
-    # Store user message in local list (Maintains full history visible on-screen)
+# Capture incoming interaction outside any layout blocks
+user_input = st.chat_input("Say something to Gaurav...")
+
+# ==========================================
+# 6. PROCESSING ARCHITECTURE
+# ==========================================
+if user_input:
+    # 1. Update UI and local app state instantly
+    with chat_history_canvas:
+        with st.chat_message("user"):
+            st.write(user_input)
+            
     st.session_state.messages.append({"role": "user", "content": user_input})
     
-    # 💰 API CREDIT SAVER: Only slice the last 5 messages to send to Gemini engine context
-    recent_history = st.session_state.messages[-5:]
+    # 2. Slice history for cost optimization (last 5 messages maximum)
+    history_slice = st.session_state.messages[-5:]
     
-    # Constructing historical contents utilizing the limited slice range
-    api_contents = []
-    for msg in recent_history:
-        role_type = "user" if msg["role"] == "user" else "model"
-        api_contents.append(
+    # 3. Construct clean GenAI payload array 
+    api_payload = []
+    for msg in history_slice:
+        api_payload.append(
             types.Content(
-                role=role_type,
+                role="user" if msg["role"] == "user" else "model",
                 parts=[types.Part.from_text(text=msg["content"])]
             )
         )
         
-    # Query the Google GenAI Engine safely with custom feedback placeholders
-    with st.chat_message("assistant"):
+    # 4. Generate streaming response within isolated UI container
+    with chat_history_canvas:
+        with st.chat_message("assistant"):
+            text_holder = st.empty()
+            running_text = ""
+            
+            try:
+                response_stream = client.models.generate_content_stream(
+                    model='gemini-2.5-flash',
+                    contents=api_payload,
+                    config=config
+                )
+                
+                for chunk in response_stream:
+                    running_text += chunk.text
+                    text_holder.write(running_text + "▌")
+                    time.sleep(0.01)
+                    
