@@ -239,31 +239,28 @@ def generate_content_with_retry(contents_payload):
         config=config
     )
 
+# --- ISOLATED SAFEHOUSE API CONTROLLER FUNCTION ---
+def get_gaurav_response(history_list):
+    """Safely extracts conversation context windows and calls the Gemini API."""
+    MAX_HISTORY_TURNS = 6
+    if len(history_list) > MAX_HISTORY_TURNS:
+        payload = history_list[-MAX_HISTORY_TURNS:]
+    else:
+        payload = history_list
+
+    try:
+        response = generate_content_with_retry(payload)
+        txt = response.text
+        in_t = response.usage_metadata.prompt_token_count if response.usage_metadata else 0
+        out_t = response.usage_metadata.candidates_token_count if response.usage_metadata else 0
+        footer = f"⚡ Usage Check: {in_t} in | {out_t} out tokens"
+        return txt, footer, True
+    except APIError as api_err:
+        if api_err.code == 429:
+            st.error("🚨 **Gaurav is out of breath, bro!** Give him 15-20 seconds to catch his breath before typing again!")
+        else:
+            st.error(f"Error connecting to API: {api_err.message}")
+        return "", "", False
+
 # 9. Process Active Client Message Inputs
 if user_input := st.chat_input("Say something to Gaurav..."):
-    with st.chat_message("user", avatar="periwinkle.png"):
-        st.markdown(user_input)
-    
-    st.session_state.messages.append({"role": "user", "content": user_input})
-    st.session_state.api_history.append(
-        types.Content(role="user", parts=[types.Part.from_text(text=user_input)])
-    )
-
-    # Generate response turn using active connection
-    with st.chat_message("assistant", avatar="gaurav.jpg"):
-        message_placeholder = st.empty()
-        
-        full_response = ""
-        token_string = ""
-        api_success = False
-        
-        with st.spinner("Gaurav is typing... 💬"):
-            try:
-                # --- QUOTA MINIMIZER: Rolling Context Window ---
-                MAX_HISTORY_TURNS = 6
-                if len(st.session_state.api_history) > MAX_HISTORY_TURNS:
-                    payload = st.session_state.api_history[-MAX_HISTORY_TURNS:]
-                else:
-                    payload = st.session_state.api_history
-
-                # Fire structured API request
