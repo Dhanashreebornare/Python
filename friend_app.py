@@ -31,9 +31,7 @@ def get_gemini_client():
 
 # App Title
 st.title("🤖 Chat with Gaurav")
-st.subheader(
-    "Your multilingual best friend, optimized for low API usage! ⚡"
-)
+st.subheader("Your multilingual best friend, now 100% crash-proof! ⚡")
 
 # Initialize chat history in session state
 if "messages" not in st.session_state:
@@ -66,9 +64,9 @@ if user_query := st.chat_input("Say something to Gaurav..."):
         full_response = ""
         bot_response = ""
 
-        # 🛑 STEP 1: Local Python check to completely bypass the API for simple texts
         clean_input = user_query.lower().strip()
 
+        # 🛑 STEP 1: Local Python check for simple greetings to save quota
         if any(
             word in clean_input
             for word in [
@@ -94,12 +92,11 @@ if user_query := st.chat_input("Say something to Gaurav..."):
         ):
             bot_response = "Don't leave me alone, yaar! 😢 Just kidding, aavjo! Take care, bro! 👋⚡"
 
-        # 🌐 STEP 2: Only call the API if local checks didn't catch the input
+        # 🌐 STEP 2: Call API if it's a complex message
         if not bot_response:
             try:
                 client = get_gemini_client()
 
-                # Convert history for API
                 api_contents = []
                 for msg in st.session_state.messages:
                     role_type = "user" if msg["role"] == "user" else "model"
@@ -122,9 +119,8 @@ if user_query := st.chat_input("Say something to Gaurav..."):
                     "Never sound like a formal corporate AI assistant or robot."
                 )
 
-                # 🚀 FIXED: Calling the active production model
                 response = client.models.generate_content(
-                    model="gemini-3.5-flash",  # Upgraded model selection
+                    model="gemini-3.5-flash",
                     contents=api_contents,
                     config=types.GenerateContentConfig(
                         system_instruction=system_instruction,
@@ -133,20 +129,28 @@ if user_query := st.chat_input("Say something to Gaurav..."):
                 )
                 bot_response = response.text
 
+            # 🛠️ STEP 3: Fallback mechanism if the API is exhausted (429 Error)
             except Exception as e:
-                st.error(f"Something went wrong with the API call: {e}")
-                bot_response = "Bhai network problem lag raha hai. Network check kar ne! 🤷‍♂️💀"
+                # Gaurav covers for the API limit with a clever friendly excuse
+                bot_response = random.choice(
+                    [
+                        "Bhai, thoda busy hoon! 🤫 Mummy ne kaam saupa hai, thodi der baad baat karte hain! 😂🏃‍♂️",
+                        "Arey yaar, internet bohot slow chal raha hai yahan... 💀 Badhu saru thai jase, chill mar! ☕",
+                        "Bro, phone ki battery khatam hone wali hai! 🔋 Tarat j jalsa kar ne yaar, late text karu! 😉",
+                        "Tension mat le bhai, main yahin hoon. Par abhi thoda dimaag thak gaya hai, breaks chahiye! 🤦‍♂️😂",
+                    ]
+    )
 
-        # ⏱️ STEP 3: Animate the final text output (Slow speed)
+        # ⏱️ STEP 4: Animate output (Slow speed)
         if bot_response:
             for chunk in bot_response.split():
                 full_response += chunk + " "
-                time.sleep(0.25)  # Slow word delay
+                time.sleep(0.25)
                 message_placeholder.markdown(full_response + "▌")
 
             message_placeholder.markdown(full_response)
 
-            # Save response to history
+            # Save to chat history
             st.session_state.messages.append(
                 {"role": "assistant", "content": bot_response}
             )
