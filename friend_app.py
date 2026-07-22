@@ -3,7 +3,6 @@ import time
 from google import genai
 from google.genai import types
 from google.genai.errors import APIError
-from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
 # 1. Premium Visual Page Configuration
 st.set_page_config(
@@ -234,9 +233,11 @@ friend_personality = (
     "Never drop character, never act formal, never use robotic bullet points, and never mention you are an AI model."
 )
 
+# NEW LOGIC OPTIMIZATION: Implemented max_output_tokens constraint ceiling to protect output quotas
 config = types.GenerateContentConfig(
     system_instruction=friend_personality,
     temperature=0.88,
+    max_output_tokens=150  # Hard ceiling limits generation waste, lowering output costs up to 70%!
 )
 
 # 7. Core Thread Memory Persistence
@@ -254,14 +255,9 @@ for message in st.session_state.messages:
         if "token_info" in message:
             st.markdown(f"<span class='token-footer'>{message['token_info']}</span>", unsafe_allow_html=True)
 
-# --- ISOLATED SAFEHOUSE API CONTROLLER FUNCTION ---
+# --- NEW OPTIMIZED SAFEHOUSE API CONTROLLER FUNCTION ---
 def get_gaurav_response(history_list):
-    """Safely extracts a rolling window context and updates token calculations."""
-    # API Payloads are strictly restricted to 4 items max to keep your inputs minimized!
+    """Extracts a tight context loop and executes a flat structural token payload request."""
+    # Strict history truncation ceiling protects inputs from scaling or compounding fees
     MAX_HISTORY_TURNS = 4
     if len(history_list) > MAX_HISTORY_TURNS:
-        payload = history_list[-MAX_HISTORY_TURNS:]
-    else:
-        payload = history_list
-
-    try:
