@@ -1,3 +1,4 @@
+import os
 import random
 import time
 import streamlit as st
@@ -5,9 +6,11 @@ import streamlit as st
 # Configure the web page
 st.set_page_config(page_title="Chat with Gaurav", page_icon="💬")
 
-# Define profile picture paths
-USER_AVATAR = "periwinkle.png"
-BOT_AVATAR = "Gaurav.jpg"
+# Safe avatar loading: uses image if it exists on GitHub, otherwise falls back to emojis
+USER_AVATAR = (
+    "periwinkle.png" if os.path.exists("periwinkle.png") else "🪻"
+)
+BOT_AVATAR = "gaurav.jpg" if os.path.exists("gaurav.jpg") else "👦"
 
 # Funny, friendly responses Gaurav might say
 GAURAV_RESPONSES = [
