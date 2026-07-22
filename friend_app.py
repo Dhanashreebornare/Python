@@ -11,7 +11,7 @@ st.set_page_config(
     layout="centered"
 )
 
-# Completely Revamped Layout Stylesheet with Dynamic Color-Cycling Glow and Spaced Backdrop
+# Completely Revamped Layout Stylesheet with Text Box Gradient Glow and Optimized Background Spacing
 st.markdown("""
 <style>
     @import url('https://googleapis.com');
@@ -52,7 +52,8 @@ st.markdown("""
     .block-container {
         position: relative;
         z-index: 2 !important;
-        padding-top: 3.5rem !important;
+        padding-top: 2rem !important;
+        padding-bottom: 6rem !important;
         max-width: 720px !important;
     }
     
@@ -130,7 +131,7 @@ st.markdown("""
         color: #381a22 !important;
     }
     
-    /* Custom Interactive Floral Buttons */
+    /* Custom High Contrast Action Buttons */
     .stButton>button {
         background: linear-gradient(90deg, #ff4e50 0%, #e14eca 100%) !important;
         color: #ffffff !important;
@@ -147,13 +148,19 @@ st.markdown("""
     /* Chat Input Container Structural Baseline */
     div[data-testid="stChatInput"] {
         z-index: 99 !important;
-        position: relative;
+        position: fixed !important;
+        bottom: 20px !important;
+        left: 0 !important;
+        right: 0 !important;
+        max-width: 720px !important;
+        margin: 0 auto !important;
+        padding: 0 1rem !important;
         background: transparent !important;
     }
     
     /* Embedded automated infinite keyframe loop to shift glow parameters smoothly */
     div[data-testid="stChatInput"] > div {
-        background: rgba(255, 255, 255, 0.65) !important;
+        background: rgba(255, 255, 255, 0.9) !important;
         backdrop-filter: blur(10px);
         border-radius: 20px !important;
         padding: 4px;
@@ -264,8 +271,3 @@ if "messages" not in st.session_state:
 if "api_history" not in st.session_state:
     st.session_state.api_history = []
 
-# 8. Render High-Contrast Chat History Cards with Custom DP Assets
-for message in st.session_state.messages:
-    avatar_icon = "periwinkle.png" if message["role"] == "user" else "gaurav.jpg"
-    with st.chat_message(message["role"], avatar=avatar_icon):
-        st.markdown(message["content"])
