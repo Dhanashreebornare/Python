@@ -122,9 +122,9 @@ if user_query := st.chat_input("Say something to Gaurav..."):
                     "Never sound like a formal corporate AI assistant or robot."
                 )
 
-                # Fetch response using the valid flash model
+                # 🚀 FIXED: Calling the active production model
                 response = client.models.generate_content(
-                    model="gemini-2.5-flash",
+                    model="gemini-3.5-flash",  # Upgraded model selection
                     contents=api_contents,
                     config=types.GenerateContentConfig(
                         system_instruction=system_instruction,
