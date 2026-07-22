@@ -250,24 +250,25 @@ def generate_content_with_retry(contents_payload):
         config=config
     )
 
-# --- ISOLATED SAFEHOUSE API CONTROLLER FUNCTION ---
-def get_gaurav_response(history_list):
-    """Safely extracts a rolling window context and updates token calculations."""
-    MAX_HISTORY_TURNS = 4
-    if len(history_list) > MAX_HISTORY_TURNS:
-        payload = history_list[-MAX_HISTORY_TURNS:]
-    else:
-        payload = history_list
+# 9. Process Active Client Message Inputs
+user_input = st.chat_input("Say something to Gaurav...")
 
-    try:
-        response = generate_content_with_retry(payload)
-        txt = response.text
-        if response.usage_metadata:
-            in_t = response.usage_metadata.prompt_token_count
-            out_t = response.usage_metadata.candidates_token_count
-        else:
-            in_t, out_t = 0, 0
-        footer = f"⚡ Usage Check: {in_t} in | {out_t} out tokens"
-        return txt, footer, True
-    except APIError as api_err:
-        if api_err.code == 429:
+if user_input:
+    with st.chat_message("user", avatar="periwinkle.png"):
+        st.markdown(user_input)
+    
+    st.session_state.messages.append({"role": "user", "content": user_input})
+    st.session_state.api_history.append(
+        types.Content(role="user", parts=[types.Part.from_text(text=user_input)])
+    )
+
+    with st.chat_message("assistant", avatar="gaurav.jpg"):
+        message_placeholder = st.empty()
+        full_response = ""
+        token_string = ""
+        api_success = False
+        
+        with st.spinner("Gaurav is typing... 💬"):
+            # --- API COST OPTIMIZER LAYER ---
+            # Caps history payload dynamically so your token costs stay entirely flat
+            MAX_HISTORY_TURNS = 4
