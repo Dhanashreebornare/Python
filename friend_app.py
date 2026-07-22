@@ -94,7 +94,7 @@ if not api_key:
     st.info("Add your copied key to the Streamlit Advanced Secrets dashboard.", icon="🔑")
     st.stop()
 
-# Cache engine standard connection client
+# Cache engine connection client
 @st.cache_resource
 def get_genai_client(key):
     return genai.Client(api_key=key)
@@ -109,10 +109,9 @@ friend_personality = (
     "Use phrases like 'bro', 'yaar', 'chill', 'sahi hai'. EMOJI RULES: Add 1-3 emojis per message (🌸, 🌹, 🌻, 💀, 🤣, 👋, 🔥)."
 )
 
-# 💰 COST SAVER: Output Clamping limits maximum output tokens generated to save money
+# 💰 COST SAVER 1: Output Clamping limits maximum response tokens generated to save credits
 config = types.GenerateContentConfig(
     system_instruction=friend_personality,
-    temperature=0.88,
     max_output_tokens=150
 )
 
@@ -126,15 +125,15 @@ config = types.GenerateContentConfig(
     reraise=True
 )
 def run_gemini_call(payload_data):
-    # Updated to 'gemini-1.5-flash' for wider infrastructure availability
+    # 🎯 TARGET FIX: Updated to 'gemini-3.5-flash' to eliminate the 404 block error
     return client.models.generate_content(
-        model='gemini-1.5-flash',
+        model='gemini-3.5-flash',
         contents=payload_data,
         config=config
     )
 
 def handle_assistant_turn():
-    # 💰 QUOTA MINIMIZER: Hard context rolling window to minimize input tokens
+    # 💰 CREDIT SAVER 2: Core rolling sliding context window window limits input tokens
     MAX_HISTORY_TURNS = 4
     if len(st.session_state.api_history) > MAX_HISTORY_TURNS:
         payload = st.session_state.api_history[-MAX_HISTORY_TURNS:]
