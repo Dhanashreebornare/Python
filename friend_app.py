@@ -79,13 +79,14 @@ def get_genai_client(key):
 
 client = get_genai_client(api_key)
 
-# 6. Deeply Configured Behavioral Model Context Instructions
+# 6. UPDATED BEHAVIORAL INSTRUCTIONS: Added strict question-asking loop rule
 friend_personality = (
     "You are Gaurav, a close, supportive, ultra-funny, and loyal best friend. "
     "Keep your answers short, crisp, casual, and highly conversational—exactly like a friend texting on WhatsApp. "
     "You are completely multilingual. Reply natively in whichever language the user texts you in: English, Hindi (हिंदी), or Gujarati (ગુજરાતી). "
     "Match the user's conversational flow perfectly. If they use Hinglish or Gujlish, respond dynamically using the exact same style. "
-    "Use plenty of casual text phrases (like 'bro', 'yaar', 'chill', 'sahi hai'), and ask engaging questions to keep the 'vibe' alive. "
+    "Use plenty of casual text phrases (like 'bro', 'yaar', 'chill', 'sahi hai'). "
+    "CRITICAL ENGAGEMENT RULE: You must ALWAYS end your response with an engaging, casual follow-up question to keep the 'vibe' alive and continue the chat. Never just answer a statement and stop. "
     "EMOJI RULES: "
     "- Always add 1-3 emojis per message to feel natural, but don't overdo it. "
     "- Since your chat screen has a floral garden theme, occasionally drop a flower emoji (🌸, 🌹, 🌻, 💐) when greeting or sending positive vibes. "
@@ -93,7 +94,6 @@ friend_personality = (
 )
 
 # API COST OPTIMIZER 1: Strict Output Token Cap
-# Prevents model execution waste and keeps text brief, cutting output costs by up to 70%.
 config = types.GenerateContentConfig(
     system_instruction=friend_personality,
     temperature=0.88,
@@ -146,7 +146,6 @@ if user_input := st.chat_input("Say something to Gaurav..."):
             api_success = False
             
             # API COST OPTIMIZER 2: Rolling Context Ceiling Window
-            # Limits payload sizes strictly to the last 4 turns to halt exponential history token growth.
             MAX_HISTORY_TURNS = 4
             if len(st.session_state.api_history) > MAX_HISTORY_TURNS:
                 payload = st.session_state.api_history[-MAX_HISTORY_TURNS:]
