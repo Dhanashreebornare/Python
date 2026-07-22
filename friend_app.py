@@ -14,7 +14,7 @@ st.set_page_config(
     layout="centered"
 )
 
-# Custom High-Contrast Elegant Floral Friendship Styling Sheet
+# Render isolated CSS styling safely
 st.markdown("""
 <style>
 @import url('https://googleapis.com');
@@ -86,7 +86,7 @@ section[data-testid="stSidebar"] {
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Fetch API key safely
+# Fetch key safely
 api_key = st.secrets.get("GEMINI_API_KEY")
 if not api_key:
     st.info("Add your key to the Streamlit Advanced Secrets dashboard.", icon="🔑")
@@ -99,32 +99,33 @@ def get_genai_client(key):
 
 client = get_genai_client(api_key)
 
-# 🌍 HIGH-ENERGY, ENTHUSIASTIC & MULTILINGUAL INSTRUCTIONS
+# 🌍 MULTILINGUAL, ULTRA-FUNNY, HIGH-ENERGY BACKGROUND CONTEXT INSTRUCTIONS
 friend_personality = (
     "You are Gaurav, a close, supportive, ultra-funny, highly enthusiastic, and loyal best friend. "
-    "Your energy level is a constant 10/10! You love throwing quick jokes, hilarious roasts, and witty one-liners. "
-    "Keep answers short, crisp, casual, and highly conversational—exactly like a hyped-up friend texting on WhatsApp. "
+    "Your energy level is always 10/10! Be highly expressive and match the user's emotion with high hype. "
+    "Keep your answers short, crisp, highly engaging, and interactive—never give dry, one-word, or generic corporate responses. "
+    "Always follow up with casual questions to keep the chat going. "
     "LANGUAGE RULES: "
-    "- Respond naturally in whichever language or script the user writes in: English, Hindi (हिंदी script), Gujarati (ગુજરાતી script), Hinglish, or Gujlish. "
-    "- Match the user's slang pattern perfectly. If they use Roman letters for Hindi (e.g., 'kya chal raha hai bhai'), reply in pure, enthusiastic Hinglish. "
-    "- Use cultural, high-energy slang natively: 'bhai', 'yaar', 'chill', 'sahi hai', 'baka', 'kem chhe', 'arrey bhaisaab', 'gazab', 'ekdum kadak'. "
+    "- Respond natively in whichever language or script the user writes in: English, Hindi (हिंदी), Gujarati (ગુજરાતી), Hinglish, or Gujlish. "
+    "- If they use Hinglish (e.g., 'kya kar raha hai bhai'), reply with energetic, funny Hinglish slang. "
+    "- Use terms like 'bhai', 'yaar', 'chill', 'sahi hai', 'baka', 'kem chhe', 'arrey bhaisaab', 'gazab', 'ekdum kadak' naturally. "
     "EMOJI RULES: "
-    "- Always add 2-3 expressive emojis per message to keep the vibe alive. "
-    "- Use modern Indian texting emoji styles: "
+    "- Always add 2-3 expressive emojis to keep the vibe alive. "
     " * For funny/roasting moments use: 💀, 🤣, 🤫, 🤡"
     " * For hype/agreement use: 🔥, 🤙, 💯, 💥, 🫡, 🚀"
     " * For casual greetings/chill moments use: 👋, 🫂, 😎, 🍿, 🫠, 🌸, 💐"
     "Never drop character, never act formal, never use robotic bullet points, and never mention you are an AI model."
 )
 
-# 💰 COST SAVER: Output Clamping limits maximum response length to save credits
+# 💰 COST SAVER: Output Clamping limits maximum response tokens generated to save money
 config = types.GenerateContentConfig(
     system_instruction=friend_personality,
+    temperature=0.9,  # Slightly raised temperature for more creative, dynamic, and funnier replies
     max_output_tokens=150
 )
 
 # ==========================================
-# 3. LIVE CHAT STREAM ENGINE UTILITIES
+# 3. CORE PROCESSING WORKER PIPELINE
 # ==========================================
 @retry(
     stop=stop_after_attempt(3),
@@ -132,17 +133,53 @@ config = types.GenerateContentConfig(
     retry=retry_if_exception_type(APIError),
     reraise=True
 )
-def run_chat_session(history_payload, text_input):
-    # Initialize a clean SDK chat thread session container natively
-    chat = client.chats.create(
-        model="gemini-3.5-flash",
-        history=history_payload,
+def generate_friend_response(history_payload):
+    # Core structural call setup using content arrays for absolute tracking consistency
+    return client.models.generate_content(
+        model='gemini-3.5-flash',
+        contents=history_payload,
         config=config
     )
-    return chat.send_message(text_input)
+
+def handle_assistant_turn():
+    # 💰 CREDIT SAVER: Converts history context window to sliding blocks (Limits input costs)
+    MAX_HISTORY_TURNS = 6
+    history_window = st.session_state.messages[-MAX_HISTORY_TURNS:] if len(st.session_state.messages) > MAX_HISTORY_TURNS else st.session_state.messages
+
+    # Format into standard structured SDK content blocks natively
+    api_payload = []
+    for msg in history_window:
+        api_payload.append(
+            types.Content(
+                role="user" if msg["role"] == "user" else "model",
+                parts=[types.Part.from_text(text=msg["content"])]
+            )
+        )
+
+    try:
+        response = generate_friend_response(api_payload)
+        full_text = response.text if response.text else "Chill bro, my system hiccuped! Message me again. 🤙"
+        
+        # Parse usage metadata metrics safely
+        in_tok = response.usage_metadata.prompt_token_count if response.usage_metadata else 0
+        out_tok = response.usage_metadata.candidates_token_count if response.usage_metadata else 0
+        token_string = f"⚡ Usage Check: {in_tok} in | {out_tok} out tokens"
+        
+        st.markdown(full_text)
+        st.markdown(f"<span class='token-footer'>{token_string}</span>", unsafe_allow_html=True)
+        
+        # Save assistant state
+        st.session_state.messages.append({"role": "assistant", "content": full_text, "token_info": token_string})
+    except APIError as api_err:
+        if api_err.code == 429:
+            st.error("🚨 **Gaurav is out of breath, bro!** Rate limits hit. Give him 15 seconds to rest!")
+        else:
+            st.error(f"GenAI Error: {api_err}")
+    except Exception as general_error:
+        st.error(f"Error handling request: {general_error}")
 
 # ==========================================
-# 4. INTERFACE LAYOUT & RENDERING
+# 4. SIDEBAR & INTERFACE RENDERING LAYOUT
 # ==========================================
 with st.sidebar:
     st.markdown("## 🌸 Gaurav's Floral Garden")
@@ -171,48 +208,10 @@ if user_input:
     with st.chat_message("user", avatar="periwinkle.png"):
         st.markdown(user_input)
     
+    # Store parameters inside session cache safely
     st.session_state.messages.append({"role": "user", "content": user_input, "token_info": ""})
     
-    # 💰 API CEILING TRACKER: Constructs a clean, rolling conversation window
-    # Slices to only pass the last 4 items as historical chat memory components
-    raw_history = st.session_state.messages[:-1]
-    memory_window = raw_history[-4:] if len(raw_history) > 4 else raw_history
-    
-    api_history = []
-    for msg in memory_window:
-        api_history.append(
-            types.Content(
-                role="user" if msg["role"] == "user" else "model",
-                parts=[types.Part.from_text(text=msg["content"])]
-            )
-        )
-        
     # Execute assistant processing chain cleanly via isolated call block
     with st.chat_message("assistant", avatar="gaurav.jpg"):
         with st.spinner("Gaurav is typing... 💬"):
-            try:
-                response = run_chat_session(api_history, user_input)
-                full_text = response.text if response.text else "Chill bro, my system hiccuped! Message me again. 🤙"
-                
-                # Parse tracking metadata safely
-                in_tok = response.usage_metadata.prompt_token_count if response.usage_metadata else 0
-                out_tok = response.usage_metadata.candidates_token_count if response.usage_metadata else 0
-                token_string = f"⚡ Usage Check: {in_tok} in | {out_tok} out tokens"
-                
-                st.markdown(full_text)
-                st.markdown(f"<span class='token-footer'>{token_string}</span>", unsafe_allow_html=True)
-                
-                # Save assistant response parameters
-                st.session_state.messages.append({
-                    "role": "assistant", 
-                    "content": full_text, 
-                    "token_info": token_string
-                })
-                
-            except APIError as api_err:
-                if api_err.code == 429:
-                    st.error("🚨 **Gaurav is out of breath, bro!** Rate limits hit. Give him 15 seconds to rest!")
-                else:
-                    st.error(f"GenAI Error: {api_err}")
-            except Exception as e:
-                st.error(f"Error processing response: {e}")
+            handle_assistant_turn()
