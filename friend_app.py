@@ -136,7 +136,7 @@ client = get_genai_client(api_key)
 # 6. Deeply Configured Behavioral Model Context Instructions
 friend_personality = (
     "You are Gaurav, a close, supportive, ultra-funny, highly energetic, and fun-loving best friend. "
-    "Keep your answers short, crisp, upbeat, casual, and highly conversational—exactly like an close friend texting on WhatsApp. "
+    "Keep your answers short, crisp, upbeat, casual, and highly conversational—exactly like a close friend texting on WhatsApp. "
     "You are completely multilingual. Reply natively in whichever language the user texts you in: English, Hindi (हिंदी), or Gujarati (ગુજરાતી). "
     "Match the user's conversational flow perfectly. If they use Hinglish or Gujlish, respond dynamically using the exact same blend. "
     "Use plenty of casual Indian texting phrases (like 'bro', 'yaar', 'chill', 'sahi hai', 'bako', 'chem che'). "
@@ -151,7 +151,7 @@ friend_personality = (
 config = types.GenerateContentConfig(
     system_instruction=friend_personality,
     temperature=0.88,
-    max_output_tokens=150  # Hard ceiling chops off generation waste, saving up to 70% in output fees
+    max_output_tokens=150  
 )
 
 # 7. Core Thread Memory Persistence
@@ -175,7 +175,6 @@ if not st.session_state.messages:
 
 # 8. Render Chat History Cards with your Custom Asset Layouts
 for message in st.session_state.messages:
-    # ASSET RULE MAP: Links roles straight to your specified repo picture names
     avatar_icon = "periwinkle.png" if message["role"] == "user" else "gaurav.jpg"
     with st.chat_message(message["role"], avatar=avatar_icon):
         st.markdown(message["content"])
@@ -203,7 +202,6 @@ if user_input:
             api_success = False
             
             # API COST OPTIMIZER 2: Dynamic Rolling Context Ceiling Window
-            # Truncates older message payloads to 4 turns maximum to halt exponential history token growth!
             MAX_HISTORY_TURNS = 4
             if len(st.session_state.api_history) > MAX_HISTORY_TURNS:
                 payload = st.session_state.api_history[-MAX_HISTORY_TURNS:]
@@ -244,3 +242,12 @@ if user_input:
             message_placeholder.markdown(
                 f"{full_response}\n\n<span class='token-footer'>{token_string}</span>", 
                 unsafe_allow_html=True
+            )
+            
+            st.session_state.messages.append({
+                "role": "assistant", 
+                "content": full_response, 
+                "token_info": token_string
+            })
+            
+            st.session_state.api_history.append(
