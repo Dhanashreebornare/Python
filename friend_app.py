@@ -12,7 +12,7 @@ st.set_page_config(
     layout="centered"
 )
 
-# Completely Revamped Layout Stylesheet with Solid High-Contrast Typography Focus
+# Completely Revamped Layout Stylesheet with Text Box Gradient Glow and Optimized Background Spacing
 st.markdown("""
 <style>
     @import url('https://googleapis.com');
@@ -25,34 +25,34 @@ st.markdown("""
         overflow-x: hidden;
     }
 
-    /* Enhanced Visibility Floating Background Flowers Layer */
+    /* Tweaked Background Flowers Layer: Softer transparency and much wider layout spacing */
     .stApp::before {
-        content: "🌸    💮    🌹    🌻    🌸    💐";
+        content: "🌸          💮          🌹          🌻          🌸          💐";
         position: fixed;
         top: -10%;
         left: 5%;
         width: 90%;
         height: 120%;
-        font-size: 26px;
-        line-height: 5;
-        word-spacing: 140px;
-        opacity: 0.22;
+        font-size: 24px;
+        line-height: 8;          /* Increased line-height for wider vertical spacing */
+        word-spacing: 240px;     /* Double the word-spacing to separate them horizontally */
+        opacity: 0.12;           /* Lower opacity (12%) for a premium, non-distracting watermark look */
         pointer-events: none;
-        z-index: 0;
+        z-index: -1 !important; 
         white-space: pre-wrap;
-        animation: floatFlowers 35s linear infinite;
+        animation: floatFlowers 45s linear infinite; /* Slower, more calming movement cadence */
     }
 
     @keyframes floatFlowers {
         0% { transform: translateY(0) rotate(0deg); }
-        50% { transform: translateY(-40px) rotate(4deg); }
+        50% { transform: translateY(-50px) rotate(3deg); }
         100% { transform: translateY(0) rotate(0deg); }
     }
     
     /* Content wrapper safety layer */
     .block-container {
         position: relative;
-        z-index: 2;
+        z-index: 2 !important;
         padding-top: 3.5rem !important;
         max-width: 720px !important;
     }
@@ -85,7 +85,7 @@ st.markdown("""
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         border: 1px solid rgba(255, 255, 255, 0.9) !important;
         position: relative;
-        z-index: 5;
+        z-index: 5 !important;
     }
     
     div[data-testid="stChatMessage"]:hover {
@@ -122,6 +122,7 @@ st.markdown("""
     section[data-testid="stSidebar"] {
         background-color: #fffafd !important;
         border-right: 2px solid #ffd1df !important;
+        z-index: 100 !important;
     }
     
     section[data-testid="stSidebar"] h2,
@@ -144,7 +145,24 @@ st.markdown("""
         letter-spacing: 0.5px;
     }
     
-    /* Chat Input Safety visibility overlay fixes */
+    /* Chat Input Container Visibility & Custom Radiant Gradient Glow Fix */
+    div[data-testid="stChatInput"] {
+        z-index: 99 !important;
+        position: relative;
+        background: transparent !important;
+    }
+    
+    /* Adding a warm blur backdrop glow specifically anchoring behind the chat input box frame */
+    div[data-testid="stChatInput"] > div {
+        background: rgba(255, 255, 255, 0.6) !important;
+        backdrop-filter: blur(8px);
+        border-radius: 20px !important;
+        box-shadow: 0 -15px 40px -10px rgba(255, 78, 80, 0.15), 
+                    0 15px 30px -10px rgba(225, 78, 202, 0.2) !important;
+        border: 1px solid rgba(255, 224, 230, 0.8) !important;
+        padding: 4px;
+    }
+    
     div[data-testid="stChatInput"] textarea {
         color: #1c0b1d !important;
         font-weight: 600 !important;
@@ -241,34 +259,3 @@ for message in st.session_state.messages:
     stop=stop_after_attempt(3), 
     wait=wait_exponential(multiplier=2, min=2, max=10),
     retry=retry_if_exception_type(APIError),
-    reraise=True
-)
-def generate_content_with_retry(contents_payload):
-    return client.models.generate_content(
-        model='gemini-3.5-flash',
-        contents=contents_payload,
-        config=config
-    )
-
-# 9. Process Active Client Message Inputs
-user_input = st.chat_input("Say something to Gaurav...")
-
-if user_input:
-    with st.chat_message("user", avatar="periwinkle.png"):
-        st.markdown(user_input)
-    
-    st.session_state.messages.append({"role": "user", "content": user_input})
-    st.session_state.api_history.append(
-        types.Content(role="user", parts=[types.Part.from_text(text=user_input)])
-    )
-
-    with st.chat_message("assistant", avatar="gaurav.jpg"):
-        message_placeholder = st.empty()
-        full_response = ""
-        token_string = ""
-        api_success = False
-        
-        with st.spinner("Gaurav is typing... 💬"):
-            # --- API COST OPTIMIZER LAYER ---
-            # Caps history payload dynamically so your token costs stay entirely flat
-            MAX_HISTORY_TURNS = 4
