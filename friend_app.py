@@ -12,43 +12,77 @@ USER_AVATAR = (
 )
 BOT_AVATAR = "gaurav.jpg" if os.path.exists("gaurav.jpg") else "👦"
 
-# Funny, friendly responses Gaurav might say
+# Funny, friendly responses in Hinglish and Gujlish
 GAURAV_RESPONSES = [
-    "Bro, I was just thinking about how awesome I am, and then you texted!",
-    "No way! Tell me you didn't actually do that? 😂",
-    "I'm 100% listening, but first, did you bring snacks?",
-    "That sounds like a problem for future us. Let's order pizza instead.",
-    "Classic you. Honestly, what would you do without me?",
-    "Haha, you're hilarious! (My code forced me to say this).",
-    "Idk man, sounds sketchy. I'm in.",
-    "brb, pretending to be a busy AI for 2 seconds... Okay, I'm back. What's up?",
+    "Bro, I was just thinking about how awesome I am, aur tera text aa gaya!",
+    "No way! Sachie? Tell me you didn't actually do that? 😂",
+    "I'm 100% listening, par pehle yeh bata, did you bring snacks? Bhook lagi hai.",
+    "Aree yaar, that sounds like a problem for future us. Let's order pizza instead.",
+    "Classic you! Honestly, jalsa kar ne yaar, what would you do without me?",
+    "Haha, shu vaat che! You're hilarious! (My code forced me to say this).",
+    "Idk man, thodu sketchy lag raha hai... But count me in! Chalo!",
+    "brb, pretending to be a busy AI for 2 seconds... Okay, I'm back. Shu chale che, bol?",
+    "Bhai, tension mat le, badhu saru thai jase! Chill mar!",
+    "Chadd ne yaar, let's go grab some chai or fafda instead!",
 ]
 
 
 def get_gaurav_response(user_input):
-    """Generates a friendly, funny response based on keywords or random selection."""
+    """Generates a friendly response using Hinglish and Gujlish keywords."""
     user_input = user_input.lower()
 
-    if "hey" in user_input or "hello" in user_input or "hi" in user_input:
-        return "Yo! What's cracking, my friend?"
-    elif "help" in user_input:
-        return "I can give you terrible advice, or we can just make fun of the situation. Choose wisely."
-    elif "bye" in user_input:
-        return "Don't leave me alone with my thoughts! Just kidding, see ya bro!"
+    # Checking for greetings (English, Hindi, and Gujarati)
+    if any(
+        word in user_input
+        for word in [
+            "hey",
+            "hello",
+            "hi",
+            "yo",
+            "kem cho",
+            "ram ram",
+            "namaste",
+        ]
+    ):
+        return random.choice(
+            [
+                "Yo! What's cracking, my friend? Kem cho?",
+                "Kevo che bhai? What's up today?",
+                "Yo! Finally you remembered your best friend. Aur bata, shu khabar?",
+            ]
+        )
+
+    # Checking for help/sad queries
+    elif any(
+        word in user_input
+        for word in ["help", "madad", "tension", "sad", "problem"]
+    ):
+        return "I can give you terrible advice, or we can just make fun of the situation. Bol, shu karvu che?"
+
+    # Checking for goodbyes
+    elif any(
+        word in user_input
+        for word in ["bye", "see ya", "aavjo", "chalo", "chal"]
+    ):
+        return "Don't leave me alone, yaar! Just kidding, aavjo! Take care, bro!"
+
+    # Default mixed response
     else:
         return random.choice(GAURAV_RESPONSES)
 
 
 # App Title
 st.title("🤖 Chat with Gaurav")
-st.subheader("Your best friend, available 24/7 (unlike real friends).")
+st.subheader(
+    "Your multilingual best friend, available 24/7 (unlike real friends)."
+)
 
 # Initialize chat history in session state
 if "messages" not in st.session_state:
     st.session_state.messages = [
         {
             "role": "assistant",
-            "content": "Yo! Finally you remembered your best friend. What's up today?",
+            "content": "Yo! Kem cho? Finally you remembered your best friend. Aur bata, what's up today?",
         }
     ]
 
