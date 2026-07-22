@@ -254,9 +254,10 @@ for message in st.session_state.messages:
         if "token_info" in message:
             st.markdown(f"<span class='token-footer'>{message['token_info']}</span>", unsafe_allow_html=True)
 
-# --- Helper Function for Automatic Retries with Exponential Backoff ---
-# Fixed formatting arguments explicitly to remove structural parsing anomalies
-@retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=2, min=2, max=10), retry=retry_if_exception_type(APIError), reraise=True)
-def generate_content_with_retry(contents_payload):
-    return client.models.generate_content(
-        model='gemini-3.5-flash',
+# --- ISOLATED SAFEHOUSE API CONTROLLER FUNCTION ---
+# Cleaned up and removed the upper structural decorator to avoid parenthesis compiling anomalies
+def get_gaurav_response(history_list):
+    """Safely extracts a rolling window context and updates token calculations."""
+    # API Payloads are strictly restricted to 4 items max to keep your inputs minimized!
+    MAX_HISTORY_TURNS = 4
+    if len(history_list) > MAX_HISTORY_TURNS:
