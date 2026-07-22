@@ -3,7 +3,6 @@ import time
 from google import genai
 from google.genai import types
 from google.genai.errors import APIError
-from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
 # 1. Premium Visual Page Configuration
 st.set_page_config(
@@ -25,7 +24,7 @@ st.markdown("""
         overflow-x: hidden;
     }
 
-    /* Spaced Background Flowers Layer: Softer transparency and much wider layout spacing */
+    /* Tweaked Background Flowers Layer: Softer transparency and much wider layout spacing */
     .stApp::before {
         content: "🌸          💮          🌹          🌻          🌸          💐";
         position: fixed;
@@ -252,7 +251,6 @@ friend_personality = (
 )
 
 # API OPTIMIZATION 1: Output Token Clamping
-# Forces Gaurav to keep answers brief, instantly lowering output token costs up to 70%!
 config = types.GenerateContentConfig(
     system_instruction=friend_personality,
     temperature=0.88,
@@ -268,3 +266,6 @@ if "api_history" not in st.session_state:
 
 # 8. Render High-Contrast Chat History Cards with Custom DP Assets
 for message in st.session_state.messages:
+    avatar_icon = "periwinkle.png" if message["role"] == "user" else "gaurav.jpg"
+    with st.chat_message(message["role"], avatar=avatar_icon):
+        st.markdown(message["content"])
