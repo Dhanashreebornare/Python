@@ -12,20 +12,20 @@ st.set_page_config(
     layout="centered"
 )
 
-# Custom High-Contrast Elegant Floral Friendship Styling with Animated Background Flowers
+# Completely Revamped Layout Stylesheet with Solid High-Contrast Typography Focus
 st.markdown("""
 <style>
     @import url('https://googleapis.com');
     
-    /* 1. Soft Dynamic Warm Floral Pastel Canvas (Friendship Theme) */
+    /* 1. Base Application Layout Restructuring */
     .stApp {
         background: linear-gradient(135deg, #fff0f3 0%, #fff9fc 50%, #f0f4ff 100%) !important;
         font-family: 'Plus Jakarta Sans', sans-serif !important;
         position: relative;
-        overflow: hidden;
+        overflow-x: hidden;
     }
 
-    /* Floating Background Flowers Layer */
+    /* Enhanced Visibility Floating Background Flowers Layer */
     .stApp::before {
         content: "🌸    💮    🌹    🌻    🌸    💐";
         position: fixed;
@@ -33,35 +33,35 @@ st.markdown("""
         left: 5%;
         width: 90%;
         height: 120%;
-        font-size: 24px;
+        font-size: 26px;
         line-height: 5;
-        word-spacing: 120px;
-        opacity: 0.12;
+        word-spacing: 140px;
+        opacity: 0.25;  /* Increased opacity for better clear view */
         pointer-events: none;
         z-index: 0;
         white-space: pre-wrap;
-        animation: floatFlowers 40s linear infinite;
+        animation: floatFlowers 35s linear infinite;
     }
 
     @keyframes floatFlowers {
         0% { transform: translateY(0) rotate(0deg); }
-        50% { transform: translateY(-30px) rotate(3deg); }
+        50% { transform: translateY(-40px) rotate(4deg); }
         100% { transform: translateY(0) rotate(0deg); }
     }
     
-    /* Ensure content stays above background decoration */
+    /* Content wrapper safety layer */
     .block-container {
         position: relative;
-        z-index: 1;
+        z-index: 2;
         padding-top: 3.5rem !important;
         max-width: 720px !important;
     }
     
-    /* 2. Bold Radiant Header Typography with Floral Gradient Accents */
+    /* 2. Clear Readable Typography & Headers */
     h1 {
-        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
         font-weight: 800 !important;
-        background: linear-gradient(90deg, #ff4e50, #f9d423, #e14eca);
+        background: linear-gradient(90deg, #ff4e50, #d6249f, #b116de);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         letter-spacing: -1.5px;
@@ -69,57 +69,68 @@ st.markdown("""
     }
     
     .subtitle-text {
-        color: #5c3d46;
+        color: #5c3d46 !important;
         font-size: 1.1rem;
         margin-top: 6px;
         margin-bottom: 2rem;
         font-weight: 600;
     }
     
-    /* 3. Rounded Elegant Chat Containers with Soft Rose Shadows */
+    /* 3. Deep Container Elements Override for Chat Messages */
     div[data-testid="stChatMessage"] {
         border-radius: 24px !important;
         padding: 1.25rem 1.5rem !important;
         margin-bottom: 1.2rem !important;
-        box-shadow: 0 10px 30px -10px rgba(225, 78, 202, 0.1);
+        box-shadow: 0 10px 30px -10px rgba(225, 78, 202, 0.15);
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        border: 1px solid rgba(255, 255, 255, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.9) !important;
+        position: relative;
+        z-index: 5;
     }
     
     div[data-testid="stChatMessage"]:hover {
         transform: translateY(-2px);
-        box-shadow: 0 20px 40px -15px rgba(225, 78, 202, 0.2);
+        box-shadow: 0 20px 40px -15px rgba(225, 78, 202, 0.25);
     }
 
-    div[data-testid="stChatMessage"] p, div[data-testid="stChatMessage"] span {
-        color: #2d1e2f !important;
-        font-weight: 500;
-        line-height: 1.6;
-        font-size: 1.02rem;
+    /* Structural fix for message texts */
+    div[data-testid="stChatMessageContent"] p, 
+    div[data-testid="stChatMessageContent"] span,
+    div[data-testid="stChatMessageContent"] li,
+    div[data-testid="stChatMessageContent"] div {
+        color: #231224 !important; /* Rich obsidian deep plum color for perfect contrast */
+        font-weight: 600 !important; /* Thickened weight for easier visibility */
+        line-height: 1.6 !important;
+        font-size: 1.05rem !important;
     }
     
-    /* User Message Bubble: Warm Blush Cherry Blossom Sunrise Frame */
+    /* User Message Bubble Styling */
     div[data-testid="stChatMessageUser"] {
-        background: linear-gradient(120deg, rgba(255, 240, 243, 0.95) 0%, rgba(255, 245, 247, 0.95) 100%) !important;
+        background: linear-gradient(120deg, #fff3f5 0%, #ffeef1 100%) !important;
         border-bottom-right-radius: 4px !important;
-        border-right: 5px solid #ff4e50 !important;
+        border-right: 6px solid #ff4e50 !important;
     }
     
-    /* Gaurav Message Bubble: Royal Cosy Lavender Orchid Frame */
+    /* Assistant Message Bubble Styling */
     div[data-testid="stChatMessageAssistant"] {
-        background: linear-gradient(120deg, rgba(253, 240, 255, 0.95) 0%, rgba(250, 245, 255, 0.95) 100%) !important;
+        background: linear-gradient(120deg, #fdf2ff 0%, #fae6ff 100%) !important;
         border-bottom-left-radius: 4px !important;
-        border-left: 5px solid #e14eca !important;
+        border-left: 6px solid #e14eca !important;
     }
     
-    /* 4. Glassmorphism Floral Sidebar formatting */
+    /* 4. Glassmorphism High-Contrast Sidebar Formatting */
     section[data-testid="stSidebar"] {
-        background-color: rgba(255, 248, 250, 0.9) !important;
-        backdrop-filter: blur(10px);
-        border-right: 1px solid rgba(255, 220, 230, 0.8);
+        background-color: #fffafd !important;
+        border-right: 2px solid #ffd1df !important;
     }
     
-    /* 5. Custom Interactive Floral Buttons */
+    section[data-testid="stSidebar"] h2,
+    section[data-testid="stSidebar"] p,
+    section[data-testid="stSidebar"] span {
+        color: #381a22 !important;
+    }
+    
+    /* 5. Custom High Contrast Action Buttons */
     .stButton>button {
         background: linear-gradient(90deg, #ff4e50 0%, #e14eca 100%) !important;
         color: #ffffff !important;
@@ -127,26 +138,27 @@ st.markdown("""
         border-radius: 16px !important;
         padding: 0.7rem 1.5rem !important;
         font-weight: 700 !important;
-        box-shadow: 0 4px 15px rgba(225, 78, 202, 0.25);
+        box-shadow: 0 4px 15px rgba(225, 78, 202, 0.3);
         transition: all 0.2s ease !important;
         width: 100%;
         letter-spacing: 0.5px;
     }
     
-    .stButton>button:hover {
-        transform: scale(1.02);
-        box-shadow: 0 8px 25px rgba(255, 78, 80, 0.4) !important;
+    /* Chat Input Safety visibility overlay fixes */
+    div[data-testid="stChatInput"] textarea {
+        color: #1c0b1d !important;
+        font-weight: 600 !important;
     }
     
-    /* Subtle minimalist token metrics display */
     .token-footer {
-        font-size: 0.7rem;
-        color: #a08090;
-        margin-top: 10px;
+        font-size: 0.75rem;
+        color: #7a5a68 !important;
+        margin-top: 12px;
         display: block;
         text-align: right;
         font-family: monospace;
-        letter-spacing: 0.3px;
+        letter-spacing: 0.4px;
+        font-weight: 700 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -252,19 +264,9 @@ def get_gaurav_response(history_list):
         response = generate_content_with_retry(payload)
         txt = response.text
         
-        # Bug Fix: Guard against completely missing usage metadata objects
         if response.usage_metadata:
             in_t = response.usage_metadata.prompt_token_count
             out_t = response.usage_metadata.candidates_token_count
         else:
             in_t, out_t = 0, 0
             
-        footer = f"⚡ Usage Check: {in_t} in | {out_t} out tokens"
-        return txt, footer, True
-    except APIError as api_err:
-        if api_err.code == 429:
-            st.error("🚨 **Gaurav is out of breath, bro!** Give him 15-20 seconds to catch his breath before typing again!")
-        else:
-            st.error(f"Error connecting to API: {api_err.message}")
-        return "", "", False
-
