@@ -34,13 +34,13 @@ st.markdown("""
         width: 90%;
         height: 120%;
         font-size: 24px;
-        line-height: 8;          /* Increased line-height for wider vertical spacing */
-        word-spacing: 240px;     /* Double the word-spacing to separate them horizontally */
-        opacity: 0.12;           /* Lower opacity (12%) for a premium, non-distracting watermark look */
+        line-height: 8;          
+        word-spacing: 240px;     
+        opacity: 0.12;           
         pointer-events: none;
         z-index: -1 !important; 
         white-space: pre-wrap;
-        animation: floatFlowers 45s linear infinite; /* Slower, more calming movement cadence */
+        animation: floatFlowers 45s linear infinite; 
     }
 
     @keyframes floatFlowers {
@@ -152,13 +152,13 @@ st.markdown("""
         background: transparent !important;
     }
     
-    /* Adding a warm blur backdrop glow specifically anchoring behind the chat input box frame */
+    /* Warm blurred gradient glow backing specifically anchoring behind the chat input box */
     div[data-testid="stChatInput"] > div {
         background: rgba(255, 255, 255, 0.6) !important;
         backdrop-filter: blur(8px);
         border-radius: 20px !important;
-        box-shadow: 0 -15px 40px -10px rgba(255, 78, 80, 0.15), 
-                    0 15px 30px -10px rgba(225, 78, 202, 0.2) !important;
+        box-shadow: 0 -15px 40px -10px rgba(225, 78, 202, 0.15), 
+                    0 15px 30px -10px rgba(255, 78, 80, 0.2) !important;
         border: 1px solid rgba(255, 224, 230, 0.8) !important;
         padding: 4px;
     }
@@ -255,7 +255,8 @@ for message in st.session_state.messages:
             st.markdown(f"<span class='token-footer'>{message['token_info']}</span>", unsafe_allow_html=True)
 
 # --- Helper Function for Automatic Retries with Exponential Backoff ---
-@retry(
-    stop=stop_after_attempt(3), 
-    wait=wait_exponential(multiplier=2, min=2, max=10),
-    retry=retry_if_exception_type(APIError),
+# Fixed formatting arguments explicitly to remove structural parsing anomalies
+@retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=2, min=2, max=10), retry=retry_if_exception_type(APIError), reraise=True)
+def generate_content_with_retry(contents_payload):
+    return client.models.generate_content(
+        model='gemini-3.5-flash',
