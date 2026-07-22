@@ -12,7 +12,7 @@ st.set_page_config(
     layout="centered"
 )
 
-# Custom High-Contrast Elegant Floral Friendship Styling
+# Custom High-Contrast Elegant Floral Friendship Styling with Animated Background Flowers
 st.markdown("""
 <style>
     @import url('https://googleapis.com');
@@ -21,6 +21,40 @@ st.markdown("""
     .stApp {
         background: linear-gradient(135deg, #fff0f3 0%, #fff9fc 50%, #f0f4ff 100%) !important;
         font-family: 'Plus Jakarta Sans', sans-serif !important;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Floating Background Flowers Layer */
+    .stApp::before {
+        content: "🌸    💮    🌹    🌻    🌸    💐";
+        position: fixed;
+        top: -10%;
+        left: 5%;
+        width: 90%;
+        height: 120%;
+        font-size: 24px;
+        line-height: 5;
+        word-spacing: 120px;
+        opacity: 0.12;
+        pointer-events: none;
+        z-index: 0;
+        white-space: pre-wrap;
+        animation: floatFlowers 40s linear infinite;
+    }
+
+    @keyframes floatFlowers {
+        0% { transform: translateY(0) rotate(0deg); }
+        50% { transform: translateY(-30px) rotate(3deg); }
+        100% { transform: translateY(0) rotate(0deg); }
+    }
+    
+    /* Ensure content stays above background decoration */
+    .block-container {
+        position: relative;
+        z-index: 1;
+        padding-top: 3.5rem !important;
+        max-width: 720px !important;
     }
     
     /* 2. Bold Radiant Header Typography with Floral Gradient Accents */
@@ -102,11 +136,6 @@ st.markdown("""
     .stButton>button:hover {
         transform: scale(1.02);
         box-shadow: 0 8px 25px rgba(255, 78, 80, 0.4) !important;
-    }
-    
-    .block-container {
-        padding-top: 3.5rem !important;
-        max-width: 720px !important;
     }
     
     /* Subtle minimalist token metrics display */
@@ -223,7 +252,6 @@ if user_input := st.chat_input("Say something to Gaurav..."):
     # Generate response turn using active connection
     with st.chat_message("assistant", avatar="gaurav.jpg"):
         message_placeholder = st.empty()
-        token_placeholder = st.empty()
         
         full_response = ""
         token_string = ""
@@ -239,15 +267,3 @@ if user_input := st.chat_input("Say something to Gaurav..."):
                     payload = st.session_state.api_history
 
                 # Fire structured API request
-                response = generate_content_with_retry(payload)
-                full_response = response.text
-                
-                # Extract token metrics safely from response metadata
-                input_tokens = response.usage_metadata.prompt_token_count if response.usage_metadata else 0
-                output_tokens = response.usage_metadata.candidates_token_count if response.usage_metadata else 0
-                token_string = f"⚡ Usage Check: {input_tokens} in | {output_tokens} out tokens"
-                api_success = True
-                
-            except APIError as api_err:
-                if api_err.code == 429:
-                    st.error("🚨 **Gaurav is out of breath, bro!** The free limits ran out. Give him 15-20 seconds to catch his breath before typing again!")
