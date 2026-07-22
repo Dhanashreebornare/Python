@@ -253,7 +253,6 @@ def generate_content_with_retry(contents_payload):
 # --- ISOLATED SAFEHOUSE API CONTROLLER FUNCTION ---
 def get_gaurav_response(history_list):
     """Safely extracts a rolling window context and updates token calculations."""
-    # API LIMIT DECREASER: Caps history payload to prevent context text-ballooning
     MAX_HISTORY_TURNS = 4
     if len(history_list) > MAX_HISTORY_TURNS:
         payload = history_list[-MAX_HISTORY_TURNS:]
