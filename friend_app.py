@@ -77,7 +77,7 @@ div[data-testid="stChatMessage"] {
     border-radius: 24px !important;
     padding: 1.25rem 1.5rem !important;
     margin-bottom: 1.2rem !important;
-    box-shadow: 0 10px 30px -10 rgba(225, 78, 202, 0.15);
+    box-shadow: 0 10px 30px -10px rgba(225, 78, 202, 0.15);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid rgba(255, 255, 255, 0.9) !important;
     position: relative;
@@ -241,9 +241,32 @@ config = types.GenerateContentConfig(
 )
 
 # ==========================================
-# 5. MODULAR CONTENT DRAWING ENGINE
+# 5. ISOLATED API HANDLER FUNCTION (Prevents Syntax Error)
 # ==========================================
-# Using an isolated canvas container avoids nested block alignment corruption
+def call_gemini_api(payload_data, placeholder_element):
+    running_text = ""
+    try:
+        response_stream = client.models.generate_content_stream(
+            model='gemini-2.5-flash',
+            contents=payload_data,
+            config=config
+        )
+        for chunk in response_stream:
+            running_text += chunk.text
+            placeholder_element.write(running_text + "▌")
+            time.sleep(0.01)
+        placeholder_element.write(running_text)
+        return running_text
+    except APIError as api_error:
+        st.error(f"GenAI Connection Error: {api_error}")
+        return None
+    except Exception as basic_error:
+        st.error(f"Something went sideways: {basic_error}")
+        return None
+
+# ==========================================
+# 6. MODULAR CONTENT DRAWING ENGINE
+# ==========================================
 chat_history_canvas = st.container()
 
 with chat_history_canvas:
@@ -251,24 +274,21 @@ with chat_history_canvas:
         with st.chat_message(message["role"]):
             st.write(message["content"])
 
-# Capture incoming interaction outside any layout blocks
 user_input = st.chat_input("Say something to Gaurav...")
 
 # ==========================================
-# 6. PROCESSING ARCHITECTURE
+# 7. PROCESSING ARCHITECTURE
 # ==========================================
 if user_input:
-    # 1. Update UI and local app state instantly
     with chat_history_canvas:
         with st.chat_message("user"):
             st.write(user_input)
             
     st.session_state.messages.append({"role": "user", "content": user_input})
     
-    # 2. Slice history for cost optimization (last 5 messages maximum)
+    # Slice payload to save API credits (max last 5 messages)
     history_slice = st.session_state.messages[-5:]
     
-    # 3. Construct clean GenAI payload array 
     api_payload = []
     for msg in history_slice:
         api_payload.append(
@@ -278,21 +298,5 @@ if user_input:
             )
         )
         
-    # 4. Generate streaming response within isolated UI container
     with chat_history_canvas:
         with st.chat_message("assistant"):
-            text_holder = st.empty()
-            running_text = ""
-            
-            try:
-                response_stream = client.models.generate_content_stream(
-                    model='gemini-2.5-flash',
-                    contents=api_payload,
-                    config=config
-                )
-                
-                for chunk in response_stream:
-                    running_text += chunk.text
-                    text_holder.write(running_text + "▌")
-                    time.sleep(0.01)
-                    
