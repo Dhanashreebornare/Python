@@ -8,37 +8,64 @@ from google.genai import types
 # Configure the web page
 st.set_page_config(page_title="Chat with Gaurav", page_icon="🪻")
 
-# 🌸 Custom CSS to inject a floral backdrop and aesthetic theme
+# 🌸 Premium Floral Aesthetic Design & Headings via CSS Injection
 st.markdown(
     """
     <style>
-    /* Add a subtle, beautiful floral background pattern to the whole app */
+    /* 1. Backdrop Wallpaper of soft, aesthetic periwinkle flowers */
     .stApp {
-        background-image: radial-gradient(rgba(230, 230, 250, 0.4) 1px, transparent 0),
-                          radial-gradient(rgba(204, 204, 255, 0.3) 1px, transparent 0);
-        background-size: 40px 40px;
-        background-position: 0 0, 20px 20px;
-        background-color: #fbfcff;
+        background-color: #f6f7fb;
+        background-image: 
+            radial-gradient(rgba(174, 182, 255, 0.25) 1.5px, transparent 1.5px),
+            radial-gradient(rgba(235, 186, 255, 0.2) 2px, transparent 2px);
+        background-size: 45px 45px;
+        background-position: 0 0, 22.5px 22.5px;
     }
     
-    /* Title container styling */
-    .title-container {
+    /* 2. Frosted Glass Modern Title Header Container */
+    .aesthetic-header {
         text-align: center;
-        padding: 20px;
-        background: rgba(255, 255, 255, 0.75);
-        border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(204, 204, 255, 0.2);
-        border: 1px solid rgba(204, 204, 255, 0.4);
-        margin-bottom: 25px;
+        padding: 24px;
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(162, 168, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        margin-bottom: 20px;
     }
     
-    /* Floral divider aesthetic */
-    .floral-divider {
-        text-align: center;
-        color: #9aa0e6;
-        font-size: 20px;
-        margin: 10px 0;
-        letter-spacing: 5px;
+    /* 3. Redesigned Heading Typography */
+    .aesthetic-title {
+        font-family: 'Helvetica Neue', sans-serif;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        background: linear-gradient(135deg, #5058df 0%, #a46ae8 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin: 0;
+        font-size: 2.3rem;
+    }
+    
+    .aesthetic-subtitle {
+        color: #787ec2;
+        font-size: 0.95rem;
+        margin-top: 6px;
+        font-weight: 500;
+        letter-spacing: 0.2px;
+    }
+    
+    /* 4. Elegant Bottom Chat-Input Customization */
+    div[data-testid="stChatInput"] {
+        border-radius: 30px !important;
+        border: 1px solid rgba(162, 168, 255, 0.4) !important;
+        box-shadow: 0 4px 15px rgba(162, 168, 255, 0.08) !important;
+    }
+    
+    /* 5. Custom Themed Periwinkle Chat Bubbles */
+    div[data-testid="stChatMessageContent"] {
+        border-radius: 16px !important;
+        padding: 12px 16px !important;
     }
     </style>
     """,
@@ -62,16 +89,13 @@ def get_gemini_client():
     return genai.Client(api_key=api_key)
 
 
-# Styled App Title Header
+# Render Redesigned Premium Heading
 st.markdown(
     """
-    <div class="title-container">
-        <h1 style='color: #5c62d6; margin: 0;'>🪻 Chat with Gaurav 🪻</h1>
-        <p style='color: #7b81db; font-style: italic; margin: 5px 0 0 0;'>
-            Your Hinglish & Gujlish best friend • Wrapped in Periwinkles 🌸
-        </p>
+    <div class="aesthetic-header">
+        <h1 class="aesthetic-title">🌸 Gaurav's Garden 🪻</h1>
+        <div class="aesthetic-subtitle">Your Hinglish & Gujlish bestie • Available 24/7 ☕✨</div>
     </div>
-    <div class="floral-divider">🌸✨🪻✨🌸</div>
     """, 
     unsafe_allow_html=True
 )
@@ -81,7 +105,7 @@ if "messages" not in st.session_state:
     st.session_state.messages = [
         {
             "role": "assistant",
-            "content": "Yo! Kem cho? Finally you remembered your best friend. 👋 Aur bata, what's up today? 🤔🪻",
+            "content": "Yo! Kem cho? Finally you remembered your best friend. Aur bata, what's up today?",
         }
     ]
 
@@ -112,12 +136,12 @@ if user_query := st.chat_input("Say something to Gaurav..."):
         # 🛑 STEP 1: Local Python check for simple greetings to save quota
         if any(word in clean_input for word in ["hey", "hello", "hi", "yo", "kem cho", "ram ram", "namaste"]):
             bot_response = random.choice([
-                "Yo! What's cracking, my friend? Kem cho? 😁👋🪻",
-                "Kevo che bhai? What's up today? 😎🌸",
-                "Yo! Finally you remembered your best friend. Aur bata, shu khabar? 😉🪻"
+                "Yo! What's cracking, my friend? Kem cho?",
+                "Kevo che bhai? What's up today?",
+                "Yo! Finally you remembered your best friend. Aur bata, shu khabar?"
             ])
         elif any(word in clean_input for word in ["bye", "see ya", "aavjo", "chalo", "chal"]):
-            bot_response = "Don't leave me alone, yaar! 😢 Just kidding, aavjo! Take care, bro! 👋⚡🌸"
+            bot_response = "Don't leave me alone, yaar! Just kidding, aavjo! Take care, bro."
 
         # 🌐 STEP 2: Call API if it's a complex message
         if not bot_response:
@@ -131,13 +155,12 @@ if user_query := st.chat_input("Say something to Gaurav..."):
                         types.Content(role=role_type, parts=[types.Part(text=msg["content"])])
                     )
 
+                # 🛠️ FIXED: Reduced emoji priority instructions
                 system_instruction = (
                     "You are Gaurav, a funny, witty, sarcastic, and deeply loyal close best friend. "
-                    "You must chat casually. Use informal internet slang, abbreviations, and plenty of emojis. "
-                    "Crucially, you must heavily sprinkle relevant, expressive emojis throughout your messages "
-                    "(e.g., 😂, 💀, 🤣, 🤦‍♂️, 🤫, 👀, ☕, 🔥) wherever necessary to emphasize your jokes and emotions. "
-                    "Since the chat has a periwinkle flower aesthetic, occasionally tease the user about flowers "
-                    "or throw in flower emojis (🪻, 🌸, 🌼) when matching your sarcastic tone. "
+                    "You must chat casually. Use informal internet slang and abbreviations. "
+                    "Do NOT use unnecessary or spammy emojis. Only use a single emoji if it is absolutely necessary "
+                    "to convey a specific emotion (like a laugh 😂 or joke), but keep most sentences plain text. "
                     "You speak naturally in a mix of English, Hinglish (Hindi + English), and Gujlish (Gujarati + English). "
                     "Frequently use local friendly slang terms like 'Bhai', 'Yaar', 'Bro', 'Kem cho', 'Majama', "
                     "'Shu vaat che', 'Chal ne', 'Jalsa kar', 'tension mat le'. "
@@ -158,17 +181,17 @@ if user_query := st.chat_input("Say something to Gaurav..."):
             # 🛠️ STEP 3: Fallback mechanism if the API is exhausted (429 Error)
             except Exception as e:
                 bot_response = random.choice([
-                    "Bhai, thoda busy hoon! 🤫 Mummy ne kaam saupa hai (yaad aaya, ghar ke pouf saaf karne hain 🌸), thodi der baad baat karte hain! 😂🏃‍♂️",
-                    "Arey yaar, internet bohot slow chal raha hai yahan... 💀 Badhu saru thai jase, chill mar aur thoda phool súngh! 🪻☕",
-                    "Bro, phone ki battery khatam hone wali hai! 🔋 Tarat j jalsa kar ne yaar, late text karu! 😉🌸",
-                    "Tension mat le bhai, main yahin hoon. Par abhi thoda dimaag thak gaya hai, fresh air aur flowers chahiye! 🤦‍♂️😂🪻"
+                    "Bhai, thoda busy hoon! Mummy ne kaam saupa hai, thodi der baad baat karte hain!",
+                    "Arey yaar, internet bohot slow chal raha hai yahan... Badhu saru thai jase, chill mar!",
+                    "Bro, phone ki battery khatam hone wali hai! Tarat j jalsa kar ne yaar, late text karu!",
+                    "Tension mat le bhai, main yahin hoon. Par abhi thoda dimaag thak gaya hai, breaks chahiye!"
                 ])
 
-        # ⏱️ STEP 4: Animate output (Half speed)
+        # ⏱️ STEP 4: Animate output (Slower word pacing)
         if bot_response:
             for chunk in bot_response.split():
                 full_response += chunk + " "
-                time.sleep(0.50)  # ⏱️ Increased delay to 0.50s per word for a slower typing experience
+                time.sleep(0.50)  # Real-time slow typing pace
                 message_placeholder.markdown(full_response + "▌")
 
             message_placeholder.markdown(full_response)
