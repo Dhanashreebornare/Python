@@ -151,7 +151,7 @@ st.markdown("""
         background: transparent !important;
     }
     
-    /* FIX: Embedded automated infinite keyframe loop to shift glow parameters smoothly */
+    /* Embedded automated infinite keyframe loop to shift glow parameters smoothly */
     div[data-testid="stChatInput"] > div {
         background: rgba(255, 255, 255, 0.65) !important;
         backdrop-filter: blur(10px);
@@ -251,7 +251,6 @@ friend_personality = (
 )
 
 # API OPTIMIZATION 1: Output Token Clamping
-# Forces Gaurav to be short and WhatsApp-style, instantly lowering output token costs up to 70%!
 config = types.GenerateContentConfig(
     system_instruction=friend_personality,
     temperature=0.88,
@@ -267,3 +266,5 @@ if "api_history" not in st.session_state:
 
 # 8. Render High-Contrast Chat History Cards with Custom DP Assets
 for message in st.session_state.messages:
+    avatar_icon = "periwinkle.png" if message["role"] == "user" else "gaurav.jpg"
+    with st.chat_message(message["role"], avatar=avatar_icon):
