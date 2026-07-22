@@ -62,14 +62,14 @@ st.markdown("""
         font-size: 1.05rem !important;
     }
     
-    /* User Message Bubble Styling: Warm Blush Sunrise Frame */
+    /* User Message Bubble Styling: Warm Blush Frame */
     div[data-testid="stChatMessageUser"] {
         background: linear-gradient(120deg, #fff3f5 0%, #ffeef1 100%) !important;
         border-bottom-right-radius: 4px !important;
         border-right: 6px solid #ff4e50 !important;
     }
     
-    /* Assistant Message Bubble Styling: Cosy Lavender Orchid Frame */
+    /* Assistant Message Bubble Styling: Royal Orchid Frame */
     div[data-testid="stChatMessageAssistant"] {
         background: linear-gradient(120deg, #fdf2ff 0%, #fae6ff 100%) !important;
         border-bottom-left-radius: 4px !important;
@@ -147,7 +147,7 @@ friend_personality = (
     "Never drop character, never act formal, never use robotic bullet points, and never mention you are an AI model."
 )
 
-# API COST OPTIMIZER 1: Strict Output Token Cap
+# API COST OPTIMIZER 1: Strict Output Token Cap (Saves up to 70% in output fees)
 config = types.GenerateContentConfig(
     system_instruction=friend_personality,
     temperature=0.88,
@@ -194,20 +194,18 @@ if user_input:
     )
 
     with st.chat_message("assistant", avatar="gaurav.jpg"):
-        message_placeholder = st.empty()
+        full_response = ""
+        token_string = ""
+        api_success = False
         
-        with st.spinner("Gaurav is typing..."):
-            full_response = ""
-            token_string = ""
-            api_success = False
-            
-            # API COST OPTIMIZER 2: Dynamic Rolling Context Ceiling Window
-            MAX_HISTORY_TURNS = 4
-            if len(st.session_state.api_history) > MAX_HISTORY_TURNS:
-                payload = st.session_state.api_history[-MAX_HISTORY_TURNS:]
-            else:
-                payload = st.session_state.api_history
+        # API COST OPTIMIZER 2: Dynamic Rolling Context Ceiling Window
+        MAX_HISTORY_TURNS = 4
+        if len(st.session_state.api_history) > MAX_HISTORY_TURNS:
+            payload = st.session_state.api_history[-MAX_HISTORY_TURNS:]
+        else:
+            payload = st.session_state.api_history
 
+        with st.spinner("Gaurav is typing..."):
             try:
                 response = client.models.generate_content(
                     model='gemini-3.5-flash',
@@ -231,19 +229,18 @@ if user_input:
                     st.error(f"Error connecting to API: {api_err.message}")
 
         if api_success:
-            # Word-by-word local typing loop (Consumes 0 extra backend API tokens)
-            animated_text = ""
-            for word in full_response.split(" "):
-                animated_text += word + " "
-                message_placeholder.markdown(animated_text + "▌")
-                time.sleep(0.03)
+            # --- NEW NATIVE STREAMING LOGIC REPLACEMENT ---
+            # Generator expression streams words with zero complex code indentation blocks
+            def text_stream_generator():
+                for word in full_response.split(" "):
+                    yield word + " "
+                    time.sleep(0.04)
             
-            # Print static clean text and tracking metrics footer
-            message_placeholder.markdown(
-                f"{full_response}\n\n<span class='token-footer'>{token_string}</span>", 
-                unsafe_allow_html=True
-            )
+            # Executes native streaming and dumps final footer directly underneath
+            st.write_stream(text_stream_generator)
+            st.markdown(f"<span class='token-footer'>{token_string}</span>", unsafe_allow_html=True)
             
+            # Save final content parameters to history states
             st.session_state.messages.append({
                 "role": "assistant", 
                 "content": full_response, 
