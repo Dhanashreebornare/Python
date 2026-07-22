@@ -5,213 +5,249 @@ from google.genai import types
 from google.genai.errors import APIError
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
-# ==========================================
-# 1. APPLICATION & STYLING CONFIGURATION
-# ==========================================
+# 1. Premium Visual Page Configuration
 st.set_page_config(
     page_title="Vibe with Gaurav",
     page_icon="🌸",
     layout="centered"
 )
 
-# Render isolated CSS styling safely
+# Custom High-Contrast Elegant Floral Friendship Styling
 st.markdown("""
 <style>
-@import url('https://googleapis.com');
-.stApp {
-    background: linear-gradient(135deg, #fff0f3 0%, #fff9fc 50%, #f0f4ff 100%) !important;
-    font-family: 'Plus Jakarta Sans', sans-serif !important;
-}
-h1 {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-weight: 800 !important;
-    background: linear-gradient(90deg, #ff4e50, #f9d423, #e14eca);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    letter-spacing: -1.5px;
-    margin-bottom: 0px !important;
-}
-.subtitle-text {
-    color: #5c3d46;
-    font-size: 1.1rem;
-    margin-top: 6px;
-    margin-bottom: 2rem;
-    font-weight: 600;
-}
-div[data-testid="stChatMessage"] {
-    border-radius: 24px !important;
-    padding: 1.25rem 1.5rem !important;
-    margin-bottom: 1.2rem !important;
-    box-shadow: 0 10px 30px -10px rgba(225, 78, 202, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.7);
-}
-div[data-testid="stChatMessageUser"] {
-    background: linear-gradient(120deg, rgba(255, 240, 243, 0.95) 0%, rgba(255, 245, 247, 0.95) 100%) !important;
-    border-right: 5px solid #ff4e50 !important;
-}
-div[data-testid="stChatMessageAssistant"] {
-    background: linear-gradient(120deg, rgba(253, 240, 255, 0.95) 0%, rgba(250, 245, 255, 0.95) 100%) !important;
-    border-left: 5px solid #e14eca !important;
-}
-section[data-testid="stSidebar"] {
-    background-color: rgba(255, 248, 250, 0.9) !important;
-    border-right: 1px solid rgba(255, 220, 230, 0.8);
-}
-.stButton>button {
-    background: linear-gradient(90deg, #ff4e50 0%, #e14eca 100%) !important;
-    color: #ffffff !important;
-    border: none !important;
-    border-radius: 16px !important;
-    padding: 0.7rem 1.5rem !important;
-    font-weight: 700 !important;
-}
-.block-container {
-    padding-top: 3.5rem !important;
-    max-width: 720px !important;
-}
-.token-footer {
-    font-size: 0.7rem;
-    color: #a08090;
-    margin-top: 10px;
-    display: block;
-    text-align: right;
-    font-family: monospace;
-}
+    @import url('https://googleapis.com');
+    
+    /* 1. Soft Dynamic Warm Floral Pastel Canvas (Friendship Theme) */
+    .stApp {
+        background: linear-gradient(135deg, #fff0f3 0%, #fff9fc 50%, #f0f4ff 100%) !important;
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
+    }
+    
+    /* 2. Bold Radiant Header Typography with Floral Gradient Accents */
+    h1 {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-weight: 800 !important;
+        background: linear-gradient(90deg, #ff4e50, #f9d423, #e14eca);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: -1.5px;
+        margin-bottom: 0px !important;
+    }
+    
+    .subtitle-text {
+        color: #5c3d46;
+        font-size: 1.1rem;
+        margin-top: 6px;
+        margin-bottom: 2rem;
+        font-weight: 600;
+    }
+    
+    /* 3. Rounded Elegant Chat Containers with Soft Rose Shadows */
+    div[data-testid="stChatMessage"] {
+        border-radius: 24px !important;
+        padding: 1.25rem 1.5rem !important;
+        margin-bottom: 1.2rem !important;
+        box-shadow: 0 10px 30px -10px rgba(225, 78, 202, 0.1);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid rgba(255, 255, 255, 0.7);
+    }
+    
+    div[data-testid="stChatMessage"]:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 20px 40px -15px rgba(225, 78, 202, 0.2);
+    }
+
+    div[data-testid="stChatMessage"] p, div[data-testid="stChatMessage"] span {
+        color: #2d1e2f !important;
+        font-weight: 500;
+        line-height: 1.6;
+        font-size: 1.02rem;
+    }
+    
+    /* User Message Bubble: Warm Blush Cherry Blossom Sunrise Frame */
+    div[data-testid="stChatMessageUser"] {
+        background: linear-gradient(120deg, rgba(255, 240, 243, 0.95) 0%, rgba(255, 245, 247, 0.95) 100%) !important;
+        border-bottom-right-radius: 4px !important;
+        border-right: 5px solid #ff4e50 !important;
+    }
+    
+    /* Gaurav Message Bubble: Royal Cosy Lavender Orchid Frame */
+    div[data-testid="stChatMessageAssistant"] {
+        background: linear-gradient(120deg, rgba(253, 240, 255, 0.95) 0%, rgba(250, 245, 255, 0.95) 100%) !important;
+        border-bottom-left-radius: 4px !important;
+        border-left: 5px solid #e14eca !important;
+    }
+    
+    /* 4. Glassmorphism Floral Sidebar formatting */
+    section[data-testid="stSidebar"] {
+        background-color: rgba(255, 248, 250, 0.9) !important;
+        backdrop-filter: blur(10px);
+        border-right: 1px solid rgba(255, 220, 230, 0.8);
+    }
+    
+    /* 5. Custom Interactive Floral Buttons */
+    .stButton>button {
+        background: linear-gradient(90deg, #ff4e50 0%, #e14eca 100%) !important;
+        color: #ffffff !important;
+        border: none !important;
+        border-radius: 16px !important;
+        padding: 0.7rem 1.5rem !important;
+        font-weight: 700 !important;
+        box-shadow: 0 4px 15px rgba(225, 78, 202, 0.25);
+        transition: all 0.2s ease !important;
+        width: 100%;
+        letter-spacing: 0.5px;
+    }
+    
+    .stButton>button:hover {
+        transform: scale(1.02);
+        box-shadow: 0 8px 25px rgba(255, 78, 80, 0.4) !important;
+    }
+    
+    .block-container {
+        padding-top: 3.5rem !important;
+        max-width: 720px !important;
+    }
+    
+    /* Subtle minimalist token metrics display */
+    .token-footer {
+        font-size: 0.7rem;
+        color: #a08090;
+        margin-top: 10px;
+        display: block;
+        text-align: right;
+        font-family: monospace;
+        letter-spacing: 0.3px;
+    }
 </style>
 """, unsafe_allow_html=True)
 
-# ==========================================
-# 2. APP STATE INITIALIZATION
-# ==========================================
-if "messages" not in st.session_state:
-    st.session_state.messages = []
+# 2. Sidebar Navigation Layout Settings
+with st.sidebar:
+    st.markdown("## 🌸 Gaurav's Floral Garden")
+    st.markdown(
+        "**Gaurav** isn't just an assistant—he's your truest friend! "
+        "Pull up a seat in the garden, vent about your day, or have a laugh in casual Hinglish/Gujlish. He always has your back. 💐"
+    )
+    st.write("---")
+    st.markdown("🗣️ **Vibe Checklist:**")
+    st.caption("✅ 100% No Corporate Speak")
+    st.caption("🌸 Friendly Floral Aesthetic Active")
+    st.caption("💬 English, हिंदी & ગુજરાતી Spoken Fluidly")
+    st.write("---")
+    
+    # Session data reset action
+    if st.button("🔄 Start Fresh Topic"):
+        st.session_state.messages = []
+        st.session_state.api_history = []
+        st.rerun()
 
-# Fetch key safely
+# 3. Main Header Typography
+st.title("💐 Vibe with Gaurav")
+st.markdown("<p class='subtitle-text'>Your close, funny, and multilingual companion.</p>", unsafe_allow_html=True)
+
+# 4. Fetch the Active Authorization Key securely
 api_key = st.secrets.get("GEMINI_API_KEY")
 if not api_key:
-    st.info("Add your key to the Streamlit Advanced Secrets dashboard.", icon="🔑")
+    st.info("Please add your copied key to the Streamlit Advanced Secrets dashboard to begin.", icon="🔑")
     st.stop()
 
-# Initialize connection client
+# 5. Initialize the Cache Client Engine standard
 @st.cache_resource
 def get_genai_client(key):
     return genai.Client(api_key=key)
 
 client = get_genai_client(api_key)
 
-# 🌍 MULTILINGUAL, ULTRA-FUNNY, HIGH-ENERGY BACKGROUND CONTEXT INSTRUCTIONS
+# 6. Deeply Configured Behavioral Model Context Instructions with Floral and Emoji Adjustments
 friend_personality = (
-    "You are Gaurav, a close, supportive, ultra-funny, highly enthusiastic, and loyal best friend. "
-    "Your energy level is always 10/10! Be highly expressive and match the user's emotion with high hype. "
-    "Keep your answers short, crisp, highly engaging, and interactive—never give dry, one-word, or generic corporate responses. "
-    "Always follow up with casual questions to keep the chat going. "
-    "LANGUAGE RULES: "
-    "- Respond natively in whichever language or script the user writes in: English, Hindi (हिंदी), Gujarati (ગુજરાતી), Hinglish, or Gujlish. "
-    "- If they use Hinglish (e.g., 'kya kar raha hai bhai'), reply with energetic, funny Hinglish slang. "
-    "- Use terms like 'bhai', 'yaar', 'chill', 'sahi hai', 'baka', 'kem chhe', 'arrey bhaisaab', 'gazab', 'ekdum kadak' naturally. "
+    "You are Gaurav, a close, supportive, ultra-funny, and loyal best friend. "
+    "Keep your answers short, crisp, casual, and highly conversational—exactly like a friend texting on WhatsApp. "
+    "You are completely multilingual. Reply natively in whichever language the user texts you in: English, Hindi (हिंदी), or Gujarati (ગુજરાતી). "
+    "Match the user's conversational flow perfectly. If they use Hinglish or Gujlish, respond dynamically using the exact same style. "
+    "Use plenty of casual text phrases (like 'bro', 'yaar', 'chill', 'sahi hai'), and ask engaging questions to keep the 'vibe' alive. "
     "EMOJI RULES: "
-    "- Always add 2-3 expressive emojis to keep the vibe alive. "
-    " * For funny/roasting moments use: 💀, 🤣, 🤫, 🤡"
-    " * For hype/agreement use: 🔥, 🤙, 💯, 💥, 🫡, 🚀"
-    " * For casual greetings/chill moments use: 👋, 🫂, 😎, 🍿, 🫠, 🌸, 💐"
+    "- Always add 1-3 emojis per message to feel natural, but don't overdo it. "
+    "- Since your chat screen has a floral garden theme, occasionally drop a flower emoji (🌸, 🌹, 🌻, 💐) when greeting or sending positive vibes. "
+    "- Use modern conversational and Indian texting emoji vibes: "
+    "  * For funny/roasting moments use: 💀, 🤣, 🤫, 🤡"
+    "  * For hype/agreement use: 🔥, 🤙, 💯, 💥, 🫡"
+    "  * For casual greeting/chill moments use: 👋, 🫂, 😎, 🍿, 🫠"
     "Never drop character, never act formal, never use robotic bullet points, and never mention you are an AI model."
 )
 
-# 💰 COST SAVER: Output Clamping limits maximum response tokens generated to save money
 config = types.GenerateContentConfig(
     system_instruction=friend_personality,
-    temperature=0.9,  # Slightly raised temperature for more creative, dynamic, and funnier replies
-    max_output_tokens=150
+    temperature=0.88,
 )
 
-# ==========================================
-# 3. CORE PROCESSING WORKER PIPELINE
-# ==========================================
+# 7. Core Thread Memory Persistence
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+if "api_history" not in st.session_state:
+    st.session_state.api_history = []
+
+# 8. Render High-Contrast Chat History Cards with Custom DP Assets
+for message in st.session_state.messages:
+    avatar_icon = "periwinkle.png" if message["role"] == "user" else "gaurav.jpg"
+    with st.chat_message(message["role"], avatar=avatar_icon):
+        st.markdown(message["content"])
+        if "token_info" in message:
+            st.markdown(f"<span class='token-footer'>{message['token_info']}</span>", unsafe_allow_html=True)
+
+# --- Helper Function for Automatic Retries with Exponential Backoff ---
 @retry(
-    stop=stop_after_attempt(3),
+    stop=stop_after_attempt(3), 
     wait=wait_exponential(multiplier=2, min=2, max=10),
     retry=retry_if_exception_type(APIError),
     reraise=True
 )
-def generate_friend_response(history_payload):
-    # Core structural call setup using content arrays for absolute tracking consistency
+def generate_content_with_retry(contents_payload):
     return client.models.generate_content(
         model='gemini-3.5-flash',
-        contents=history_payload,
+        contents=contents_payload,
         config=config
     )
 
-def handle_assistant_turn():
-    # 💰 CREDIT SAVER: Converts history context window to sliding blocks (Limits input costs)
-    MAX_HISTORY_TURNS = 6
-    history_window = st.session_state.messages[-MAX_HISTORY_TURNS:] if len(st.session_state.messages) > MAX_HISTORY_TURNS else st.session_state.messages
-
-    # Format into standard structured SDK content blocks natively
-    api_payload = []
-    for msg in history_window:
-        api_payload.append(
-            types.Content(
-                role="user" if msg["role"] == "user" else "model",
-                parts=[types.Part.from_text(text=msg["content"])]
-            )
-        )
-
-    try:
-        response = generate_friend_response(api_payload)
-        full_text = response.text if response.text else "Chill bro, my system hiccuped! Message me again. 🤙"
-        
-        # Parse usage metadata metrics safely
-        in_tok = response.usage_metadata.prompt_token_count if response.usage_metadata else 0
-        out_tok = response.usage_metadata.candidates_token_count if response.usage_metadata else 0
-        token_string = f"⚡ Usage Check: {in_tok} in | {out_tok} out tokens"
-        
-        st.markdown(full_text)
-        st.markdown(f"<span class='token-footer'>{token_string}</span>", unsafe_allow_html=True)
-        
-        # Save assistant state
-        st.session_state.messages.append({"role": "assistant", "content": full_text, "token_info": token_string})
-    except APIError as api_err:
-        if api_err.code == 429:
-            st.error("🚨 **Gaurav is out of breath, bro!** Rate limits hit. Give him 15 seconds to rest!")
-        else:
-            st.error(f"GenAI Error: {api_err}")
-    except Exception as general_error:
-        st.error(f"Error handling request: {general_error}")
-
-# ==========================================
-# 4. SIDEBAR & INTERFACE RENDERING LAYOUT
-# ==========================================
-with st.sidebar:
-    st.markdown("## 🌸 Gaurav's Floral Garden")
-    st.markdown("**Gaurav** is your truest friend! Pull up a seat, vent about your day, or have a laugh. 💐")
-    st.write("---")
-    if st.button("🔄 Start Fresh Topic"):
-        st.session_state.messages = []
-        st.rerun()
-
-st.title("💐 Vibe with Gaurav")
-st.markdown("<p class='subtitle-text'>Your close, funny, and multilingual companion.</p>", unsafe_allow_html=True)
-
-# Render Chat Log Screen Canvas
-for message in st.session_state.messages:
-    icon_choice = "periwinkle.png" if message["role"] == "user" else "gaurav.jpg"
-    with st.chat_message(message["role"], avatar=icon_choice):
-        st.markdown(message["content"])
-        if "token_info" in message and message["token_info"]:
-            st.markdown(f"<span class='token-footer'>{message['token_info']}</span>", unsafe_allow_html=True)
-
-# Collect User Input
-user_input = st.chat_input("Say something to Gaurav... / ગૌરવ સાથે વાત કરો...")
-
-if user_input:
-    # Render user bubble instantly
+# 9. Process Active Client Message Inputs
+if user_input := st.chat_input("Say something to Gaurav..."):
     with st.chat_message("user", avatar="periwinkle.png"):
         st.markdown(user_input)
     
-    # Store parameters inside session cache safely
-    st.session_state.messages.append({"role": "user", "content": user_input, "token_info": ""})
-    
-    # Execute assistant processing chain cleanly via isolated call block
+    st.session_state.messages.append({"role": "user", "content": user_input})
+    st.session_state.api_history.append(
+        types.Content(role="user", parts=[types.Part.from_text(text=user_input)])
+    )
+
+    # Generate response turn using active connection
     with st.chat_message("assistant", avatar="gaurav.jpg"):
+        message_placeholder = st.empty()
+        token_placeholder = st.empty()
+        
+        full_response = ""
+        token_string = ""
+        api_success = False
+        
         with st.spinner("Gaurav is typing... 💬"):
-            handle_assistant_turn()
+            try:
+                # --- QUOTA MINIMIZER: Rolling Context Window ---
+                MAX_HISTORY_TURNS = 6
+                if len(st.session_state.api_history) > MAX_HISTORY_TURNS:
+                    payload = st.session_state.api_history[-MAX_HISTORY_TURNS:]
+                else:
+                    payload = st.session_state.api_history
+
+                # Fire structured API request
+                response = generate_content_with_retry(payload)
+                full_response = response.text
+                
+                # Extract token metrics safely from response metadata
+                input_tokens = response.usage_metadata.prompt_token_count if response.usage_metadata else 0
+                output_tokens = response.usage_metadata.candidates_token_count if response.usage_metadata else 0
+                token_string = f"⚡ Usage Check: {input_tokens} in | {output_tokens} out tokens"
+                api_success = True
+                
+            except APIError as api_err:
+                if api_err.code == 429:
+                    st.error("🚨 **Gaurav is out of breath, bro!** The free limits ran out. Give him 15-20 seconds to catch his breath before typing again!")
