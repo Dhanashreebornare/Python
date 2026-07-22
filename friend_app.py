@@ -92,9 +92,9 @@ if user_query := st.chat_input("Say something to Gaurav..."):
         full_response = ""
 
         try:
-            # 🚀 UPDATED: Set to the latest production Flash model
+            # 🚀 FIXED: Pointed to the newly released active model
             response = client.models.generate_content(
-                model="gemini-2.5-flash",  # Change this to "gemini-1.5-flash" if required
+                model="gemini-3.6-flash",  # Swapped from 2.5-flash to 3.6-flash
                 contents=api_contents,
                 config=types.GenerateContentConfig(
                     system_instruction=system_instruction,
