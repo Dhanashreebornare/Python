@@ -24,50 +24,94 @@ st.markdown(
         background-size: 32px 32px;
     }
     
-           # 🌐 STEP 2: Call API if it's a complex message
-        if not bot_response:
-            try:
-                client = get_gemini_client()
-                api_contents = []
-                for msg in st.session_state.messages:
-                    role_type = "user" if msg["role"] == "user" else "model"
-                    api_contents.append(
-                        types.Content(role=role_type, parts=[types.Part(text=msg["content"])])
-                    )
-                
-                # 🛠️ System instructions for chatbot personality
-                system_instruction = (
-                    "You are Gaurav, a funny, witty, sarcastic, and deeply loyal close best friend. "
-                    "You must chat casually. Use informal internet slang and abbreviations. "
-                    "Crucially, you MUST include exactly ONE highly relevant emoji at the end of your response "
-                    "or inside your message (e.g., 😂 if making a joke, 💀 if reacting to something crazy, "
-                    "🔥 for something cool, or 🤦‍♂️ for a facepalm moment) to sound like a natural human friend. "
-                    "Do not leave the message as completely plain text, but do not spam multiple emojis either. "
-                    "You speak naturally in a mix of English, Hinglish (Hindi + English), and Gujlish (Gujarati + English). "
-                    "Frequently use local friendly slang terms like 'Bhai', 'Yaar', 'Bro', 'Kem cho', 'Majama', "
-                    "'Shu vaat che', 'Chal ne', 'Jalsa kar', 'tension mat le'. "
-                    "Keep your responses relatively punchy and short, exactly like a friend texting over WhatsApp. "
-                    "Never sound like a formal corporate AI assistant or robot."
-                )
-                
-                response = client.models.generate_content(
-                    model="gemini-3.5-flash",
-                    contents=api_contents,
-                    config=types.GenerateContentConfig(
-                        system_instruction=system_instruction,
-                        temperature=1.0,
-                    ),
-                )
-                bot_response = response.text
-                
-            # 🛠️ STEP 3: Fallback mechanism if the API encounters an error
-            except Exception as e:
-                bot_response = random.choice([
-                    "Bhai, thoda busy hoon! Mummy ne kaam saupa hai, thodi der baad baat karte hain! 🏃‍♂️",
-                    "Arey yaar, internet bohot slow chal raha hai yahan... Badhu saru thai jase, chill mar! ☕",
-                    "Bro, phone ki battery khatam hone wali hai! Tarat j jalsa kar ne yaar, late text karu! 😉",
-                    "Tension mat le bhai, main yahin hoon. Par abhi thoda dimaag thak gaya hai, breaks chahiye! 😂"
-                ])
+    /* 2. Left Column Profile Card Styling */
+    .profile-card {
+        background: #ffffff;
+        border: 1px solid rgba(145, 157, 255, 0.25);
+        border-radius: 24px;
+        padding: 30px 20px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(145, 157, 255, 0.05);
+        position: sticky;
+        top: 20px;
+    }
+    
+    .profile-avatar {
+        font-size: 4.5rem;
+        margin-bottom: 10px;
+        filter: drop-shadow(0 8px 12px rgba(145, 157, 255, 0.2));
+    }
+    
+    .profile-name {
+        font-weight: 800;
+        color: #21255e;
+        font-size: 1.8rem;
+        margin: 0;
+        letter-spacing: -0.5px;
+    }
+    
+    .profile-tagline {
+        color: #787fb5;
+        font-size: 0.9rem;
+        margin-top: 4px;
+        font-weight: 500;
+    }
+    
+    .status-badge {
+        display: inline-block;
+        background-color: #e3fcef;
+        color: #006644;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        margin-top: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .info-box {
+        margin-top: 25px;
+        text-align: left;
+        background: #f8fafc;
+        padding: 15px;
+        border-radius: 16px;
+        border: 1px solid #edf2f7;
+    }
+    
+    .info-title {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #4d55cc;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+        letter-spacing: 0.5px;
+    }
+    
+    .info-text {
+        font-size: 0.85rem;
+        color: #4a5568;
+        line-height: 1.4;
+    }
+
+    /* 3. Right Column Custom Styled Chat Bubbles */
+    div[data-testid="stChatMessage"]:nth-child(even) div[data-testid="stChatMessageContent"] {
+        background: linear-gradient(135deg, #e2e5ff 0%, #ebedff 100%) !important;
+        color: #21255e !important;
+        border-radius: 24px 24px 4px 24px !important;
+        box-shadow: 0 4px 20px rgba(145, 157, 255, 0.08);
+        padding: 16px 20px !important;
+        border: 1px solid rgba(145, 157, 255, 0.2);
+    }
+    
+    div[data-testid="stChatMessage"]:nth-child(odd) div[data-testid="stChatMessageContent"] {
+        background: linear-gradient(135deg, #f1e6ff 0%, #f9f2ff 100%) !important;
+        color: #422a63 !important;
+        border-radius: 24px 24px 24px 4px !important;
+        box-shadow: 0 4px 20px rgba(220, 180, 255, 0.08);
+        padding: 16px 20px !important;
+        border: 1px solid rgba(220, 180, 255, 0.2);
+    }
     
     /* 4. Bottom Chat Input Aesthetics */
     div[data-testid="stChatInput"] {
@@ -107,7 +151,7 @@ if "messages" not in st.session_state:
     ]
 
 # --- LAYOUT CONFIGURATION ---
-# Create a 1:3 ratio layout (Left side card, right side chat interface)
+# Create a 1:3 ratio sidebar-to-chat column layout layout 
 col1, col2 = st.columns([1, 3], gap="large")
 
 with col1:
@@ -210,3 +254,4 @@ with col2:
                     
                 # 🛠️ STEP 3: Fallback mechanism if the API encounters an error
                 except Exception as e:
+                    bot_response = random.choice([
