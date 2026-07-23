@@ -6,9 +6,9 @@ from google import genai
 from google.genai import types
 
 # 1. Global Page Layout Configurations
-st.set_page_config(page_title="Chat with Gaurav", page_icon="🪻", layout="wide")
+st.set_page_config(page_title="Chat with Gaurav", page_icon="🪻", layout="centered")
 
-# 2. Inject CSS Styles Privately
+# 2. Inject CSS Styles Privately (Frosty Cold-Tone Floral Theme)
 st.markdown(
     """
     <link rel="preconnect" href="https://googleapis.com">
@@ -16,104 +16,79 @@ st.markdown(
     <link href="https://googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
-    /* Global Background Accent Settings */
+    /* Frosty Cold-Tone Background with Floral Accents */
     .stApp {
         font-family: 'Inter', sans-serif !important;
-        background-color: #f6f8fc;
-        background-image: radial-gradient(rgba(145, 157, 255, 0.15) 1.2px, transparent 1.2px);
-        background-size: 32px 32px;
+        background-color: #f1f4f9;
+        background-image: 
+            radial-gradient(rgba(145, 175, 255, 0.25) 1px, transparent 1px), 
+            radial-gradient(rgba(180, 160, 240, 0.2) 1.5px, transparent 1.5px);
+        background-size: 40px 40px;
+        background-position: 0 0, 20px 20px;
     }
     
-    /* Left Sidebar Profile Card Styling */
-    .profile-card {
-        background: #ffffff;
-        border: 1px solid rgba(145, 157, 255, 0.25);
-        border-radius: 20px;
-        padding: 20px 15px;
+    /* Elegant Minimalist Floral Header Widget */
+    .floral-header {
         text-align: center;
-        box-shadow: 0 4px 15px rgba(145, 157, 255, 0.05);
-        margin-bottom: 15px;
+        padding: 25px 15px;
+        background: rgba(255, 255, 255, 0.55);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(145, 175, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        margin-bottom: 35px;
     }
     
-    .profile-avatar {
-        font-size: 3.5rem;
-        margin-bottom: 5px;
-    }
-    
-    .profile-name {
+    .floral-title {
         font-weight: 800;
-        color: #21255e;
-        font-size: 1.6rem;
+        letter-spacing: -0.5px;
+        background: linear-gradient(135deg, #4552a1 0%, #6d78c7 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
         margin: 0;
+        font-size: 2.1rem;
     }
     
-    .profile-tagline {
-        color: #787fb5;
-        font-size: 0.85rem;
-        margin-top: 2px;
+    .floral-subtitle {
+        color: #7b84bf;
+        font-size: 0.95rem;
+        margin-top: 5px;
         font-weight: 500;
     }
     
-    .status-badge {
-        display: inline-block;
-        background-color: #e3fcef;
-        color: #006644;
-        padding: 3px 10px;
-        border-radius: 15px;
-        font-size: 0.7rem;
-        font-weight: 700;
-        margin-top: 8px;
-        text-transform: uppercase;
-    }
-    
-    .info-box {
-        margin-top: 15px;
-        text-align: left;
-        background: #f8fafc;
-        padding: 12px;
-        border-radius: 12px;
-        border: 1px solid #edf2f7;
-    }
-    
-    .info-title {
-        font-size: 0.75rem;
-        font-weight: 700;
-        color: #4d55cc;
-        text-transform: uppercase;
-        margin-bottom: 4px;
-    }
-    
-    .info-text {
-        font-size: 0.8rem;
-        color: #4a5568;
-        line-height: 1.3;
+    .floral-deco {
+        font-size: 1.2rem;
+        color: #9aa5e3;
+        margin-top: 6px;
+        letter-spacing: 4px;
     }
 
-    /* Right Chat Message Bubble Formatting Rules */
+    /* Muted Cold-Tone Chat Bubble Structuring */
     div[data-testid="stChatMessage"]:nth-child(even) div[data-testid="stChatMessageContent"] {
-        background: linear-gradient(135deg, #e2e5ff 0%, #ebedff 100%) !important;
-        color: #21255e !important;
-        border-radius: 24px 24px 4px 24px !important;
-        box-shadow: 0 4px 20px rgba(145, 157, 255, 0.08);
-        padding: 16px 20px !important;
-        border: 1px solid rgba(145, 157, 255, 0.2);
+        background: linear-gradient(135deg, #e3e9ff 0%, #edf1ff 100%) !important; /* Ice Powder Blue for User */
+        color: #1c2554 !important;
+        border-radius: 20px 20px 4px 20px !important;
+        box-shadow: 0 4px 15px rgba(145, 175, 255, 0.05);
+        padding: 14px 18px !important;
+        border: 1px solid rgba(145, 175, 255, 0.15);
     }
     
     div[data-testid="stChatMessage"]:nth-child(odd) div[data-testid="stChatMessageContent"] {
-        background: linear-gradient(135deg, #f1e6ff 0%, #f9f2ff 100%) !important;
-        color: #422a63 !important;
-        border-radius: 24px 24px 24px 4px !important;
-        box-shadow: 0 4px 20px rgba(220, 180, 255, 0.08);
-        padding: 16px 20px !important;
-        border: 1px solid rgba(220, 180, 255, 0.2);
+        background: linear-gradient(135deg, #eae3ff 0%, #f3f0ff 100%) !important; /* Muted Frost Lavender for Gaurav */
+        color: #2b1f47 !important;
+        border-radius: 20px 20px 20px 4px !important;
+        box-shadow: 0 4px 15px rgba(180, 160, 240, 0.05);
+        padding: 14px 18px !important;
+        border: 1px solid rgba(180, 160, 240, 0.15);
     }
     
     /* Sleek User Chat Input Aesthetics */
     div[data-testid="stChatInput"] {
         border-radius: 35px !important;
-        border: 1px solid rgba(145, 157, 255, 0.3) !important;
+        border: 1px solid rgba(145, 175, 255, 0.25) !important;
         background-color: #ffffff !important;
-        box-shadow: 0 12px 30px rgba(145, 157, 255, 0.08) !important;
+        box-shadow: 0 10px 25px rgba(145, 175, 255, 0.06) !important;
     }
     </style>
     """,
@@ -144,34 +119,17 @@ if "messages" not in st.session_state:
         }
     ]
 
-# 3. Sidebar Anchor Layout Fix (Ensures correct placement of the input box layout)
-with st.sidebar:
-    st.markdown(
-        """
-        <div class="profile-card">
-            <div class="profile-avatar">👦</div>
-            <h1 class="profile-name">Gaurav</h1>
-            <div class="profile-tagline">Your Hinglish Bestie</div>
-            <div class="status-badge">● Active Now</div>
-            
-            <div class="info-box">
-                <div class="info-title">Vibe Check</div>
-                <div class="info-text">Funny, mildly sarcastic, fiercely loyal, and a solid listener. 💯</div>
-            </div>
-            
-            <div class="info-box">
-                <div class="info-title">Current Jam</div>
-                <div class="info-text">🎵 Pasoori Nu (On Repeat)</div>
-            </div>
-            
-            <div class="info-box">
-                <div class="info-title">Catchphrases</div>
-                <div class="info-text"><i>"Bhai", "Yaar", "Bro", "Chill mar", "Tension mat le"</i></div>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+# 3. Render Minimalist Cold Floral Header Banner
+st.markdown(
+    """
+    <div class="floral-header">
+        <h1 class="floral-title">Gaurav's Garden</h1>
+        <div class="floral-subtitle">Your Hinglish bestie • Available 24/7</div>
+        <div class="floral-deco">🪻 ✧ 🪻 ✧ 🪻</div>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 # 4. Construct Main Feed Area Container
 for message in st.session_state.messages:
@@ -181,14 +139,11 @@ for message in st.session_state.messages:
 
 # Wait for execution engine input signals
 if user_query := st.chat_input("Say something to Gaurav..."):
-    # Mount incoming input query to layout interface view tracking
     with st.chat_message("user", avatar=USER_AVATAR):
         st.markdown(user_query)
         
-    # Register values to data session storage matrix
     st.session_state.messages.append({"role": "user", "content": user_query})
     
-    # Open chatbot layout placeholder windows
     with st.chat_message("assistant", avatar=BOT_AVATAR):
         message_placeholder = st.empty()
         full_response = ""
@@ -246,13 +201,12 @@ if user_query := st.chat_input("Say something to Gaurav..."):
                 ]
                 bot_response = random.choice(fallback_options)
                 
-        # Animate final layout variables downstream onto interface screens
+        # Animate final variables downstream (10x slower tracking rhythm)
         if bot_response:
             for chunk in bot_response.split():
                 full_response += chunk + " "
-                time.sleep(0.06)
+                time.sleep(0.60)  # Paced precisely 10 times slower than 0.06s
                 message_placeholder.markdown(full_response + "▌")
             message_placeholder.markdown(full_response)
             
-        # Permanently append values back into historical arrays
         st.session_state.messages.append({"role": "assistant", "content": bot_response})
