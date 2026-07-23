@@ -151,7 +151,7 @@ if "messages" not in st.session_state:
     ]
 
 # --- LAYOUT CONFIGURATION ---
-# Create a 1:3 ratio sidebar-to-chat column layout layout 
+# Fixed the missing tuple definition inside st.columns
 col1, col2 = st.columns([1, 3], gap="large")
 
 with col1:
