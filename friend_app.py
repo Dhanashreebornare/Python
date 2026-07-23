@@ -8,7 +8,7 @@ from google.genai import types
 # 1. Global Page Layout Configurations
 st.set_page_config(page_title="Chat with Gaurav", page_icon="🪻", layout="wide")
 
-# 2. Inject CSS Styles Privately (Hidden from the App Window UI)
+# 2. Inject CSS Styles Privately
 st.markdown(
     """
     <link rel="preconnect" href="https://googleapis.com">
@@ -150,7 +150,7 @@ if "messages" not in st.session_state:
         }
     ]
 
-# 3. Formulate Page Columns Ratio explicitly [1 Unit Width Left Card : 3 Units Width Chat Interface]
+# 3. Explicit 1:3 structural column split mapping layout
 col1, col2 = st.columns([1, 3], gap="large")
 
 with col1:
@@ -162,17 +162,14 @@ with col1:
             <h1 class="profile-name">Gaurav</h1>
             <div class="profile-tagline">Hinglish & Gujlish Bestie</div>
             <div class="status-badge">● Active Now</div>
-            
             <div class="info-box">
                 <div class="info-title">Vibe Check</div>
                 <div class="info-text">Funny, wildly sarcastic, fiercely loyal, and ready to listen. 💯</div>
             </div>
-            
             <div class="info-box">
                 <div class="info-title">Current Jam</div>
                 <div class="info-text">🎵 Pasoori Nu (On Repeat)</div>
             </div>
-            
             <div class="info-box">
                 <div class="info-title">Favorite Words</div>
                 <div class="info-text"><i>"Bhai", "Yaar", "Majama", "Tension mat le", "Jalsa kar"</i></div>
@@ -250,5 +247,6 @@ with col2:
                     )
                     bot_response = response.text
                     
-                # Error Boundary Trapping Core Configuration Strategy Rules
-                    except Exception as e:
+                except Exception as e:
+                    bot_response = random.choice([
+                        "Bhai, thoda busy hoon! Mummy ne kaam saupa hai, thodi der baad baat karte hain! 🏃‍♂️",
