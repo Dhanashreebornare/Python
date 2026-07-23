@@ -251,4 +251,4 @@ with col2:
                     bot_response = response.text
                     
                 # Error Boundary Trapping Core Configuration Strategy Rules
-                except Exception as e:
+                    except Exception as e:
