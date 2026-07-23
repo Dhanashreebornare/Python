@@ -163,21 +163,22 @@ if user_query := st.chat_input("Say something to Gaurav..."):
         if not bot_response:
             try:
                 client = get_gemini_client()
+                
+                # RESTRUCTURED: Simplified history extraction format for better model tracking
                 api_contents = []
                 for msg in st.session_state.messages:
                     role_type = "user" if msg["role"] == "user" else "model"
-                    api_contents.append(
-                        types.Content(role=role_type, parts=[types.Part(text=msg["content"])])
-                    )
+                    api_contents.append({"role": role_type, "parts": [{"text": msg["content"]}]})
                 
                 system_instruction = (
                     "You are Gaurav, a funny, witty, sarcastic, and deeply loyal close best friend. "
-                    "You must chat casually using informal internet slang and short sentences like a text message. "
+                    "You must answer accurately and address the user's statements directly. Do not go off-topic. "
+                    "Chat casually using informal internet slang and short sentences like a text message. "
                     "You speak naturally in a mix of Hindi and English (Hinglish). Use casual terms like 'Bhai', "
                     "'Yaar', 'Bro', 'Chill mar', and 'tension mat le'. "
                     "Do NOT use Gujarati phrases like 'Kem cho' or 'Majama' in every sentence. Only use them rarely "
                     "if explicitly asked about Gujarati or if it fits a niche joke naturally. "
-                    "Crucially, you must use emojis effectively: include exactly ONE or a maximum of TWO highly relevant emojis "
+                    "Crucially, use emojis effectively: include exactly ONE or a maximum of TWO highly relevant emojis "
                     "per turn. Do not spam arrays of emojis under any circumstance."
                 )
                 
@@ -186,7 +187,7 @@ if user_query := st.chat_input("Say something to Gaurav..."):
                     contents=api_contents,
                     config=types.GenerateContentConfig(
                         system_instruction=system_instruction,
-                        temperature=1.0,
+                        temperature=0.7,  # LOWERED: Kept lower to prevent irrelevant branching logic
                     ),
                 )
                 bot_response = response.text
