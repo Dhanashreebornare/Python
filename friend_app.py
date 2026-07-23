@@ -5,18 +5,18 @@ import streamlit as st
 from google import genai
 from google.genai import types
 
-# Configure the web page layout to WIDE mode for columns
+# 1. Global Page Layout Configurations
 st.set_page_config(page_title="Chat with Gaurav", page_icon="🪻", layout="wide")
 
-# 🪻 Premium Modern Two-Column Aesthetic Theme Design
+# 2. Inject CSS Styles Privately (Hidden from the App Window UI)
 st.markdown(
     """
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://googleapis.com" rel="stylesheet">
+    <link rel="preconnect" href="https://googleapis.com">
+    <link rel="preconnect" href="https://gstatic.com" crossorigin>
+    <link href="https://googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
-    /* 1. Global App & Typography Settings */
+    /* Global Background Accent Settings */
     .stApp {
         font-family: 'Inter', sans-serif !important;
         background-color: #f6f8fc;
@@ -24,7 +24,7 @@ st.markdown(
         background-size: 32px 32px;
     }
     
-    /* 2. Left Column Profile Card Styling */
+    /* Left Profile Card Styling */
     .profile-card {
         background: #ffffff;
         border: 1px solid rgba(145, 157, 255, 0.25);
@@ -94,7 +94,7 @@ st.markdown(
         line-height: 1.4;
     }
 
-    /* 3. Right Column Custom Styled Chat Bubbles */
+    /* Right Chat Message Bubble Formatting Rules */
     div[data-testid="stChatMessage"]:nth-child(even) div[data-testid="stChatMessageContent"] {
         background: linear-gradient(135deg, #e2e5ff 0%, #ebedff 100%) !important;
         color: #21255e !important;
@@ -113,7 +113,7 @@ st.markdown(
         border: 1px solid rgba(220, 180, 255, 0.2);
     }
     
-    /* 4. Bottom Chat Input Aesthetics */
+    /* Sleek User Chat Input Aesthetics */
     div[data-testid="stChatInput"] {
         border-radius: 35px !important;
         border: 1px solid rgba(145, 157, 255, 0.3) !important;
@@ -126,11 +126,11 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Clean, file-free emoji avatars
+# Clean Native Avatars
 USER_AVATAR = "🪻"
 BOT_AVATAR = "👦"
 
-# Initialize Google Gemini API client securely
+# Initialize Google Gemini API securely
 def get_gemini_client():
     if "GEMINI_API_KEY" in st.secrets:
         api_key = st.secrets["GEMINI_API_KEY"]
@@ -141,7 +141,7 @@ def get_gemini_client():
         st.stop()
     return genai.Client(api_key=api_key)
 
-# Initialize chat history in session state
+# Setup initial structural session tracking state
 if "messages" not in st.session_state:
     st.session_state.messages = [
         {
@@ -150,12 +150,11 @@ if "messages" not in st.session_state:
         }
     ]
 
-# --- LAYOUT CONFIGURATION ---
-# Fixed the layout width definition completely
+# 3. Formulate Page Columns Ratio explicitly [1 Unit Width Left Card : 3 Units Width Chat Interface]
 col1, col2 = st.columns([1, 3], gap="large")
 
 with col1:
-    # Render Sticky Premium Left Profile Card
+    # Render Left Layout Visual Profile Component Card
     st.markdown(
         """
         <div class="profile-card">
@@ -184,29 +183,29 @@ with col1:
     )
 
 with col2:
-    # Display previous chat messages from history inside the main view window
+    # Construct right view column historical logs cleanly
     for message in st.session_state.messages:
         avatar = BOT_AVATAR if message["role"] == "assistant" else USER_AVATAR
         with st.chat_message(message["role"], avatar=avatar):
             st.markdown(message["content"])
 
-    # Accept user input
+    # Wait for execution engine input signals
     if user_query := st.chat_input("Say something to Gaurav..."):
-        # Display user message
+        # Mount incoming input query to layout interface view tracking
         with st.chat_message("user", avatar=USER_AVATAR):
             st.markdown(user_query)
             
-        # Add user message to local history
+        # Register values to data session storage matrix
         st.session_state.messages.append({"role": "user", "content": user_query})
         
-        # Prepare response container
+        # Open chatbot layout placeholder windows
         with st.chat_message("assistant", avatar=BOT_AVATAR):
             message_placeholder = st.empty()
             full_response = ""
             bot_response = ""
             clean_input = user_query.lower().strip()
             
-            # 🛑 STEP 1: Local Python check for simple greetings to save quota
+            # Layer A Engine Sorting Logic: Fast Greeting Interceptor Validation
             if any(word in clean_input for word in ["hey", "hello", "hi", "yo", "kem cho", "ram ram", "namaste"]):
                 bot_response = random.choice([
                     "Yo! What's cracking, my friend? Kem cho? 🙌",
@@ -216,7 +215,7 @@ with col2:
             elif any(word in clean_input for word in ["bye", "see ya", "aavjo", "chalo", "chal"]):
                 bot_response = "Don't leave me alone, yaar! Just kidding, aavjo! Take care, bro. 👋"
                 
-            # 🌐 STEP 2: Call API if it's a complex message
+            # Layer B Engine Sorting Logic: Live Global Gemini Target Content Evaluator
             if not bot_response:
                 try:
                     client = get_gemini_client()
@@ -227,7 +226,6 @@ with col2:
                             types.Content(role=role_type, parts=[types.Part(text=msg["content"])])
                         )
                     
-                    # 🛠️ System instructions for chatbot personality
                     system_instruction = (
                         "You are Gaurav, a funny, witty, sarcastic, and deeply loyal close best friend. "
                         "You must chat casually. Use informal internet slang and abbreviations. "
@@ -252,11 +250,5 @@ with col2:
                     )
                     bot_response = response.text
                     
-                # 🛠️ STEP 3: Fallback mechanism if the API encounters an error
+                # Error Boundary Trapping Core Configuration Strategy Rules
                 except Exception as e:
-                    bot_response = random.choice([
-                        "Bhai, thoda busy hoon! Mummy ne kaam saupa hai, thodi der baad baat karte hain! 🏃‍♂️",
-                        "Arey yaar, internet bohot slow chal raha hai yahan... Badhu saru thai jase, chill mar! ☕",
-                        "Bro, phone ki battery khatam hone wali hai! Tarat j jalsa kar ne yaar, late text karu! 😉",
-                        "Tension mat le bhai, main yahin hoon. Par abhi thoda dimaag thak gaya hai, breaks chahiye! 😂"
-                    ])
