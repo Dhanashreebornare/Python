@@ -151,7 +151,7 @@ if "messages" not in st.session_state:
     ]
 
 # --- LAYOUT CONFIGURATION ---
-# Fixed the missing tuple definition inside st.columns
+# Fixed the layout width definition completely
 col1, col2 = st.columns([1, 3], gap="large")
 
 with col1:
