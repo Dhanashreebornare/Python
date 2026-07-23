@@ -11,9 +11,9 @@ st.set_page_config(page_title="Chat with Gaurav", page_icon="🌸", layout="cent
 # 2. Inject CSS Styles Privately (Pink & Blue Floral Aesthetic Theme)
 st.markdown(
     """
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://googleapis.com">
     <link rel="preconnect" href="https://gstatic.com" crossorigin>
-    <link href="https://googleapis.com" rel="stylesheet">
+    <link href="https://googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
     /* Global Pink & Blue Gradient App Workspace with Floral Vector Dots */
@@ -147,70 +147,59 @@ if user_query := st.chat_input("Say something to Gaurav..."):
         message_placeholder = st.empty()
         full_response = ""
         bot_response = ""
-        clean_input = user_query.lower().strip()
         
-        # Layer A Engine Sorting Logic: Fast Greeting Interceptor Validation
-        if any(word in clean_input for word in ["hey", "hello", "hi", "yo", "ram ram", "namaste"]):
-            bot_response = random.choice([
-                "Yo! What's cracking, my friend? All good? 🙌",
-                "Kya chal raha hai bhai? What's up today? 😎",
-                "Yo! Finally you remembered your best friend. Aur bata, sab badhiya? 😉"
-            ])
-        elif any(word in clean_input for word in ["bye", "see ya", "chalo", "chal", "tata"]):
-            bot_response = "Don't leave me alone, yaar! Just kidding, chal take care, bro. 👋"
+        # REMOVED local greeting interceptor entirely to avoid hardcoded static replies
+        try:
+            client = get_gemini_client()
             
-        # Layer B Engine Sorting Logic: Live Global Gemini Target Content Evaluator
-        if not bot_response:
-            try:
-                client = get_gemini_client()
-                
-                # FIXED: Formulate explicit types using valid structural SDK content constructors
-                api_contents = []
-                for msg in st.session_state.messages:
-                    role_type = "user" if msg["role"] == "user" else "model"
-                    api_contents.append(
-                        types.Content(
-                            role=role_type,
-                            parts=[types.Part.from_text(text=msg["content"])]
-                        )
+            # Formulate explicit types using valid structural SDK content constructors
+            api_contents = []
+            for msg in st.session_state.messages:
+                role_type = "user" if msg["role"] == "user" else "model"
+                api_contents.append(
+                    types.Content(
+                        role=role_type,
+                        parts=[types.Part.from_text(text=msg["content"])]
                     )
-                
-                system_instruction = (
-                    "You are Gaurav, a funny, witty, sarcastic, and deeply loyal close best friend. "
-                    "CRUCIAL: Read the user's latest text carefully and answer their questions directly. Never change the topic. "
-                    "Chat casually using informal internet slang and short sentences like a text message. "
-                    "You speak naturally in a mix of Hindi and English (Hinglish). Use casual terms like 'Bhai', "
-                    "'Yaar', 'Bro', 'Chill mar', and 'tension mat le'. "
-                    "Do NOT use Gujarati phrases like 'Kem cho' or 'Majama' in every sentence. Only use them rarely "
-                    "if explicitly asked about Gujarati or if it fits a niche joke naturally. "
-                    "Crucially, you must use emojis effectively: include exactly ONE or a maximum of TWO highly relevant emojis "
-                    "per turn. Do not spam arrays of emojis under any circumstance."
                 )
-                
-                response = client.models.generate_content(
-                    model="gemini-3.5-flash",
-                    contents=api_contents,
-                    config=types.GenerateContentConfig(
-                        system_instruction=system_instruction,
-                        temperature=0.4,  # GROUNDED: Kept tight to prevent contextual drift or tangents
-                    ),
-                )
-                bot_response = response.text
-                
-            except Exception as e:
-                fallback_options = [
-                    "Bhai, thoda busy hoon! Mummy ne kaam saupa hai. 😂",
-                    "Arey yaar, internet bohot slow chal raha hai yahan... chill mar! ☕",
-                    "Bro, phone ki battery khatam hone wali hai! Late text karu? 😉",
-                    "Tension mat le bhai, main yahin hoon. Thoda breaks chahiye! 😂"
-                ]
-                bot_response = random.choice(fallback_options)
-                
+            
+            system_instruction = (
+                "You are Gaurav, a funny, witty, sarcastic, and deeply loyal close best friend. "
+                "CRUCIAL: Read the user's text carefully and answer their exact question contextually. "
+                "Never use hardcoded greeting lists or switch topics randomly. Respond dynamically. "
+                "Chat casually using informal internet slang and short sentences like a text message. "
+                "You speak naturally in a mix of Hindi and English (Hinglish). Use casual terms like 'Bhai', "
+                "'Yaar', 'Bro', 'Chill mar', and 'tension mat le'. "
+                "Do NOT use Gujarati phrases like 'Kem cho' or 'Majama' in every sentence. Only use them rarely "
+                "if explicitly asked about Gujarati or if it fits a niche joke naturally. "
+                "Crucially, you must use emojis effectively: include exactly ONE or a maximum of TWO highly relevant emojis "
+                "per turn. Do not spam arrays of emojis under any circumstance."
+            )
+            
+            response = client.models.generate_content(
+                model="gemini-3.5-flash",
+                contents=api_contents,
+                config=types.GenerateContentConfig(
+                    system_instruction=system_instruction,
+                    temperature=0.4,  # Grounded tracking
+                ),
+            )
+            bot_response = response.text
+            
+        except Exception as e:
+            fallback_options = [
+                "Bhai, thoda busy hoon! Mummy ne kaam saupa hai. 😂",
+                "Arey yaar, internet bohot slow chal raha hai yahan... chill mar! ☕",
+                "Bro, phone ki battery khatam hone wali hai! Late text karu? 😉",
+                "Tension mat le bhai, main yahin hoon. Thoda breaks chahiye! 😂"
+            ]
+            bot_response = random.choice(fallback_options)
+            
         # Animate final variables downstream (10x slower tracking rhythm)
         if bot_response:
             for chunk in bot_response.split():
                 full_response += chunk + " "
-                time.sleep(0.60)  # Methodical human texting tempo
+                time.sleep(0.60)  # Methodical text typing pacing
                 message_placeholder.markdown(full_response + "▌")
             message_placeholder.markdown(full_response)
             
