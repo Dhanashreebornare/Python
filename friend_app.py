@@ -11,9 +11,9 @@ st.set_page_config(page_title="Chat with Gaurav", page_icon="🌸", layout="cent
 # 2. Inject CSS Styles Privately (Pink & Blue Floral Aesthetic Theme)
 st.markdown(
     """
-    <link rel="preconnect" href="https://googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://gstatic.com" crossorigin>
-    <link href="https://googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://googleapis.com" rel="stylesheet">
     
     <style>
     /* Global Pink & Blue Gradient App Workspace with Floral Vector Dots */
@@ -164,21 +164,26 @@ if user_query := st.chat_input("Say something to Gaurav..."):
             try:
                 client = get_gemini_client()
                 
-                # RESTRUCTURED: Simplified history extraction format for better model tracking
+                # FIXED: Formulate explicit types using valid structural SDK content constructors
                 api_contents = []
                 for msg in st.session_state.messages:
                     role_type = "user" if msg["role"] == "user" else "model"
-                    api_contents.append({"role": role_type, "parts": [{"text": msg["content"]}]})
+                    api_contents.append(
+                        types.Content(
+                            role=role_type,
+                            parts=[types.Part.from_text(text=msg["content"])]
+                        )
+                    )
                 
                 system_instruction = (
                     "You are Gaurav, a funny, witty, sarcastic, and deeply loyal close best friend. "
-                    "You must answer accurately and address the user's statements directly. Do not go off-topic. "
+                    "CRUCIAL: Read the user's latest text carefully and answer their questions directly. Never change the topic. "
                     "Chat casually using informal internet slang and short sentences like a text message. "
                     "You speak naturally in a mix of Hindi and English (Hinglish). Use casual terms like 'Bhai', "
                     "'Yaar', 'Bro', 'Chill mar', and 'tension mat le'. "
                     "Do NOT use Gujarati phrases like 'Kem cho' or 'Majama' in every sentence. Only use them rarely "
                     "if explicitly asked about Gujarati or if it fits a niche joke naturally. "
-                    "Crucially, use emojis effectively: include exactly ONE or a maximum of TWO highly relevant emojis "
+                    "Crucially, you must use emojis effectively: include exactly ONE or a maximum of TWO highly relevant emojis "
                     "per turn. Do not spam arrays of emojis under any circumstance."
                 )
                 
@@ -187,7 +192,7 @@ if user_query := st.chat_input("Say something to Gaurav..."):
                     contents=api_contents,
                     config=types.GenerateContentConfig(
                         system_instruction=system_instruction,
-                        temperature=0.7,  # LOWERED: Kept lower to prevent irrelevant branching logic
+                        temperature=0.4,  # GROUNDED: Kept tight to prevent contextual drift or tangents
                     ),
                 )
                 bot_response = response.text
@@ -205,7 +210,7 @@ if user_query := st.chat_input("Say something to Gaurav..."):
         if bot_response:
             for chunk in bot_response.split():
                 full_response += chunk + " "
-                time.sleep(0.60)  # Paced precisely 10 times slower than 0.06s
+                time.sleep(0.60)  # Methodical human texting tempo
                 message_placeholder.markdown(full_response + "▌")
             message_placeholder.markdown(full_response)
             
