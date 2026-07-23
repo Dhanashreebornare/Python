@@ -255,3 +255,8 @@ with col2:
                 # 🛠️ STEP 3: Fallback mechanism if the API encounters an error
                 except Exception as e:
                     bot_response = random.choice([
+                        "Bhai, thoda busy hoon! Mummy ne kaam saupa hai, thodi der baad baat karte hain! 🏃‍♂️",
+                        "Arey yaar, internet bohot slow chal raha hai yahan... Badhu saru thai jase, chill mar! ☕",
+                        "Bro, phone ki battery khatam hone wali hai! Tarat j jalsa kar ne yaar, late text karu! 😉",
+                        "Tension mat le bhai, main yahin hoon. Par abhi thoda dimaag thak gaya hai, breaks chahiye! 😂"
+                    ])
