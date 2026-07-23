@@ -6,9 +6,9 @@ from google import genai
 from google.genai import types
 
 # 1. Global Page Layout Configurations
-st.set_page_config(page_title="Chat with Gaurav", page_icon="🪻", layout="centered")
+st.set_page_config(page_title="Chat with Gaurav", page_icon="🌸", layout="centered")
 
-# 2. Inject CSS Styles Privately (Frosty Cold-Tone Floral Theme)
+# 2. Inject CSS Styles Privately (Pink & Blue Floral Aesthetic Theme)
 st.markdown(
     """
     <link rel="preconnect" href="https://googleapis.com">
@@ -16,79 +16,78 @@ st.markdown(
     <link href="https://googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
-    /* Frosty Cold-Tone Background with Floral Accents */
+    /* Global Pink & Blue Gradient App Workspace with Floral Vector Dots */
     .stApp {
         font-family: 'Inter', sans-serif !important;
-        background-color: #f1f4f9;
+        background-color: #fff0f5;
         background-image: 
-            radial-gradient(rgba(145, 175, 255, 0.25) 1px, transparent 1px), 
-            radial-gradient(rgba(180, 160, 240, 0.2) 1.5px, transparent 1.5px);
-        background-size: 40px 40px;
-        background-position: 0 0, 20px 20px;
+            radial-gradient(rgba(255, 182, 193, 0.4) 1.5px, transparent 1.5px), 
+            radial-gradient(rgba(173, 216, 230, 0.4) 1.5px, transparent 1.5px);
+        background-size: 30px 30px;
+        background-position: 0 0, 15px 15px;
     }
     
-    /* Elegant Minimalist Floral Header Widget */
+    /* Elegant Floral Banner Display Container Card */
     .floral-header {
         text-align: center;
-        padding: 25px 15px;
-        background: rgba(255, 255, 255, 0.55);
+        padding: 24px 15px;
+        background: rgba(255, 255, 255, 0.65);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
-        border-radius: 20px;
-        box-shadow: 0 8px 32px rgba(145, 175, 255, 0.06);
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        margin-bottom: 35px;
+        border-radius: 24px;
+        box-shadow: 0 8px 32px rgba(255, 182, 193, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        margin-bottom: 30px;
     }
     
     .floral-title {
         font-weight: 800;
         letter-spacing: -0.5px;
-        background: linear-gradient(135deg, #4552a1 0%, #6d78c7 100%);
+        background: linear-gradient(135deg, #d84b80 0%, #4a77d4 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         margin: 0;
-        font-size: 2.1rem;
+        font-size: 2.2rem;
     }
     
     .floral-subtitle {
-        color: #7b84bf;
+        color: #657b9e;
         font-size: 0.95rem;
         margin-top: 5px;
         font-weight: 500;
     }
     
     .floral-deco {
-        font-size: 1.2rem;
-        color: #9aa5e3;
-        margin-top: 6px;
-        letter-spacing: 4px;
+        font-size: 1.1rem;
+        margin-top: 8px;
+        letter-spacing: 6px;
     }
 
-    /* Muted Cold-Tone Chat Bubble Structuring */
+    /* Pink & Blue Styled Message Bubbles Configuration Rules */
     div[data-testid="stChatMessage"]:nth-child(even) div[data-testid="stChatMessageContent"] {
-        background: linear-gradient(135deg, #e3e9ff 0%, #edf1ff 100%) !important; /* Ice Powder Blue for User */
-        color: #1c2554 !important;
+        background: linear-gradient(135deg, #e3f2fd 0%, #edf7ff 100%) !important; /* Soft Sky Blue for User */
+        color: #1a365d !important;
         border-radius: 20px 20px 4px 20px !important;
-        box-shadow: 0 4px 15px rgba(145, 175, 255, 0.05);
+        box-shadow: 0 4px 15px rgba(173, 216, 230, 0.1);
         padding: 14px 18px !important;
-        border: 1px solid rgba(145, 175, 255, 0.15);
+        border: 1px solid rgba(173, 216, 230, 0.3);
     }
     
     div[data-testid="stChatMessage"]:nth-child(odd) div[data-testid="stChatMessageContent"] {
-        background: linear-gradient(135deg, #eae3ff 0%, #f3f0ff 100%) !important; /* Muted Frost Lavender for Gaurav */
-        color: #2b1f47 !important;
+        background: linear-gradient(135deg, #ffe4e1 0%, #fff0f5 100%) !important; /* Pastel Peony Pink for Gaurav */
+        color: #4a1525 !important;
         border-radius: 20px 20px 20px 4px !important;
-        box-shadow: 0 4px 15px rgba(180, 160, 240, 0.05);
+        box-shadow: 0 4px 15px rgba(255, 182, 193, 0.1);
         padding: 14px 18px !important;
-        border: 1px solid rgba(180, 160, 240, 0.15);
+        border: 1px solid rgba(255, 182, 193, 0.3);
     }
     
-    /* Sleek User Chat Input Aesthetics */
+    /* Sleek Themed Bottom Chat Input Aesthetics */
     div[data-testid="stChatInput"] {
         border-radius: 35px !important;
-        border: 1px solid rgba(145, 175, 255, 0.25) !important;
+        border: 1px solid rgba(255, 182, 193, 0.4) !important;
         background-color: #ffffff !important;
-        box-shadow: 0 10px 25px rgba(145, 175, 255, 0.06) !important;
+        box-shadow: 0 10px 25px rgba(255, 182, 193, 0.08) !important;
     }
     </style>
     """,
@@ -96,7 +95,7 @@ st.markdown(
 )
 
 # Clean Native Avatars
-USER_AVATAR = "🪻"
+USER_AVATAR = "🌸"
 BOT_AVATAR = "👦"
 
 # Initialize Google Gemini API client securely
@@ -119,13 +118,13 @@ if "messages" not in st.session_state:
         }
     ]
 
-# 3. Render Minimalist Cold Floral Header Banner
+# 3. Render Minimalist Pink & Blue Floral Header Banner Widget
 st.markdown(
     """
     <div class="floral-header">
         <h1 class="floral-title">Gaurav's Garden</h1>
         <div class="floral-subtitle">Your Hinglish bestie • Available 24/7</div>
-        <div class="floral-deco">🪻 ✧ 🪻 ✧ 🪻</div>
+        <div class="floral-deco">🌸 ✨ 🌸 ✨ 🌸</div>
     </div>
     """,
     unsafe_allow_html=True
