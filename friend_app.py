@@ -19,52 +19,51 @@ if not st.session_state.authenticated:
         <link rel="preconnect" href="https://gstatic.com" crossorigin>
         <link href="https://googleapis.com" rel="stylesheet">
         <style>
-        /* Smooth Purple-Pink Dynamic Aesthetic Canvas Backdrop */
+        /* Premium Minimalist Sage Green Canvas Backdrop */
         .stApp { 
             font-family: 'Inter', sans-serif !important;
-            background: linear-gradient(135deg, #ffb6c1 0%, #e0a6ce 100%) !important;
-            color: #331023 !important;
+            background: linear-gradient(135deg, #f2f4f2 0%, #e4eae4 100%) !important;
+            color: #2c3e2b !important;
         }
         
-        /* Modern Glassmorphic Login Center Card Container */
+        /* Matte Cream Glassmorphic Container */
         .lock-container {
             text-align: center;
             padding: 45px 35px;
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-radius: 24px;
-            box-shadow: 0 10px 30px rgba(51, 16, 35, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 10px 30px rgba(44, 62, 43, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.5);
             margin-top: 80px;
             margin-bottom: 20px;
         }
-        .lock-title { color: #331023; font-weight: 800; font-size: 2.2rem; margin: 15px 0 0 0; }
-        .lock-subtitle { color: #543d4c; font-size: 1rem; font-weight: 500; margin-top: 8px; margin-bottom: 25px; }
+        .lock-title { color: #2c3e2b; font-weight: 800; font-size: 2.2rem; margin: 15px 0 0 0; }
+        .lock-subtitle { color: #5a6e59; font-size: 1rem; font-weight: 500; margin-top: 8px; margin-bottom: 25px; }
         .handshake-logo { width: 90px; height: auto; }
         
-        /* Chiseled Light High-Visibility Login Entry Inputs */
+        /* Clean Text Input Styling */
         div[data-testid="stTextInput"] input {
             border-radius: 25px !important;
-            border: 2px solid rgba(51, 16, 35, 0.2) !important;
+            border: 1px solid rgba(44, 62, 43, 0.15) !important;
             background-color: #ffffff !important;
             padding: 12px 20px !important;
             font-size: 1.1rem !important;
-            color: #331023 !important;
+            color: #2c3e2b !important;
             text-align: center !important;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02) !important;
             transition: all 0.3s ease;
         }
         div[data-testid="stTextInput"] input:focus {
-            border-color: #331023 !important;
-            box-shadow: 0 0 12px rgba(51, 16, 35, 0.25) !important;
+            border-color: #2c3e2b !important;
+            box-shadow: 0 0 12px rgba(44, 62, 43, 0.12) !important;
         }
         div[data-testid="stTextInput"] label { display: none !important; }
         footer, header { visibility: hidden; }
         </style>
         
         <div class="lock-container">
-            <!-- Stable, high-quality, verified vector handshake graphics asset -->
             <img class="handshake-logo" src="https://openclipart.org" alt="Handshake">
             <h2 class="lock-title">Vibe with Gaurav.</h2>
             <div class="lock-subtitle">Verify code to connect securely</div>
@@ -88,56 +87,56 @@ st.markdown(
     <style>
     .stApp {
         font-family: 'Inter', sans-serif !important;
-        background: linear-gradient(135deg, #ffb6c1 0%, #e0a6ce 100%) !important;
-        color: #331023 !important;
+        background: linear-gradient(135deg, #f2f4f2 0%, #e4eae4 100%) !important;
+        color: #2c3e2b !important;
     }
     .lounge-header {
         text-align: center;
         padding: 24px 15px;
-        background: rgba(255, 255, 255, 0.65);
+        background: rgba(255, 255, 255, 0.8);
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
         border-radius: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        box-shadow: 0 8px 32px rgba(51, 16, 35, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        box-shadow: 0 8px 32px rgba(44, 62, 43, 0.05);
         margin-bottom: 35px;
     }
     .lounge-title {
         font-weight: 800;
         letter-spacing: -0.5px;
-        color: #331023 !important;
+        color: #2c3e2b !important;
         margin: 0;
         font-size: 2.2rem;
     }
-    .lounge-subtitle { color: #543d4c; font-size: 0.95rem; margin-top: 5px; font-weight: 500; }
+    .lounge-subtitle { color: #5a6e59; font-size: 0.95rem; margin-top: 5px; font-weight: 500; }
     
-    /* Elegant Clean Dark-Text Chat Bubble Containers (No Outer Framing Boxes) */
+    /* Matte Ceramic Chat Bubbles */
     div[data-testid="stChatMessage"]:nth-child(even) div[data-testid="stChatMessageContent"] {
-        background-color: rgba(255, 255, 255, 0.8) !important;
-        color: #331023 !important;
+        background-color: #ffffff !important; /* Pure Ceramic White for User */
+        color: #2c3e2b !important;
         border-radius: 20px 20px 4px 20px !important;
         padding: 14px 18px !important;
-        border: 1px solid rgba(255, 255, 255, 0.5) !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03) !important;
+        border: 1px solid rgba(44, 62, 43, 0.08) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02) !important;
     }
     div[data-testid="stChatMessage"]:nth-child(odd) div[data-testid="stChatMessageContent"] {
-        background-color: rgba(255, 240, 245, 0.85) !important;
-        color: #331023 !important;
+        background-color: #f7f9f7 !important; /* Soft Alabaster for Gaurav */
+        color: #2c3e2b !important;
         border-radius: 20px 20px 20px 4px !important;
         padding: 14px 18px !important;
-        border: 1px solid rgba(255, 182, 193, 0.5) !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03) !important;
+        border: 1px solid rgba(44, 62, 43, 0.08) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02) !important;
     }
     
-    /* Clean, Borderless Bottom Chat Entry Input Box Configuration */
+    /* Clean, Borderless Bottom Chat Entry Input Box */
     div[data-testid="stChatInput"] {
         border-radius: 35px !important;
         background-color: #ffffff !important;
-        box-shadow: 0 8px 24px rgba(51, 16, 35, 0.08) !important;
+        box-shadow: 0 8px 24px rgba(44, 62, 43, 0.06) !important;
         border: none !important;
     }
     div[data-testid="stChatInput"] textarea { 
-        color: #331023 !important; 
+        color: #2c3e2b !important; 
         font-size: 1.05rem !important;
     }
     footer, header { visibility: hidden; }
@@ -148,7 +147,6 @@ st.markdown(
 
 # Avatars Configuration
 USER_AVATAR = "🌸"
-# Verified: The exact custom animated spiky-haired boy avatar link you submitted
 BOT_AVATAR = "https://ftcdn.net"
 
 def get_gemini_client():
