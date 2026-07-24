@@ -10,23 +10,16 @@ st.set_page_config(page_title="Vibe with Gaurav", page_icon="🤝", layout="cent
 
 # --- PASSCODE AUTHENTICATION LOCK ---
 if "authenticated" not in st.session_state:
-    st.session_state.authenticated = False
-
-if not st.session_state.authenticated:
+    if not st.session_state.authenticated:
+    # 1. Inject CSS Styles Privately
     st.markdown(
         """
-        <link rel="preconnect" href="https://googleapis.com">
-        <link rel="preconnect" href="https://gstatic.com" crossorigin>
-        <link href="https://googleapis.com" rel="stylesheet">
         <style>
-        /* Premium Minimalist Sage Green Canvas Backdrop */
         .stApp { 
             font-family: 'Inter', sans-serif !important;
             background: linear-gradient(135deg, #f2f4f2 0%, #e4eae4 100%) !important;
             color: #2c3e2b !important;
         }
-        
-        /* Matte Cream Glassmorphic Container */
         .lock-container {
             text-align: center;
             padding: 45px 35px;
@@ -36,14 +29,9 @@ if not st.session_state.authenticated:
             border-radius: 24px;
             box-shadow: 0 10px 30px rgba(44, 62, 43, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.5);
-            margin-top: 80px;
+            margin-top: 40px;
             margin-bottom: 20px;
         }
-        .lock-title { color: #2c3e2b; font-weight: 800; font-size: 2.2rem; margin: 15px 0 0 0; }
-        .lock-subtitle { color: #5a6e59; font-size: 1rem; font-weight: 500; margin-top: 8px; margin-bottom: 25px; }
-        .handshake-logo { width: 90px; height: auto; }
-        
-        /* Clean Text Input Styling */
         div[data-testid="stTextInput"] input {
             border-radius: 25px !important;
             border: 1px solid rgba(44, 62, 43, 0.15) !important;
@@ -62,11 +50,17 @@ if not st.session_state.authenticated:
         div[data-testid="stTextInput"] label { display: none !important; }
         footer, header { visibility: hidden; }
         </style>
-        
+        """,
+        unsafe_allow_html=True
+    )
+
+    # 2. Render Clean Visual Container
+    st.markdown(
+        """
         <div class="lock-container">
-            <img class="handshake-logo" src="https://openclipart.org" alt="Handshake">
-            <h2 class="lock-title">Vibe with Gaurav.</h2>
-            <div class="lock-subtitle">Verify code to connect securely</div>
+            <img style="width: 90px; height: auto;" src="https://openclipart.org" alt="Handshake">
+            <h2 style="color: #2c3e2b; font-weight: 800; font-size: 2.2rem; margin: 15px 0 0 0;">Vibe with Gaurav.</h2>
+            <div style="color: #5a6e59; font-size: 1rem; font-weight: 500; margin-top: 8px; margin-bottom: 25px;">Verify code to connect securely</div>
         </div>
         """,
         unsafe_allow_html=True
