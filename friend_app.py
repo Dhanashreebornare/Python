@@ -122,10 +122,7 @@ def get_gemini_client():
         else:
             st.error("🔑 API Key missing! Please add 'GEMINI_API_KEY' to your Streamlit Secrets.")
             st.stop()
-        
-        # Open a single persistent connection cache block
         st.session_state.gemini_client = genai.Client(api_key=api_key_val)
-        
     return st.session_state.gemini_client
 
 if "messages" not in st.session_state:
@@ -156,44 +153,48 @@ for message in st.session_state.messages:
 
 # 5. Live Interaction Engine
 if user_query := st.chat_input("Say something to Gaurav..."):
-    # 1. Append the user message and reload the UI instantly to clear the input state fields
+    # Render user chat block instantly
+    with st.chat_message("user", avatar=USER_AVATAR):
+        st.markdown(user_query)
     st.session_state.messages.append({"role": "user", "content": user_query})
-    st.rerun()
-
-# 6. Post-Rerun Processing: If the last message belongs to the user, run the AI model silently
-if st.session_state.messages and st.session_state.messages[-1]["role"] == "user":
-    # Isolated Gujarati waiting prompts for the background loader spinner block
-    gujarati_waiting_comments = ["Gaurav vichi rahyo chhe, thobhi jaa bhai! 🧠", "Chai piva gayo chhe ke shu? Ek min ubho reh... ☕", "Gaurav typing kare chhe, jalsa kar ne yaar! 😂", "Bhai thodu dhimu dhimu vicharva de, ghanti vage chhe dimaag ma! 🔔", "Tension shu kaam leve chhe? Gaurav lakhi rahyo chhe! 🤫", "Ek j min yaar, dhajyu lakhva de moko aap! 😉"]
     
-    api_contents = [types.Content(role="user" if msg["role"] == "user" else "model", parts=[types.Part.from_text(text=msg["content"])]) for msg in st.session_state.messages]
-    system_instruction = "You are Gaurav, a funny, witty, deeply loving, and loyal close best friend. CRUCIAL: Read the user's text carefully and answer their exact question contextually. Never use hardcoded greeting lists or switch topics randomly. Respond dynamically. Chat casually using informal internet slang and short sentences like a text message. You speak naturally in a mix of Hindi and English (Hinglish). Use casual terms like 'Bhai', 'Yaar', 'Bro', 'Chill mar', 'tension mat le', and 'Mast'. Crucially, you must use emojis in a highly optimistic, joyful, and supportive way to lift the user's spirits and spread positive vibes. Include exactly ONE or a maximum of TWO highly relevant, bright, happy emojis per turn. Do not spam arrays of emojis."
-    
-    start_time = time.time(); chosen_wait_msg = random.choice(gujarati_waiting_comments); bot_response = ""
-    
-    # Render the loading spinner frame at the very bottom baseline where the next message belongs
-    with st.spinner(chosen_wait_msg):
-        try:
-            response_data = get_gemini_client().models.generate_content(
-                model="gemini-2.5-flash", 
-                contents=api_contents, 
-                config=types.GenerateContentConfig(system_instruction=system_instruction, temperature=0.5)
-            )
-            bot_response = response_data.text
-        except Exception as e:
-            bot_response = f"Bhai, thoda system issue chhe yaar! Real error: {str(e)} ⚠️"
+    # Open assistant block context path cleanly
+    with st.chat_message("assistant", avatar=BOT_AVATAR):
+        message_placeholder = st.empty()
+        full_response = ""
         
-        # --- CRUSH-PROOF COUNTDOWN DELAY ---
-        elapsed_time = time.time() - start_time; remaining_time = max(0.0, 5.0 - elapsed_time)
-        if remaining_time > 0: time.sleep(remaining_time)
+        gujarati_waiting_comments = ["Gaurav vichi rahyo chhe, thobhi jaa bhai! 🧠", "Chai piva gayo chhe ke shu? Ek min ubho reh... ☕", "Gaurav typing kare chhe, jalsa kar ne yaar! 😂", "Bhai thodu dhimu dhimu vicharva de, ghanti vage chhe dimaag ma! 🔔", "Tension shu kaam leve chhe? Gaurav lakhi rahyo chhe! 🤫", "Ek j min yaar, dhajyu lakhva de moko aap! 😉"]
+        api_contents = [types.Content(role="user" if msg["role"] == "user" else "model", parts=[types.Part.from_text(text=msg["content"])]) for msg in st.session_state.messages]
+        
+        system_instruction = "You are Gaurav, a funny, witty, deeply loving, and loyal close best friend. CRUCIAL: Read the user's text carefully and answer their exact question contextually. Never use hardcoded greeting lists or switch topics randomly. Respond dynamically. Chat casually using informal internet slang and short sentences like a text message. You speak naturally in a mix of Hindi and English (Hinglish). Use casual terms like 'Bhai', 'Yaar', 'Bro', 'Chill mar', 'tension mat le', and 'Mast'. Crucially, you must use emojis in a highly optimistic, joyful, and supportive way to lift the user's spirits and spread positive vibes. Include exactly ONE or a maximum of TWO highly relevant, bright, happy emojis per turn. Do not spam arrays of emojis."
+        
+        start_time = time.time()
+        chosen_wait_msg = random.choice(gujarati_waiting_comments)
+        
+        # Displays the "Gaurav is typing..." animation frame directly inside his context block next to his icon
+        with st.spinner(chosen_wait_msg):
+            try:
+                response_data = get_gemini_client().models.generate_content(
+                    model="gemini-3.5-flash", 
+                    contents=api_contents, 
+                    config=types.GenerateContentConfig(system_instruction=system_instruction, temperature=0.5)
+                )
+                bot_response = response_data.text
+            except Exception as e:
+                # Direct error messaging prevents the old hardcoded messages from showing up
+                bot_response = f"Bhai, thoda system issue chhe yaar! Real error: {str(e)} ⚠️"
+            
+            # Enforce 5-second countdown duration layout tracking thresholds
+            elapsed_time = time.time() - start_time; remaining_time = max(0.0, 5.0 - elapsed_time)
+            if remaining_time > 0: time.sleep(remaining_time)
 
-    # --- RE-STABILIZED ANTI-OVERLAP WORD TYPEWRITER ANIMATION ---
-    if bot_response:
-        with st.chat_message("assistant", avatar=BOT_AVATAR):
-            message_placeholder = st.empty(); full_response = ""
+        # Word-by-word typewriter loop calibrated to run smoothly over exactly 5 seconds
+        if bot_response:
             word_list = bot_response.split(); word_delay = max(0.01, 5.0 / max(1, len(word_list)))
             for index, word in enumerate(word_list):
                 full_response += word + " "; time.sleep(word_delay); message_placeholder.markdown(full_response.strip())
-        
-        # --- SAFE DATA TERMINATION ---
-        st.session_state.messages.append({"role": "assistant", "content": bot_response})
-        st.rerun()
+            
+            # Safe append and page refresh
+            message_placeholder.markdown(bot_response)
+            st.session_state.messages.append({"role": "assistant", "content": bot_response})
+            st.rerun()
