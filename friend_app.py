@@ -177,7 +177,7 @@ if user_query := st.chat_input("Say something to Gaurav..."):
             try:
                 # Connected to your modern Gemini AI Studio endpoint using persistent state cache references
                 bot_response = get_gemini_client().models.generate_content(
-                    model="gemini-2.5-flash", 
+                    model="gemini-3.5-flash", 
                     contents=api_contents, 
                     config=types.GenerateContentConfig(system_instruction=system_instruction, temperature=0.5)
                 ).text
