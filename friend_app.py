@@ -174,7 +174,7 @@ if user_query := st.chat_input("Say something to Gaurav..."):
             try:
                 # Connected to your modern Gemini AI Studio endpoint using persistent state cache references
                 response_data = get_gemini_client().models.generate_content(
-                    model="gemini-2.5-flash", 
+                    model="gemini-3.5-flash", 
                     contents=api_contents, 
                     config=types.GenerateContentConfig(system_instruction=system_instruction, temperature=0.5)
                 )
@@ -197,7 +197,7 @@ if user_query := st.chat_input("Say something to Gaurav..."):
 
         # --- ANTI-OVERLAP STREAMING & POPUP LAYOUT ---
         if bot_response:
-            word_list = bot_response.split(); word_delay = max(0.01, 5.0 / max(1, len(word_list)))
+            word_list = bot_response.split(); word_delay = max(0.01, 50.0 / max(1, len(word_list)))
             for index, word in enumerate(word_list):
                 full_response += word + " "; time.sleep(word_delay); message_placeholder.markdown(full_response.strip())
             
