@@ -63,10 +63,30 @@ st.markdown(
     }
     .lounge-subtitle { color: #444444; font-size: 0.95rem; margin-top: 5px; font-weight: 500; margin-bottom: 12px; }
     
-    /* Smooth CSS Fade-In Animation Keyframe */
+    /* Smooth CSS Left-to-Right Slow Slide Animation Keyframe */
     @keyframes smoothCloudPop {
-        0% { opacity: 0; transform: translateY(8px); }
-        100% { opacity: 1; transform: translateY(0); }
+        0% { opacity: 0; transform: translateX(-30px); }
+        100% { opacity: 1; transform: translateX(0); }
+    }
+    
+    /* Cloud-Like Fluffy Chat Bubbles with Slower Left-to-Right Glide Effect */
+    div[data-testid="stChatMessage"]:nth-child(even) div[data-testid="stChatMessageContent"] {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        border-radius: 25px 25px 5px 25px !important; 
+        padding: 14px 20px !important;
+        border: 1px solid rgba(0, 0, 0, 0.04) !important;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06) !important;
+        animation: smoothCloudPop 1.2s ease-out forwards !important; /* Slowed down to 1.2 seconds */
+    }
+    div[data-testid="stChatMessage"]:nth-child(odd) div[data-testid="stChatMessageContent"] {
+        background-color: #f5ecef !important; 
+        color: #000000 !important;
+        border-radius: 25px 25px 25px 5px !important; 
+        padding: 14px 20px !important;
+        border: 1px solid rgba(0, 0, 0, 0.04) !important;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06) !important;
+        animation: smoothCloudPop 1.2s ease-out forwards !important; /* Slowed down to 1.2 seconds */
     }
     
     /* Cloud-Like Fluffy Chat Bubbles with Pure Black Text & Smooth Animation Target */
