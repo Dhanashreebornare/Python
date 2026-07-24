@@ -14,7 +14,7 @@ if "authenticated" not in st.session_state:
 
 # --- PASSCODE AUTHENTICATION LOCK ---
 if not st.session_state.authenticated:
-    st.markdown("""<style>.stApp {font-family: 'Inter', sans-serif !important; background: linear-gradient(135deg, #2d1124 0%, #4a1539 100%) !important; color: #000000 !important;} .lock-container {text-align: center; padding: 45px 35px; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 24px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.5); margin-top: 40px; margin-bottom: 20px;} div[data-testid="stTextInput"] input {border-radius: 25px !important; border: 1px solid rgba(0, 0, 0, 0.2) !important; background-color: #ffffff !important; padding: 12px 20px !important; font-size: 1.1rem !important; color: #000000 !important; text-align: center !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important; transition: all 0.3s ease;} div[data-testid="stTextInput"] input:focus {border-color: #000000 !important; box-shadow: 0 0 12px rgba(0, 0, 0, 0.2) !important;} div[data-testid="stTextInput"] label {display: none !important;} footer {visibility: hidden !important;}</style>""", unsafe_allow_html=True)
+    st.markdown("""<style>.stApp {font-family: 'Inter', sans-serif !important; background: linear-gradient(135deg, #2d1124 0%, #4a1539 100%) !important; color: #000000 !important;} .lock-container {text-align: center; padding: 45px 35px; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 24px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.5); margin-top: 40px; margin-bottom: 20px;} div[data-testid="stTextInput"] input {border-radius: 25px !important; border: 1px solid rgba(0, 0, 0, 0.2) !important; background-color: #ffffff !important; padding: 12px 20px !important; font-size: 1.1rem !important; color: #000000 !important; text-align: center !important; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05) !important; transition: all 0.3s ease;} div[data-testid="stTextInput"] input:focus {border-color: #000000 !important; box-shadow: 0 0 12px rgba(0, 0, 0, 0.2) !important;} div[data-testid="stTextInput"] label {display: none !important;} footer {visibility: hidden !important;}</style>""", unsafe_allow_html=True)
     st.markdown("""<div class="lock-container"><h2 style="color: #000000; font-weight: 800; font-size: 2.2rem; margin: 15px 0 0 0;">Vibe with Gaurav.</h2><div style="color: #444444; font-size: 1rem; font-weight: 500; margin-top: 8px; margin-bottom: 12px;">Verify code to connect securely</div><div style="font-size: 1.2rem; letter-spacing: 4px; margin-bottom: 5px;">🌸  ✨  🪻  ✨  🌸</div></div>""", unsafe_allow_html=True)
     
     passcode_input = st.text_input("Secret Code:", type="password", key="secret_gate", placeholder="Enter passcode here...")
@@ -63,7 +63,13 @@ st.markdown(
     }
     .lounge-subtitle { color: #444444; font-size: 0.95rem; margin-top: 5px; font-weight: 500; margin-bottom: 12px; }
     
-    /* Cloud-Like Fluffy Chat Bubbles with Pure Black Text */
+    /* Smooth CSS Fade-In Animation Keyframe */
+    @keyframes smoothCloudPop {
+        0% { opacity: 0; transform: translateY(8px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Cloud-Like Fluffy Chat Bubbles with Pure Black Text & Smooth Animation Target */
     div[data-testid="stChatMessage"]:nth-child(even) div[data-testid="stChatMessageContent"] {
         background-color: #ffffff !important;
         color: #000000 !important;
@@ -71,6 +77,7 @@ st.markdown(
         padding: 14px 20px !important;
         border: 1px solid rgba(0, 0, 0, 0.04) !important;
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06) !important;
+        animation: smoothCloudPop 0.5s ease-out forwards !important;
     }
     div[data-testid="stChatMessage"]:nth-child(odd) div[data-testid="stChatMessageContent"] {
         background-color: #f5ecef !important; 
@@ -79,6 +86,7 @@ st.markdown(
         padding: 14px 20px !important;
         border: 1px solid rgba(0, 0, 0, 0.04) !important;
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06) !important;
+        animation: smoothCloudPop 0.5s ease-out forwards !important;
     }
     
     /* Minimalist Cloud Text Input Box */
@@ -123,7 +131,7 @@ if "messages" not in st.session_state:
 st.markdown(
     """
     <div class="lounge-header">
-        <h1 class="lounge-title">Vibe with Gaurav...</h1>
+        <h1 class="lounge-title">Vibe with Gaurav.</h1>
         <div class="lounge-subtitle">Your Hinglish bestie • Available 24/7</div>
         <div style="font-size: 1.2rem; letter-spacing: 4px;">🌸  ✨  🪻  ✨  🌸</div>
     </div>
@@ -144,12 +152,10 @@ if user_query := st.chat_input("Say something to Gaurav..."):
     st.session_state.messages.append({"role": "user", "content": user_query})
     
     fallback_options = [
-        "Bhai, thoda busy hoon! Wife ne kaam saupa hai. 😂",
+        "Bhai, thoda busy hoon! Mummy ne kaam saupa hai. 😂",
         "Arey yaar, internet bohot slow chal raha hai yahan... chill mar! ☕",
         "Bro, phone ki battery khatam hone wali hai! Late text karu? 😉",
         "Tension mat le bhai, main yahin hoon. Thoda breaks chahiye! 😂"
-        "Dhairya rakh bhai, shvas pachho to leva de! 😂"
-        "Jara shanti rakh, utavalo tha maa..😂"
     ]
     api_contents = [types.Content(role="user" if msg["role"] == "user" else "model", parts=[types.Part.from_text(text=msg["content"])]) for msg in st.session_state.messages]
     
@@ -167,7 +173,6 @@ if user_query := st.chat_input("Say something to Gaurav..."):
     
     # --- RENDER SPINNER INSIDE GAURAV'S BLOCK ---
     with st.chat_message("assistant", avatar=BOT_AVATAR):
-        # We start the 5-second countdown timer alongside the 3 moving dots animation
         start_time = time.time()
         
         with st.spinner("Gaurav is typing..."):
@@ -180,13 +185,13 @@ if user_query := st.chat_input("Say something to Gaurav..."):
             except:
                 bot_response = random.choice(fallback_options)
             
-            # Calculate remaining time to fulfill an exact 5.0 seconds delay threshold
+            # Match strict 5-second countdown duration layout metrics
             elapsed_time = time.time() - start_time
             remaining_time = max(0.0, 5.0 - elapsed_time)
             if remaining_time > 0:
                 time.sleep(remaining_time)
 
-        # --- INSTANT POP UP EXECUTION ---
+        # --- SMOOTH CSS-ANIMATED POP UP ---
         if bot_response:
             st.markdown(bot_response)
             st.session_state.messages.append({"role": "assistant", "content": bot_response})
