@@ -197,7 +197,7 @@ if user_query := st.chat_input("Say something to Gaurav..."):
 
         # --- ANTI-OVERLAP STREAMING & POPUP LAYOUT ---
         if bot_response:
-            word_list = bot_response.split(); word_delay = max(0.01, 50.0 / max(1, len(word_list)))
+            word_list = bot_response.split(); word_delay = max(0.01, 20.0 / max(1, len(word_list)))
             for index, word in enumerate(word_list):
                 full_response += word + " "; time.sleep(word_delay); message_placeholder.markdown(full_response.strip())
             
