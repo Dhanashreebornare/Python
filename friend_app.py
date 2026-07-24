@@ -213,17 +213,27 @@ if user_query := st.chat_input("Say something to Gaurav..."):
         message_placeholder = st.empty()
         full_response = ""
         
+        # We pre-define the fallback options here safely
+        fallback_options = ["Bhai, thoda busy hoon! Mummy ne kaam saupa hai. 😂", "Arey yaar, internet bohot slow chal raha hai yahan... chill mar! ☕", "Bro, phone ki battery khatam hone wali hai! Late text karu? 😉", "Tension mat le bhai, main yahin hoon. Thoda breaks chahiye! 😂"]
+        
+        # We process the data structures smoothly
+        api_contents = [types.Content(role="user" if msg["role"] == "user" else "model", parts=[types.Part.from_text(text=msg["content"])]) for msg in st.session_state.messages]
+        system_instruction = "You are Gaurav, a funny, witty, sarcastic, and deeply loyal close best friend. CRUCIAL: Read the user's text carefully and answer their exact question contextually. Never use hardcoded greeting lists or switch topics randomly. Respond dynamically. Chat casually using informal internet slang and short sentences like a text message. You speak naturally in a mix of Hindi and English (Hinglish). Use casual terms like 'Bhai', 'Yaar', 'Bro', 'Chill mar', and 'tension mat le'. Do NOT use Gujarati phrases like 'Kem cho' or 'Majama' in every sentence. Only use them rarely if explicitly asked about Gujarati or if it fits a niche joke naturally. Crucially, you must use emojis effectively: include exactly ONE or a maximum of TWO highly relevant emojis per turn. Do not spam arrays of emojis under any circumstance."
+        
+        # --- FIXED SINGLE LINE TRY/EXCEPT PORTION ---
         try:
-            client = get_gemini_client()
-            api_contents = []
-            for msg in st.session_state.messages:
-                role_type = "user" if msg["role"] == "user" else "model"
-                api_contents.append(
-                    types.Content(
-                        role=role_type,
-                        parts=[types.Part.from_text(text=msg["content"])]
-                    )
-                )
+            bot_response = get_gemini_client().models.generate_content(model="gemini-3.5-flash", contents=api_contents, config=types.GenerateContentConfig(system_instruction=system_instruction, temperature=0.4)).text
+        except:
+            bot_response = random.choice(fallback_options)
             
-            system_instruction = """You are Gaurav, a funny, witty, sarcastic, and deeply loyal close best friend. CRUCIAL: Read the user's text carefully and answer their exact question contextually. Never use hardcoded greeting lists or switch topics randomly. Respond dynamically. Chat casually using informal internet slang and short sentences like a text message. You speak naturally in a mix of Hindi and English (Hinglish). Use casual terms like 'Bhai', 'Yaar', 'Bro', 'Chill mar', and 'tension mat le'. Do NOT use Gujarati phrases like 'Kem cho' or 'Majama' in every sentence. Only use them rarely if explicitly asked about Gujarati or if it fits a niche joke naturally. Crucially, you must use emojis effectively: include exactly ONE or a maximum of TWO highly relevant emojis per turn. Do not spam arrays of emojis under any circumstance."""
-            response = client.models.generate_content(model="gemini-3.5-flash",contents=api_contents,config=types.GenerateContentConfig(system_instruction=system_instruction,temperature=0.4,),)bot_response = response.textexcept Exception as e:fallback_options = ["Bhai, thoda busy hoon! Mummy ne kaam saupa hai. 😂","Arey yaar, internet bohot slow chal raha hai yahan... chill mar! ☕","Bro, phone ki battery khatam hone wali hai! Late text karu? 😉","Tension mat le bhai, main yahin hoon. Thoda breaks chahiye! 😂"]bot_response = random.choice(fallback_options)if bot_response:for chunk in bot_response.split():full_response += chunk + " "time.sleep(0.60)message_placeholder.markdown(full_response)message_placeholder.markdown(full_response)st.session_state.messages.append({"role": "assistant", "content": bot_response})st.rerun()
+        # The typing text animation processing loop runs cleanly here
+        if bot_response:
+            for chunk in bot_response.split():
+                full_response += chunk + " "
+                time.sleep(0.60)
+                message_placeholder.markdown(full_response)
+            message_placeholder.markdown(full_response)
+            
+        st.session_state.messages.append({"role": "assistant", "content": bot_response})
+        
+    st.rerun()
