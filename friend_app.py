@@ -190,9 +190,9 @@ if user_query := st.chat_input("Say something to Gaurav..."):
             if remaining_time > 0: time.sleep(remaining_time)
             # --- CRUSH-PROOF WORD TYPEWRITER STREAMING ANIMATION ---
             if bot_response:
-            word_list = bot_response.split();word_delay = max(0.01, 5.0 / max(1, len(word_list)))
+                word_list = bot_response.split();word_delay = max(0.01, 5.0 / max(1, len(word_list)))
             for index, word in enumerate(word_list):full_response += word + " "; time.sleep(word_delay); 
-            message_placeholder.markdown(full_response.strip())
+                message_placeholder.markdown(full_response.strip())
             # --- SAFE DATA BACKEND TERMINATION ---
             message_placeholder.markdown(bot_response)
             st.session_state.messages.append({"role": "assistant", "content": bot_response})
