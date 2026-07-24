@@ -22,7 +22,8 @@ if not st.session_state.authenticated:
     if passcode_input:
         if "SECRET_PASSCODE" in st.secrets:
             master_passcode = st.secrets["SECRET_PASSCODE"]
-        else os.environ.get("SECRET_PASSCODE"):
+        else:
+            os.environ.get("SECRET_PASSCODE")
             master_passcode = os.environ.get("SECRET_PASSCODE")
             
         if passcode_input.strip().lower() == master_passcode.strip().lower():
