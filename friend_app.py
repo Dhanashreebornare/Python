@@ -40,7 +40,7 @@ st.markdown(
     <style>
     .stApp {
         font-family: 'Inter', sans-serif !important;
-        background: linear-gradient(135deg, #2d1124 0%, #4a1539 100%) !important; /* Premium Dark Purple Pink Canvas */
+        background: linear-gradient(135deg, #2d1124 0%, #4a1539 100%) !important;
         color: #000000 !important;
     }
     .lounge-header {
@@ -100,7 +100,7 @@ st.markdown(
 
 # Avatars Configuration
 USER_AVATAR = "🌸"
-BOT_AVATAR = "👦🏻"  # Boy with spiky hair emoji profile asset configuration
+BOT_AVATAR = "👦🏻"  
 
 def get_gemini_client():
     if "GEMINI_API_KEY" in st.secrets:
@@ -163,10 +163,10 @@ if user_query := st.chat_input("Say something to Gaurav..."):
         "TWO highly relevant, bright, happy emojis per turn. Do not spam arrays of emojis."
     )
     
-    # --- FIXED: SPINNER ENCLOSED NEATLY INSIDE GAURAV'S ACTIVE CHAT BLOCK NEXT TO HIS ICON ---
+    # --- RENDER SPINNER INSIDE GAURAV'S BLOCK ---
     with st.chat_message("assistant", avatar=BOT_AVATAR):
-        message_placeholder = st.empty()
-        full_response = ""
+        # We start the 5-second countdown timer alongside the 3 moving dots animation
+        start_time = time.time()
         
         with st.spinner("Gaurav is typing..."):
             try:
@@ -178,14 +178,15 @@ if user_query := st.chat_input("Say something to Gaurav..."):
             except:
                 bot_response = random.choice(fallback_options)
             
+            # Calculate remaining time to fulfill an exact 5.0 seconds delay threshold
+            elapsed_time = time.time() - start_time
+            remaining_time = max(0.0, 5.0 - elapsed_time)
+            if remaining_time > 0:
+                time.sleep(remaining_time)
+
+        # --- INSTANT POP UP EXECUTION ---
         if bot_response:
-            # Steady character-by-character typewriter loop calibrated at a 20x slower speed rate
-            for char in bot_response:
-                full_response += char
-                time.sleep(0.40)  # Intentional deep deceleration rhythm
-                message_placeholder.markdown(full_response)
-            message_placeholder.markdown(full_response)
-            
-        st.session_state.messages.append({"role": "assistant", "content": bot_response})
+            st.markdown(bot_response)
+            st.session_state.messages.append({"role": "assistant", "content": bot_response})
         
     st.rerun()
