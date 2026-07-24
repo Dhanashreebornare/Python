@@ -15,7 +15,7 @@ if "authenticated" not in st.session_state:
 # --- PASSCODE AUTHENTICATION LOCK ---
 if not st.session_state.authenticated:
     st.markdown("""<style>.stApp {font-family: 'Inter', sans-serif !important; background: linear-gradient(135deg, #2d1124 0%, #4a1539 100%) !important; color: #000000 !important;} .lock-container {text-align: center; padding: 45px 35px; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 24px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.5); margin-top: 40px; margin-bottom: 20px;} div[data-testid="stTextInput"] input {border-radius: 25px !important; border: 1px solid rgba(0, 0, 0, 0.2) !important; background-color: #ffffff !important; padding: 12px 20px !important; font-size: 1.1rem !important; color: #000000 !important; text-align: center !important; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05) !important; transition: all 0.3s ease;} div[data-testid="stTextInput"] input:focus {border-color: #000000 !important; box-shadow: 0 0 12px rgba(0, 0, 0, 0.2) !important;} div[data-testid="stTextInput"] label {display: none !important;} footer {visibility: hidden !important;}</style>""", unsafe_allow_html=True)
-    st.markdown("""<div class="lock-container"><h2 style="color: #000000; font-weight: 800; font-size: 2.2rem; margin: 15px 0 0 0;">Vibe with Gaurav.</h2><div style="color: #444444; font-size: 1rem; font-weight: 500; margin-top: 8px; margin-bottom: 12px;">Verify code to connect securely</div><div style="font-size: 1.2rem; letter-spacing: 4px; margin-bottom: 5px;">🌸 ✨ 🪻 ✨ 🌸</div></div>""", unsafe_allow_html=True)
+    st.markdown("""<div class="lock-container"><h2 style="color: #000000; font-weight: 800; font-size: 2.2rem; margin: 15px 0 0 0;">Vibe with Gaurav.</h2><div style="color: #444444; font-size: 1rem; font-weight: 500; margin-top: 8px; margin-bottom: 12px;">Verify code to connect securely</div><div style="font-size: 1.2rem; letter-spacing: 4px; margin-bottom: 5px;">🌸  ✨  🪻  ✨  🌸</div></div>""", unsafe_allow_html=True)
     
     passcode_input = st.text_input("Secret Code:", type="password", key="secret_gate", placeholder="Enter passcode here...")
     
@@ -113,13 +113,20 @@ USER_AVATAR = "🌸"
 BOT_AVATAR = "👦🏻"  
 
 def get_gemini_client():
-    if "GEMINI_API_KEY" in st.secrets:
-        return genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
-    elif os.environ.get("GEMINI_API_KEY"):
-        return genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
-    else:
-        st.error("🔑 API Key missing! Please add 'GEMINI_API_KEY' to your Streamlit Secrets.")
-        st.stop()
+    # Store the client instance in session state permanently to prevent 'client is closed' bugs
+    if "gemini_client" not in st.session_state:
+        if "GEMINI_API_KEY" in st.secrets:
+            api_key_val = st.secrets["GEMINI_API_KEY"]
+        elif os.environ.get("GEMINI_API_KEY"):
+            api_key_val = os.environ.get("GEMINI_API_KEY")
+        else:
+            st.error("🔑 API Key missing! Please add 'GEMINI_API_KEY' to your Streamlit Secrets.")
+            st.stop()
+        
+        # Open a single persistent connection cache block
+        st.session_state.gemini_client = genai.Client(api_key=api_key_val)
+        
+    return st.session_state.gemini_client
 
 if "messages" not in st.session_state:
     st.session_state.messages = [
@@ -135,7 +142,7 @@ st.markdown(
     <div class="lounge-header">
         <h1 class="lounge-title">Vibe with Gaurav.</h1>
         <div class="lounge-subtitle">Your Hinglish bestie • Available 24/7</div>
-        <div style="font-size: 1.2rem; letter-spacing: 4px;">🌸 ✨ 🪻 ✨ 🌸</div>
+        <div style="font-size: 1.2rem; letter-spacing: 4px;">🌸  ✨  🪻  ✨  🌸</div>
     </div>
     """,
     unsafe_allow_html=True
@@ -168,7 +175,12 @@ if user_query := st.chat_input("Say something to Gaurav..."):
         
         with st.spinner(chosen_wait_msg):
             try:
-                bot_response = get_gemini_client().models.generate_content(model="gemini-2.5-flash", contents=api_contents, config=types.GenerateContentConfig(system_instruction=system_instruction, temperature=0.5)).text
+                # Connected to your modern Gemini AI Studio endpoint using persistent state cache references
+                bot_response = get_gemini_client().models.generate_content(
+                    model="gemini-2.5-flash", 
+                    contents=api_contents, 
+                    config=types.GenerateContentConfig(system_instruction=system_instruction, temperature=0.5)
+                ).text
             except Exception as e:
                 st.error(f"⚠️ Brain broke because: {e}")
                 bot_response = random.choice(fallback_options)
@@ -176,15 +188,12 @@ if user_query := st.chat_input("Say something to Gaurav..."):
             # --- CRUSH-PROOF COUNTDOWN DELAY ---
             elapsed_time = time.time() - start_time; remaining_time = max(0.0, 5.0 - elapsed_time)
             if remaining_time > 0: time.sleep(remaining_time)
-
-        # --- CRUSH-PROOF WORD TYPEWRITER STREAMING ANIMATION ---
-        if bot_response:
-            word_list = bot_response.split(); word_delay = max(0.01, 5.0 / max(1, len(word_list)))
-            for index, word in enumerate(word_list):
-                full_response += word + " "; time.sleep(word_delay); message_placeholder.markdown(full_response.strip())
-            
-            # --- SAFE TERMINATION ---
+            # --- CRUSH-PROOF WORD TYPEWRITER STREAMING ANIMATION ---
+            if bot_response:
+            word_list = bot_response.split();word_delay = max(0.01, 5.0 / max(1, len(word_list)))
+            for index, word in enumerate(word_list):full_response += word + " "; time.sleep(word_delay); 
+            message_placeholder.markdown(full_response.strip())
+            # --- SAFE DATA BACKEND TERMINATION ---
             message_placeholder.markdown(bot_response)
             st.session_state.messages.append({"role": "assistant", "content": bot_response})
             st.rerun()
-
