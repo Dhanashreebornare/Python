@@ -143,13 +143,22 @@ if user_query := st.chat_input("Say something to Gaurav..."):
         with st.spinner("Gaurav is typing..."):
             try:
                 response_data = get_gemini_client().models.generate_content(
-                    model="gemini-3.5-flash", 
+                    model="gemini-2.5-flash", 
                     contents=api_contents, 
                     config=types.GenerateContentConfig(system_instruction=system_instruction, temperature=0.5)
                 )
                 bot_response = response_data.text
             except Exception as e:
-                bot_response = f"Bhai, thoda system issue chhe yaar! Real error: {str(e)} ⚠️"
+                # Witty, caring, and realistic backup lines when the system goes offline
+                system_fallbacks = [
+                    "Bhai, thoda system issue chhe yaar! Network haali gayo chhe dimaag mathi. 🥲",
+                    "Arey bro, network j locha maari rahyu chhe! Tension mat le, thodi vaar ma vaat kariye. ☕",
+                    "Gaurav no dimaag thakyo chhe... lag chhe pachhad thi server j down thadh gayo! 😂",
+                    "Yaar, Mummy ne bolavyo kaam mate, etla ma server j bandh thai gayo! 🏃‍♂️",
+                    "Tension shu kaam leve chhe bhai? Thodo technical issue chhe, haveli par aav vaat kariye! 😉"
+                ]
+                # Combine a funny line with the real hidden error trace for clean debugging
+                bot_response = f"{random.choice(system_fallbacks)}\n\n*(Debug Trace: {str(e)})*"
             
             # --- CRUSH-PROOF COUNTDOWN DELAY ---
             elapsed_time = time.time() - start_time; remaining_time = max(0.0, 5.0 - elapsed_time)
@@ -157,7 +166,7 @@ if user_query := st.chat_input("Say something to Gaurav..."):
 
         # --- WORD TYPEWRITER STREAMING ANIMATION ---
         if bot_response:
-            word_list = bot_response.split(); word_delay = max(0.01, 5.0 / max(1, len(word_list)))
+            word_list = bot_response.split(); word_delay = max(0.02, 5.0 / max(1, len(word_list)))
             for index, word in enumerate(word_list):
                 full_response += word + " "; time.sleep(word_delay); message_placeholder.markdown(full_response.strip())
             
