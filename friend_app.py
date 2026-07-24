@@ -206,3 +206,4 @@ if user_query := st.chat_input("Say something to Gaurav..."):
             elapsed_time = time.time() - start_time
             remaining_time = max(0.0, 5.0 - elapsed_time)
             if remaining_time > 0:
+                time.sleep(remaining_time)if bot_response:word_list = bot_response.split()word_delay = max(0.01, 5.0 / len(word_list))for index, word in enumerate(word_list):full_response += word + " "time.sleep(word_delay)message_placeholder.markdown(full_response.strip())message_placeholder.markdown(bot_response)st.session_state.messages.append({"role": "assistant", "content": bot_response})st.rerun()
