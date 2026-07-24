@@ -8,32 +8,6 @@ from google.genai import types
 # 1. Global Page Layout Configurations
 st.set_page_config(page_title="Vibe with Gaurav", page_icon="🌸", layout="centered")
 
-# Initialize global authentication tracking state safely from Streamlit Sessions
-if "authenticated" not in st.session_state:
-    st.session_state.authenticated = False
-
-# --- PASSCODE AUTHENTICATION LOCK ---
-if not st.session_state.authenticated:
-    st.markdown("""<style>.stApp {font-family: 'Inter', sans-serif !important; background: linear-gradient(135deg, #2d1124 0%, #4a1539 100%) !important; color: #000000 !important;} .lock-container {text-align: center; padding: 45px 35px; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 24px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.5); margin-top: 40px; margin-bottom: 20px;} div[data-testid="stTextInput"] input {border-radius: 25px !important; border: 1px solid rgba(0, 0, 0, 0.2) !important; background-color: #ffffff !important; padding: 12px 20px !important; font-size: 1.1rem !important; color: #000000 !important; text-align: center !important; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05) !important; transition: all 0.3s ease;} div[data-testid="stTextInput"] input:focus {border-color: #000000 !important; box-shadow: 0 0 12px rgba(0, 0, 0, 0.2) !important;} div[data-testid="stTextInput"] label {display: none !important;} footer {visibility: hidden !important;}</style>""", unsafe_allow_html=True)
-    st.markdown("""<div class="lock-container"><h2 style="color: #000000; font-weight: 800; font-size: 2.2rem; margin: 15px 0 0 0;">Vibe with Gaurav.</h2><div style="color: #444444; font-size: 1rem; font-weight: 500; margin-top: 8px; margin-bottom: 12px;">Verify code to connect securely</div><div style="font-size: 1.2rem; letter-spacing: 4px; margin-bottom: 5px;">🌸 ✨ 🪻 ✨ 🌸</div></div>""", unsafe_allow_html=True)
-    
-    passcode_input = st.text_input("Secret Code:", type="password", key="secret_gate", placeholder="Enter passcode here...")
-    
-    if passcode_input:
-        if "SECRET_PASSCODE" in st.secrets:
-            master_passcode = st.secrets["SECRET_PASSCODE"]
-        elif os.environ.get("SECRET_PASSCODE"):
-            master_passcode = os.environ.get("SECRET_PASSCODE")
-        else:
-            master_passcode = "cutie pie"
-            
-        if passcode_input.strip().lower() == master_passcode.strip().lower():
-            st.session_state.authenticated = True
-            st.rerun()
-        else:
-            st.error("❌ Invalid entry, buddy! Try again.")
-    st.stop()
-
 # 2. Main Lounge UI Core Styles (Dark Purple-Pink Theme, Cloud Bubbles, Black Text)
 st.markdown(
     """
@@ -113,7 +87,6 @@ USER_AVATAR = "🌸"
 BOT_AVATAR = "👦🏻"  
 
 def get_gemini_client():
-    # Store the client instance in session state permanently to prevent 'client is closed' bugs
     if "gemini_client" not in st.session_state:
         if "GEMINI_API_KEY" in st.secrets:
             api_key_val = st.secrets["GEMINI_API_KEY"]
@@ -153,48 +126,41 @@ for message in st.session_state.messages:
 
 # 5. Live Interaction Engine
 if user_query := st.chat_input("Say something to Gaurav..."):
-    # Render user chat block instantly
     with st.chat_message("user", avatar=USER_AVATAR):
         st.markdown(user_query)
     st.session_state.messages.append({"role": "user", "content": user_query})
     
-    # Open assistant block context path cleanly
     with st.chat_message("assistant", avatar=BOT_AVATAR):
         message_placeholder = st.empty()
         full_response = ""
         
-        gujarati_waiting_comments = ["Gaurav vichi rahyo chhe, thobhi jaa bhai! 🧠", "Chai piva gayo chhe ke shu? Ek min ubho reh... ☕", "Gaurav typing kare chhe, jalsa kar ne yaar! 😂", "Bhai thodu dhimu dhimu vicharva de, ghanti vage chhe dimaag ma! 🔔", "Tension shu kaam leve chhe? Gaurav lakhi rahyo chhe! 🤫", "Ek j min yaar, dhajyu lakhva de moko aap! 😉"]
         api_contents = [types.Content(role="user" if msg["role"] == "user" else "model", parts=[types.Part.from_text(text=msg["content"])]) for msg in st.session_state.messages]
-        
         system_instruction = "You are Gaurav, a funny, witty, deeply loving, and loyal close best friend. CRUCIAL: Read the user's text carefully and answer their exact question contextually. Never use hardcoded greeting lists or switch topics randomly. Respond dynamically. Chat casually using informal internet slang and short sentences like a text message. You speak naturally in a mix of Hindi and English (Hinglish). Use casual terms like 'Bhai', 'Yaar', 'Bro', 'Chill mar', 'tension mat le', and 'Mast'. Crucially, you must use emojis in a highly optimistic, joyful, and supportive way to lift the user's spirits and spread positive vibes. Include exactly ONE or a maximum of TWO highly relevant, bright, happy emojis per turn. Do not spam arrays of emojis."
         
         start_time = time.time()
-        chosen_wait_msg = random.choice(gujarati_waiting_comments)
         
-        # Displays the "Gaurav is typing..." animation frame directly inside his context block next to his icon
-        with st.spinner(chosen_wait_msg):
+        # --- CLEAN UNIFIED SPINNER CONTEXT ---
+        with st.spinner("Gaurav is typing..."):
             try:
                 response_data = get_gemini_client().models.generate_content(
-                    model="gemini-3.5-flash", 
+                    model="gemini-2.5-flash", 
                     contents=api_contents, 
                     config=types.GenerateContentConfig(system_instruction=system_instruction, temperature=0.5)
                 )
                 bot_response = response_data.text
             except Exception as e:
-                # Direct error messaging prevents the old hardcoded messages from showing up
                 bot_response = f"Bhai, thoda system issue chhe yaar! Real error: {str(e)} ⚠️"
             
-            # Enforce 5-second countdown duration layout tracking thresholds
+            # --- CRUSH-PROOF COUNTDOWN DELAY ---
             elapsed_time = time.time() - start_time; remaining_time = max(0.0, 5.0 - elapsed_time)
             if remaining_time > 0: time.sleep(remaining_time)
 
-        # Word-by-word typewriter loop calibrated to run smoothly over exactly 5 seconds
+        # --- WORD TYPEWRITER STREAMING ANIMATION ---
         if bot_response:
             word_list = bot_response.split(); word_delay = max(0.01, 5.0 / max(1, len(word_list)))
             for index, word in enumerate(word_list):
                 full_response += word + " "; time.sleep(word_delay); message_placeholder.markdown(full_response.strip())
             
-            # Safe append and page refresh
             message_placeholder.markdown(bot_response)
             st.session_state.messages.append({"role": "assistant", "content": bot_response})
             st.rerun()
