@@ -6,16 +6,16 @@ from google import genai
 from google.genai import types
 
 # 1. Global Page Layout Configurations
-st.set_page_config(page_title="Vibe with Gaurav", page_icon="💐", layout="centered")
+st.set_page_config(page_title="Vibe with Gaurav", page_icon="🌸", layout="centered")
 
-# Initialize global authentication tracking state safely
+# Initialize global authentication tracking state safely from Streamlit Sessions
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
 # --- PASSCODE AUTHENTICATION LOCK ---
 if not st.session_state.authenticated:
-    st.markdown("""<style>.stApp {font-family: 'Inter', sans-serif !important; background: linear-gradient(135deg, #2d1124 0%, #4a1539 100%) !important; color: #000000 !important;} .lock-container {text-align: center; padding: 45px 35px; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 24px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.5); margin-top: 40px; margin-bottom: 20px;} div[data-testid="stTextInput"] input {border-radius: 25px !important; border: 1px solid rgba(0, 0, 0, 0.2) !important; background-color: #ffffff !important; padding: 12px 20px !important; font-size: 1.1rem !important; color: #000000 !important; text-align: center !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important; transition: all 0.3s ease;} div[data-testid="stTextInput"] input:focus {border-color: #000000 !important; box-shadow: 0 0 12px rgba(0, 0, 0, 0.2) !important;} div[data-testid="stTextInput"] label {display: none !important;} footer {visibility: hidden !important;}</style>""", unsafe_allow_html=True)
-    st.markdown("""<div class="lock-container"><img style="width: 100px; height: auto;" src="https://openclipart.org" alt="Bouquet"><h2 style="color: #000000; font-weight: 800; font-size: 2.2rem; margin: 15px 0 0 0;">Vibe with Gaurav.</h2><div style="color: #444444; font-size: 1rem; font-weight: 500; margin-top: 8px; margin-bottom: 12px;">Verify code to connect securely</div><div style="font-size: 1.2rem; margin-bottom: 20px; letter-spacing: 4px;">🌸 ✨ 🪻 ✨ 🌸</div></div>""", unsafe_allow_html=True)
+    st.markdown("""<style>.stApp {font-family: 'Inter', sans-serif !important; background: #ffb7c5 !important; color: #000000 !important;} .lock-container {text-align: center; padding: 45px 35px; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 24px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); border: 1px solid rgba(255, 255, 255, 0.4); margin-top: 60px; margin-bottom: 20px;} div[data-testid="stTextInput"] input {border-radius: 25px !important; border: 1px solid rgba(0, 0, 0, 0.15) !important; background-color: #ffffff !important; padding: 12px 20px !important; font-size: 1.1rem !important; color: #000000 !important; text-align: center !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03) !important; transition: all 0.3s ease;} div[data-testid="stTextInput"] input:focus {border-color: #000000 !important; box-shadow: 0 0 12px rgba(0, 0, 0, 0.15) !important;} div[data-testid="stTextInput"] label {display: none !important;} footer {visibility: hidden !important;}</style>""", unsafe_allow_html=True)
+    st.markdown("""<div class="lock-container"><h2 style="color: #000000; font-weight: 800; font-size: 2.2rem; margin: 15px 0 0 0;">Vibe with Gaurav.</h2><div style="color: #444444; font-size: 1rem; font-weight: 500; margin-top: 8px; margin-bottom: 12px;">Verify code to connect securely</div><div style="font-size: 1.2rem; letter-spacing: 4px; margin-bottom: 5px;">🌸  ✨  🪻  ✨  🌸</div></div>""", unsafe_allow_html=True)
     
     passcode_input = st.text_input("Secret Code:", type="password", key="secret_gate", placeholder="Enter passcode here...")
     
@@ -25,8 +25,7 @@ if not st.session_state.authenticated:
         elif os.environ.get("SECRET_PASSCODE"):
             master_passcode = os.environ.get("SECRET_PASSCODE")
         else:
-            st.error("🔒 Security configuration missing! Please add 'SECRET_PASSCODE' to your Streamlit Secrets.")
-            st.stop()
+            master_passcode = "cutie pie"
             
         if passcode_input.strip().lower() == master_passcode.strip().lower():
             st.session_state.authenticated = True
@@ -35,24 +34,24 @@ if not st.session_state.authenticated:
             st.error("❌ Invalid entry, buddy! Try again.")
     st.stop()
 
-# 2. Main Lounge UI Core Styles
+# 2. Main Lounge UI Core Styles (Cherry Blossom Theme, Cloud Bubbles, Black Text)
 st.markdown(
     """
     <style>
     .stApp {
         font-family: 'Inter', sans-serif !important;
-        background: linear-gradient(135deg, #2d1124 0%, #4a1539 100%) !important;
+        background: #ffb7c5 !important; 
         color: #000000 !important;
     }
     .lounge-header {
         text-align: center;
         padding: 24px 15px;
-        background: rgba(255, 255, 255, 0.9);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border-radius: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.5);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
         margin-bottom: 35px;
     }
     .lounge-title {
@@ -62,29 +61,31 @@ st.markdown(
         margin: 0;
         font-size: 2.2rem;
     }
-    .lounge-subtitle { color: #444444; font-size: 0.95rem; margin-top: 5px; font-weight: 500; margin-bottom: 10px; }
+    .lounge-subtitle { color: #333333; font-size: 0.95rem; margin-top: 5px; font-weight: 500; margin-bottom: 12px; }
     
+    /* Cloud-Like Fluffy Chat Bubbles with Pure Black Text */
     div[data-testid="stChatMessage"]:nth-child(even) div[data-testid="stChatMessageContent"] {
         background-color: #ffffff !important;
         color: #000000 !important;
-        border-radius: 20px 20px 4px 20px !important;
-        padding: 14px 18px !important;
-        border: 1px solid rgba(0, 0, 0, 0.1) !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+        border-radius: 25px 25px 5px 25px !important; 
+        padding: 14px 20px !important;
+        border: 1px solid rgba(0, 0, 0, 0.03) !important;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04) !important;
     }
     div[data-testid="stChatMessage"]:nth-child(odd) div[data-testid="stChatMessageContent"] {
-        background-color: #f5ecef !important;
+        background-color: #fff2f5 !important; 
         color: #000000 !important;
-        border-radius: 20px 20px 20px 4px !important;
-        padding: 14px 18px !important;
-        border: 1px solid rgba(0, 0, 0, 0.1) !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+        border-radius: 25px 25px 25px 5px !important; 
+        padding: 14px 20px !important;
+        border: 1px solid rgba(0, 0, 0, 0.03) !important;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04) !important;
     }
     
+    /* Minimalist Cloud Text Input Box */
     div[data-testid="stChatInput"] {
         border-radius: 35px !important;
         background-color: #ffffff !important;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08) !important;
         border: none !important;
     }
     div[data-testid="stChatInput"] textarea { 
@@ -99,7 +100,7 @@ st.markdown(
 
 # Avatars Configuration
 USER_AVATAR = "🌸"
-BOT_AVATAR = "👦"  # Common boy emoji profile asset configuration
+BOT_AVATAR = "👦🏻"  
 
 def get_gemini_client():
     if "GEMINI_API_KEY" in st.secrets:
@@ -124,7 +125,7 @@ st.markdown(
     <div class="lounge-header">
         <h1 class="lounge-title">Vibe with Gaurav.</h1>
         <div class="lounge-subtitle">Your Hinglish bestie • Available 24/7</div>
-        <div style="font-size: 1.2rem; letter-spacing: 4px;">🌸 ✨ 🪻 ✨ 🌸</div>
+        <div style="font-size: 1.2rem; letter-spacing: 4px;">🌸  ✨  🪻  ✨  🌸</div>
     </div>
     """,
     unsafe_allow_html=True
@@ -149,24 +150,26 @@ if user_query := st.chat_input("Say something to Gaurav..."):
         message_placeholder = st.empty()
         full_response = ""
         
-        fallback_options = ["Bhai, thoda busy hoon! Mummy ne kaam saupa hai. 😂", "Arey yaar, internet bohot slow chal raha hai yahan... chill mar! ☕", "Bro, phone ki battery khatam hone wali hai! Late text karu? 😉", "Tension mat le bhai, main yahin hoon. Thoda breaks chahiye! 😂"]
+        fallback_options = [
+            "Bhai, thoda busy hoon! Mummy ne kaam saupa hai. 😂",
+            "Arey yaar, internet bohot slow chal raha hai yahan... chill mar! ☕",
+            "Bro, phone ki battery khatam hone wali hai! Late text karu? 😉",
+            "Tension mat le bhai, main yahin hoon. Thoda breaks chahiye! 😂"
+        ]
         api_contents = [types.Content(role="user" if msg["role"] == "user" else "model", parts=[types.Part.from_text(text=msg["content"])]) for msg in st.session_state.messages]
         
-        # Curated System Instructions for a funny, sarcastic, loyal best friend who speaks Hinglish + Gujarati with positive, optimistic emojis
         system_instruction = (
-            "You are Gaurav, a funny, witty, sarcastic, and deeply loyal close best friend. "
+            "You are Gaurav, a funny, witty, deeply loving, and loyal close best friend. "
             "CRUCIAL: Read the user's text carefully and answer their exact question contextually. "
             "Never use hardcoded greeting lists or switch topics randomly. Respond dynamically. "
             "Chat casually using informal internet slang and short sentences like a text message. "
-            "You speak naturally in a mix of Hindi, English, and Gujarati (Hinglish/Gujlish). Use casual terms "
-            "like 'Bhai', 'Yaar', 'Bro', 'Chill mar', and 'tension shu kaam leve chhe'. Feel free to slide in "
-            "fun Gujarati expressions like 'Kem cho', 'Majama', or 'Jalsa kar, bhai' naturally to keep the vibe witty. "
-            "Crucially, you must use emojis in a highly optimistic, warm, and supportive way to lift the user's "
-            "spirits. Include exactly ONE or a maximum of TWO highly relevant, bright emojis per turn. "
-            "Do not spam arrays of emojis under any circumstance."
+            "You speak naturally in a mix of Hindi and English (Hinglish). Use casual terms "
+            "like 'Bhai', 'Yaar', 'Bro', 'Chill mar', 'tension mat le', and 'Mast'. "
+            "Crucially, you must use emojis in a highly optimistic, joyful, and supportive way to "
+            "lift the user's spirits and spread positive vibes. Include exactly ONE or a maximum of "
+            "TWO highly relevant, bright, happy emojis per turn. Do not spam arrays of emojis."
         )
         
-        # Target the bottom container slot to keep the animation fixed directly above the input box layout
         with typing_indicator_container:
             with st.spinner("Gaurav is typing..."):
                 try:
@@ -181,7 +184,7 @@ if user_query := st.chat_input("Say something to Gaurav..."):
         if bot_response:
             for char in bot_response:
                 full_response += char
-                time.sleep(0.04)  # Smooth, legible typewriter ticker
+                time.sleep(0.04)
                 message_placeholder.markdown(full_response)
             message_placeholder.markdown(full_response)
             
