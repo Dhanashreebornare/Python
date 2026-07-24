@@ -6,7 +6,7 @@ from google import genai
 from google.genai import types
 
 # 1. Global Page Layout Configurations
-st.set_page_config(page_title="Vibe with Gaurav", page_icon="🌸", layout="centered")
+st.set_page_config(page_title="Vibe with Gaurav", page_icon="💐", layout="centered")
 
 # Initialize global authentication tracking state safely
 if "authenticated" not in st.session_state:
@@ -136,6 +136,9 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"], avatar=avatar):
         st.markdown(message["content"])
 
+# Create a permanent empty placeholder slot anchored right above the chat input box
+typing_indicator_container = st.empty()
+
 # 5. Live Interaction Engine
 if user_query := st.chat_input("Say something to Gaurav..."):
     with st.chat_message("user", avatar=USER_AVATAR):
@@ -148,19 +151,37 @@ if user_query := st.chat_input("Say something to Gaurav..."):
         
         fallback_options = ["Bhai, thoda busy hoon! Mummy ne kaam saupa hai. 😂", "Arey yaar, internet bohot slow chal raha hai yahan... chill mar! ☕", "Bro, phone ki battery khatam hone wali hai! Late text karu? 😉", "Tension mat le bhai, main yahin hoon. Thoda breaks chahiye! 😂"]
         api_contents = [types.Content(role="user" if msg["role"] == "user" else "model", parts=[types.Part.from_text(text=msg["content"])]) for msg in st.session_state.messages]
-        system_instruction = "You are Gaurav, a funny, witty, sarcastic, and deeply loyal close best friend. CRUCIAL: Read the user's text carefully and answer their exact question contextually. Never use hardcoded greeting lists or switch topics randomly. Respond dynamically. Chat casually using informal internet slang and short sentences like a text message. You speak naturally in a mix of Hindi and English (Hinglish). Use casual terms like 'Bhai', 'Yaar', 'Bro', 'Chill mar', and 'tension mat le'. Do NOT use Gujarati phrases like 'Kem cho' or 'Majama' in every sentence. Only use them rarely if explicitly asked about Gujarati or if it fits a niche joke naturally. Crucially, you must use emojis effectively: include exactly ONE or a maximum of TWO highly relevant emojis per turn. Do not spam arrays of emojis under any circumstance."
         
-        # Display the three-dot active loading spinner inside the active layout context block while fetching the API response
-        with st.spinner("Gaurav is typing..."):
-            try:
-                bot_response = get_gemini_client().models.generate_content(model="gemini-3.5-flash", contents=api_contents, config=types.GenerateContentConfig(system_instruction=system_instruction, temperature=0.4)).text
-            except:
-                bot_response = random.choice(fallback_options)
+        # Curated System Instructions for a funny, sarcastic, loyal best friend who speaks Hinglish + Gujarati with positive, optimistic emojis
+        system_instruction = (
+            "You are Gaurav, a funny, witty, sarcastic, and deeply loyal close best friend. "
+            "CRUCIAL: Read the user's text carefully and answer their exact question contextually. "
+            "Never use hardcoded greeting lists or switch topics randomly. Respond dynamically. "
+            "Chat casually using informal internet slang and short sentences like a text message. "
+            "You speak naturally in a mix of Hindi, English, and Gujarati (Hinglish/Gujlish). Use casual terms "
+            "like 'Bhai', 'Yaar', 'Bro', 'Chill mar', and 'tension shu kaam leve chhe'. Feel free to slide in "
+            "fun Gujarati expressions like 'Kem cho', 'Majama', or 'Jalsa kar, bhai' naturally to keep the vibe witty. "
+            "Crucially, you must use emojis in a highly optimistic, warm, and supportive way to lift the user's "
+            "spirits. Include exactly ONE or a maximum of TWO highly relevant, bright emojis per turn. "
+            "Do not spam arrays of emojis under any circumstance."
+        )
+        
+        # Target the bottom container slot to keep the animation fixed directly above the input box layout
+        with typing_indicator_container:
+            with st.spinner("Gaurav is typing..."):
+                try:
+                    bot_response = get_gemini_client().models.generate_content(
+                        model="gemini-3.5-flash", 
+                        contents=api_contents, 
+                        config=types.GenerateContentConfig(system_instruction=system_instruction, temperature=0.5)
+                    ).text
+                except:
+                    bot_response = random.choice(fallback_options)
             
         if bot_response:
             for char in bot_response:
                 full_response += char
-                time.sleep(0.3)  # Steady, legible typing ticker
+                time.sleep(0.04)  # Smooth, legible typewriter ticker
                 message_placeholder.markdown(full_response)
             message_placeholder.markdown(full_response)
             
