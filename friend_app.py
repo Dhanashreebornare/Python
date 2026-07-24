@@ -77,7 +77,7 @@ st.markdown(
         padding: 14px 20px !important;
         border: 1px solid rgba(0, 0, 0, 0.04) !important;
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06) !important;
-        animation: smoothCloudPop 1.2s ease-out forwards !important; /* Slowed down to 1.2 seconds */
+        animation: smoothCloudPop 12s ease-out forwards !important; /* Slowed down to 1.2 seconds */
     }
     div[data-testid="stChatMessage"]:nth-child(odd) div[data-testid="stChatMessageContent"] {
         background-color: #f5ecef !important; 
