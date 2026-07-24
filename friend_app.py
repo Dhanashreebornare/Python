@@ -20,7 +20,6 @@ if not st.session_state.authenticated:
     passcode_input = st.text_input("Secret Code:", type="password", key="secret_gate", placeholder="Enter passcode here...")
     
     if passcode_input:
-        # Securely fetch the master passcode value from the Streamlit Secrets file environment
         if "SECRET_PASSCODE" in st.secrets:
             master_passcode = st.secrets["SECRET_PASSCODE"]
         elif os.environ.get("SECRET_PASSCODE"):
@@ -29,7 +28,6 @@ if not st.session_state.authenticated:
             st.error("🔒 Security configuration missing! Please add 'SECRET_PASSCODE' to your Streamlit Secrets.")
             st.stop()
             
-        # Cleanly validate the entry case-insensitively
         if passcode_input.strip().lower() == master_passcode.strip().lower():
             st.session_state.authenticated = True
             st.rerun()
@@ -101,17 +99,7 @@ st.markdown(
 
 # Avatars Configuration
 USER_AVATAR = "🌸"
-BOT_AVATAR = (
-    "data:image/svg+xml;utf8,<svg xmlns='http://w3.org' viewBox='0 0 100 100'>"
-    "<circle cx='50' cy='50' r='45' fill='%23f5ecef' stroke='%232d1124' stroke-width='3'/>"
-    "<path d='M35,35 Q40,25 45,35' stroke='%23000000' stroke-width='4' fill='none' stroke-linecap='round'/>"
-    "<path d='M65,35 Q60,25 55,35' stroke='%23000000' stroke-width='4' fill='none' stroke-linecap='round'/>"
-    "<circle cx='40' cy='42' r='4' fill='%23000000'/>"
-    "<circle cx='60' cy='42' r='4' fill='%23000000'/>"
-    "<path d='M40,65 Q50,75 60,65' stroke='%23000000' stroke-width='4' fill='none' stroke-linecap='round'/>"
-    "<path d='M25,25 L35,10 L45,22 L50,5 L58,22 L68,10 L75,25' stroke='%232d1124' stroke-width='4' fill='none' stroke-linejoin='round'/>"
-    "</svg>"
-)
+BOT_AVATAR = "👦"  # Common boy emoji profile asset configuration
 
 def get_gemini_client():
     if "GEMINI_API_KEY" in st.secrets:
@@ -162,15 +150,17 @@ if user_query := st.chat_input("Say something to Gaurav..."):
         api_contents = [types.Content(role="user" if msg["role"] == "user" else "model", parts=[types.Part.from_text(text=msg["content"])]) for msg in st.session_state.messages]
         system_instruction = "You are Gaurav, a funny, witty, sarcastic, and deeply loyal close best friend. CRUCIAL: Read the user's text carefully and answer their exact question contextually. Never use hardcoded greeting lists or switch topics randomly. Respond dynamically. Chat casually using informal internet slang and short sentences like a text message. You speak naturally in a mix of Hindi and English (Hinglish). Use casual terms like 'Bhai', 'Yaar', 'Bro', 'Chill mar', and 'tension mat le'. Do NOT use Gujarati phrases like 'Kem cho' or 'Majama' in every sentence. Only use them rarely if explicitly asked about Gujarati or if it fits a niche joke naturally. Crucially, you must use emojis effectively: include exactly ONE or a maximum of TWO highly relevant emojis per turn. Do not spam arrays of emojis under any circumstance."
         
-        try:
-            bot_response = get_gemini_client().models.generate_content(model="gemini-3.5-flash", contents=api_contents, config=types.GenerateContentConfig(system_instruction=system_instruction, temperature=0.4)).text
-        except:
-            bot_response = random.choice(fallback_options)
+        # Display the three-dot active loading spinner inside the active layout context block while fetching the API response
+        with st.spinner("Gaurav is typing..."):
+            try:
+                bot_response = get_gemini_client().models.generate_content(model="gemini-3.5-flash", contents=api_contents, config=types.GenerateContentConfig(system_instruction=system_instruction, temperature=0.4)).text
+            except:
+                bot_response = random.choice(fallback_options)
             
         if bot_response:
             for char in bot_response:
                 full_response += char
-                time.sleep(0.8)
+                time.sleep(0.04)  # Steady, legible typing ticker
                 message_placeholder.markdown(full_response)
             message_placeholder.markdown(full_response)
             
