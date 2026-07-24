@@ -151,7 +151,6 @@ if user_query := st.chat_input("Say something to Gaurav..."):
         st.markdown(user_query)
     st.session_state.messages.append({"role": "user", "content": user_query})
     
-    # Render active loader segment inside Gaurav's bubble block path directly next to his spiky icon
     with st.chat_message("assistant", avatar=BOT_AVATAR):
         message_placeholder = st.empty()
         full_response = ""
@@ -178,7 +177,6 @@ if user_query := st.chat_input("Say something to Gaurav..."):
         
         start_time = time.time()
         
-        # Displays the "Gaurav is typing..." animation frame directly inside his context block next to his icon
         with st.spinner("Gaurav is typing..."):
             try:
                 bot_response = get_gemini_client().models.generate_content(
@@ -189,13 +187,11 @@ if user_query := st.chat_input("Say something to Gaurav..."):
             except:
                 bot_response = random.choice(fallback_options)
             
-            # Enforce 5-second countdown duration layout tracking thresholds
             elapsed_time = time.time() - start_time
             remaining_time = max(0.0, 5.0 - elapsed_time)
             if remaining_time > 0:
                 time.sleep(remaining_time)
 
-        # Word-by-word streaming effect calibrated to run smoothly over exactly 5 seconds
         if bot_response:
             word_list = bot_response.split()
             word_delay = max(0.01, 5.0 / len(word_list))
@@ -203,5 +199,9 @@ if user_query := st.chat_input("Say something to Gaurav..."):
             for index, word in enumerate(word_list):
                 full_response += word + " "
                 time.sleep(word_delay)
-message_placeholder.markdown(full_response.strip())message_placeholder.markdown(bot_response)st.session_state.messages.append({"role": "assistant", "content": bot_response})
-st.rerun()
+                message_placeholder.markdown(full_response.strip())
+            
+            # --- FINAL CLEAN LOGIC PLACEMENT ---
+            message_placeholder.markdown(bot_response)
+            st.session_state.messages.append({"role": "assistant", "content": bot_response})
+            st.rerun()
