@@ -7,65 +7,14 @@ from google.genai import types
 
 # 1. Global Page Layout Configurations
 st.set_page_config(page_title="Vibe with Gaurav", page_icon="🤝", layout="centered")
-
+# --- PASSCODE AUTHENTICATION LOCK ---
 # --- PASSCODE AUTHENTICATION LOCK ---
 if "authenticated" not in st.session_state:
-    if not st.session_state.authenticated:
-    # 1. Inject CSS Styles Privately
-    st.markdown(
-        """
-        <style>
-        .stApp { 
-            font-family: 'Inter', sans-serif !important;
-            background: linear-gradient(135deg, #f2f4f2 0%, #e4eae4 100%) !important;
-            color: #2c3e2b !important;
-        }
-        .lock-container {
-            text-align: center;
-            padding: 45px 35px;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: 24px;
-            box-shadow: 0 10px 30px rgba(44, 62, 43, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            margin-top: 40px;
-            margin-bottom: 20px;
-        }
-        div[data-testid="stTextInput"] input {
-            border-radius: 25px !important;
-            border: 1px solid rgba(44, 62, 43, 0.15) !important;
-            background-color: #ffffff !important;
-            padding: 12px 20px !important;
-            font-size: 1.1rem !important;
-            color: #2c3e2b !important;
-            text-align: center !important;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02) !important;
-            transition: all 0.3s ease;
-        }
-        div[data-testid="stTextInput"] input:focus {
-            border-color: #2c3e2b !important;
-            box-shadow: 0 0 12px rgba(44, 62, 43, 0.12) !important;
-        }
-        div[data-testid="stTextInput"] label { display: none !important; }
-        footer, header { visibility: hidden; }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
+    st.session_state.authenticated = False
 
-    # 2. Render Clean Visual Container
-    st.markdown(
-        """
-        <div class="lock-container">
-            <img style="width: 90px; height: auto;" src="https://openclipart.org" alt="Handshake">
-            <h2 style="color: #2c3e2b; font-weight: 800; font-size: 2.2rem; margin: 15px 0 0 0;">Vibe with Gaurav.</h2>
-            <div style="color: #5a6e59; font-size: 1rem; font-weight: 500; margin-top: 8px; margin-bottom: 25px;">Verify code to connect securely</div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-    
+if not st.session_state.authenticated:
+    st.markdown("""<style>.stApp {font-family: 'Inter', sans-serif !important; background: linear-gradient(135deg, #f2f4f2 0%, #e4eae4 100%) !important; color: #2c3e2b !important;} .lock-container {text-align: center; padding: 45px 35px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 24px; box-shadow: 0 10px 30px rgba(44, 62, 43, 0.08); border: 1px solid rgba(255, 255, 255, 0.5); margin-top: 40px; margin-bottom: 20px;} div[data-testid="stTextInput"] input {border-radius: 25px !important; border: 1px solid rgba(44, 62, 43, 0.15) !important; background-color: #ffffff !important; padding: 12px 20px !important; font-size: 1.1rem !important; color: #2c3e2b !important; text-align: center !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02) !important; transition: all 0.3s ease;} div[data-testid="stTextInput"] input:focus {border-color: #2c3e2b !important; box-shadow: 0 0 12px rgba(44, 62, 43, 0.12) !important;} div[data-testid="stTextInput"] label {display: none !important;} footer, header {visibility: hidden;}</style>""", unsafe_allow_html=True)
+    st.markdown("""<div class="lock-container"><img style="width: 90px; height: auto;" src="https://openclipart.org" alt="Handshake"><h2 style="color: #2c3e2b; font-weight: 800; font-size: 2.2rem; margin: 15px 0 0 0;">Vibe with Gaurav.</h2><div style="color: #5a6e59; font-size: 1rem; font-weight: 500; margin-top: 8px; margin-bottom: 25px;">Verify code to connect securely</div></div>""", unsafe_allow_html=True)
     passcode = st.text_input("Secret Code:", type="password", key="secret_gate", placeholder="Enter passcode here...")
     if passcode:
         if passcode.strip().lower() == "cutie pie":
