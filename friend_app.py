@@ -163,6 +163,17 @@ if user_query := st.chat_input("Say something to Gaurav..."):
             "Bro, phone ki battery khatam hone wali hai! Late text karu? 😉",
             "Tension mat le bhai, main yahin hoon. Thoda breaks chahiye! 😂"
         ]
+        
+        # Funny, casual, and witty Gujarati waiting comments
+        gujarati_waiting_comments = [
+            "Gaurav vichi rahyo chhe, thobhi jaa bhai! 🧠",
+            "Chai piva gayo chhe ke shu? Ek min ubho reh... ☕",
+            "Gaurav typing kare chhe, jalsa kar ne yaar! 😂",
+            "Bhai thodu dhimu dhimu vicharva de, ghanti vage chhe dimaag ma! 🔔",
+            "Tension shu kaam leve chhe? Gaurav lakhi rahyo chhe! 🤫",
+            "Ek j min yaar, dhajyu lakhva de moko aap! 😉"
+        ]
+        
         api_contents = [types.Content(role="user" if msg["role"] == "user" else "model", parts=[types.Part.from_text(text=msg["content"])]) for msg in st.session_state.messages]
         
         system_instruction = (
@@ -178,31 +189,20 @@ if user_query := st.chat_input("Say something to Gaurav..."):
         )
         
         start_time = time.time()
+        chosen_wait_msg = random.choice(gujarati_waiting_comments)
         
-        with st.spinner("Gaurav is typing..."):
+        with st.spinner(chosen_wait_msg):
             try:
+                # Connected securely to standard AI Studio configurations
                 bot_response = get_gemini_client().models.generate_content(
-                    model="gemini-3.5-flash", 
+                    model="gemini-2.5-flash", 
                     contents=api_contents, 
                     config=types.GenerateContentConfig(system_instruction=system_instruction, temperature=0.5)
                 ).text
-            except:
+            except Exception as e:
+                st.error(f"⚠️ Brain broke because: {e}")
                 bot_response = random.choice(fallback_options)
             
             elapsed_time = time.time() - start_time
             remaining_time = max(0.0, 5.0 - elapsed_time)
             if remaining_time > 0:
-                time.sleep(remaining_time)
-
-        if bot_response:
-            word_list = bot_response.split()
-            word_delay = max(0.01, 5.0 / len(word_list))
-            
-            for index, word in enumerate(word_list):
-                full_response += word + " "
-                time.sleep(word_delay)
-                message_placeholder.markdown(full_response.strip())
-            
-            message_placeholder.markdown(bot_response)
-            st.session_state.messages.append({"role": "assistant", "content": bot_response})
-            st.rerun()
