@@ -6,7 +6,7 @@ from google import genai
 from google.genai import types
 
 # 1. Global Page Layout Configurations
-st.set_page_config(page_title="Vibe with Gaurav!", page_icon="🤝", layout="centered")
+st.set_page_config(page_title="Vibe with Gaurav", page_icon="🤝", layout="centered")
 
 # --- PASSCODE AUTHENTICATION LOCK ---
 if "authenticated" not in st.session_state:
@@ -53,7 +53,6 @@ st.markdown(
     }
     .lounge-subtitle { color: #444444; font-size: 0.95rem; margin-top: 5px; font-weight: 500; margin-bottom: 10px; }
     
-    /* Clean Ceramic Black-Text Chat Bubbles */
     div[data-testid="stChatMessage"]:nth-child(even) div[data-testid="stChatMessageContent"] {
         background-color: #ffffff !important;
         color: #000000 !important;
@@ -71,7 +70,6 @@ st.markdown(
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
     }
     
-    /* Clean, Borderless Bottom Chat Entry Input Box */
     div[data-testid="stChatInput"] {
         border-radius: 35px !important;
         background-color: #ffffff !important;
@@ -90,7 +88,7 @@ st.markdown(
 
 # Avatars Configuration
 USER_AVATAR = "🌸"
-BOT_AVATAR = "https://ftcdn.net"
+BOT_AVATAR = "https://githubusercontent.com"
 
 def get_gemini_client():
     if "GEMINI_API_KEY" in st.secrets:
