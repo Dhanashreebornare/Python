@@ -10,23 +10,18 @@ st.set_page_config(page_title="Vibe with Gaurav", page_icon="🤝", layout="cent
 
 # --- PASSCODE AUTHENTICATION LOCK ---
 if "authenticated" not in st.session_state:
-    st.session_state.authenticated = False
-
-if not st.session_state.authenticated:
+    if not st.session_state.authenticated:
     st.markdown(
         """
         <link rel="preconnect" href="https://googleapis.com">
         <link rel="preconnect" href="https://gstatic.com" crossorigin>
         <link href="https://googleapis.com" rel="stylesheet">
         <style>
-        /* Stark Obsidian High-Contrast Deep Matte Background */
         .stApp { 
             font-family: 'Inter', sans-serif !important;
             background-color: #05070b !important;
             color: #ffffff !important;
         }
-        
-        /* Fixed Absolute CSS Floral Side Banners - Fully Visible on All Layouts */
         .fixed-flower-left {
             position: fixed; left: 5vw; top: 0; bottom: 0; width: 40px;
             display: flex; flex-direction: column; justify-content: space-around;
@@ -37,15 +32,13 @@ if not st.session_state.authenticated:
             display: flex; flex-direction: column; justify-content: space-around;
             align-items: center; font-size: 24px; z-index: 9999; pointer-events: none;
         }
-        
-        /* High Contrast Neon-Chiseled Passcode Card Box */
         .lock-container {
             text-align: center;
             padding: 45px 35px;
             background: #0d111a;
             border-radius: 20px;
             box-shadow: 0 0 25px rgba(168, 85, 247, 0.2);
-            border: 2px solid #a855f7; /* High-Contrast Electric Purple */
+            border: 2px solid #a855f7;
             margin-top: 80px;
             margin-bottom: 20px;
         }
@@ -53,10 +46,9 @@ if not st.session_state.authenticated:
         .lock-subtitle { color: #94a3b8; font-size: 1rem; font-weight: 500; margin-top: 8px; margin-bottom: 25px; }
         .handshake-logo { width: 85px; filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.4)); }
         
-        /* Chiseled Input Forms Override rules */
         div[data-testid="stTextInput"] input {
             border-radius: 25px !important;
-            border: 2px solid #ffffff !important; /* Pure White High Contrast */
+            border: 2px solid #ffffff !important;
             background-color: #1e293b !important;
             padding: 12px 20px !important;
             font-size: 1.1rem !important;
@@ -72,7 +64,6 @@ if not st.session_state.authenticated:
         footer, header { visibility: hidden; }
         </style>
         
-        <!-- Render Side Flower streams securely inside fixed root wrapper paths -->
         <div class="fixed-flower-left">🪻<br>🪻<br>🪻<br>🪻<br>🪻<br>🪻<br>🪻</div>
         <div class="fixed-flower-right">🪻<br>🪻<br>🪻<br>🪻<br>🪻<br>🪻<br>🪻</div>
         
@@ -93,7 +84,6 @@ if not st.session_state.authenticated:
         else:
             st.error("❌ Invalid entry, buddy! Try again.")
     st.stop()
-
 # 2. Main Lounge UI Core Styles
 st.markdown(
     """
