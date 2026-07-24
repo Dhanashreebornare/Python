@@ -160,7 +160,7 @@ if user_query := st.chat_input("Say something to Gaurav..."):
         if bot_response:
             for char in bot_response:
                 full_response += char
-                time.sleep(0.1)  # Steady, legible typing ticker
+                time.sleep(0.3)  # Steady, legible typing ticker
                 message_placeholder.markdown(full_response)
             message_placeholder.markdown(full_response)
             
