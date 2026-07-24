@@ -123,7 +123,7 @@ if "messages" not in st.session_state:
 st.markdown(
     """
     <div class="lounge-header">
-        <h1 class="lounge-title">Vibe with Gaurav.</h1>
+        <h1 class="lounge-title">Vibe with Gaurav...</h1>
         <div class="lounge-subtitle">Your Hinglish bestie • Available 24/7</div>
         <div style="font-size: 1.2rem; letter-spacing: 4px;">🌸  ✨  🪻  ✨  🌸</div>
     </div>
@@ -144,10 +144,12 @@ if user_query := st.chat_input("Say something to Gaurav..."):
     st.session_state.messages.append({"role": "user", "content": user_query})
     
     fallback_options = [
-        "Bhai, thoda busy hoon! Mummy ne kaam saupa hai. 😂",
+        "Bhai, thoda busy hoon! Wife ne kaam saupa hai. 😂",
         "Arey yaar, internet bohot slow chal raha hai yahan... chill mar! ☕",
         "Bro, phone ki battery khatam hone wali hai! Late text karu? 😉",
         "Tension mat le bhai, main yahin hoon. Thoda breaks chahiye! 😂"
+        "Dhairya rakh bhai, shvas pachho to leva de! 😂"
+        "Jara shanti rakh, utavalo tha maa..😂"
     ]
     api_contents = [types.Content(role="user" if msg["role"] == "user" else "model", parts=[types.Part.from_text(text=msg["content"])]) for msg in st.session_state.messages]
     
