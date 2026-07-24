@@ -141,7 +141,7 @@ st.markdown(
     <div class="lounge-header">
         <h1 class="lounge-title">Vibe with Gaurav.</h1>
         <div class="lounge-subtitle">Your Hinglish bestie • Available 24/7</div>
-        <div style="font-size: 1.2rem; letter-spacing: 4px;">🌸  ✨  🪻  ✨  🌸</div>
+        <div style="font-size: 1.2rem; letter-spacing: 4px;">🌸  ✨   ✨  🌸</div>
     </div>
     """,
     unsafe_allow_html=True
