@@ -196,12 +196,9 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Profile configuration settings
 USER_AVATAR = "🌸"
-# Cute anime chibi boy with stylish spikey hair asset for Gaurav's avatar
 BOT_AVATAR = "https://freepik.com"
 
-# Initialize Google Gemini API client securely
 def get_gemini_client():
     if "GEMINI_API_KEY" in st.secrets:
         api_key = st.secrets["GEMINI_API_KEY"]
@@ -212,28 +209,10 @@ def get_gemini_client():
         st.stop()
     return genai.Client(api_key=api_key)
 
-# Setup initial session tracking state
 if "messages" not in st.session_state:
-    st.session_state.messages = [
-        {
-            "role": "assistant",
-            "content": "Yo! What's up? Finally you remembered your best friend. Aur bata, what's cooking today? 🤔",
-        }
-    ]
+    st.session_state.messages = [{"role": "assistant", "content": "Yo! What's up? Finally you remembered your best friend. Aur bata, what's cooking today? 🤔"}]
 
-# 3. Render Minimalist Pink, Blue & Yellow Floral Header Banner Widget
-st.markdown(
-    """
-    <div class="floral-header">
-        <h1 class="floral-title">Gaurav's Garden</h1>
-        <div class="floral-subtitle">Your Hinglish bestie • Available 24/7</div>
-        <div class="floral-deco">🌸 ✨ 💛 ✨ 🦋</div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
-# 4. Construct Main Feed Area Container wrapped in a custom triple-bordered container layout
+st.markdown("""<div class="floral-header"><h1 class="floral-title">Gaurav's Garden</h1><div class="floral-subtitle">Your Hinglish bestie • Available 24/7</div><div class="floral-deco">🌸 ✨ 💛 ✨ 🦋</div></div>""", unsafe_allow_html=True)
 st.markdown('<div class="floral-outer-frame"><div class="floral-mid-frame"><div class="floral-inner-frame">', unsafe_allow_html=True)
 
 for message in st.session_state.messages:
@@ -241,14 +220,10 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"], avatar=avatar):
         st.markdown(message["content"])
 
-# Close structural layout tags before taking input
 st.markdown('</div></div></div>', unsafe_allow_html=True)
 
-# Wait for execution engine input signals
 if user_query := st.chat_input("Say something to Gaurav..."):
-    # Re-open layout frames contextually for the newly typed message stream
     st.markdown('<div class="floral-outer-frame"><div class="floral-mid-frame"><div class="floral-inner-frame">', unsafe_allow_html=True)
-    
     with st.chat_message("user", avatar=USER_AVATAR):
         st.markdown(user_query)
     st.session_state.messages.append({"role": "user", "content": user_query})
@@ -256,9 +231,53 @@ if user_query := st.chat_input("Say something to Gaurav..."):
     with st.chat_message("assistant", avatar=BOT_AVATAR):
         message_placeholder = st.empty()
         full_response = ""
-        bot_response = ""
-        
         try:
             client = get_gemini_client()
             api_contents = []
+            
+            # --- FIXED FOR-LOOP INDENTATION PORTION ---
             for msg in st.session_state.messages:
+                role_type = "user" if msg["role"] == "user" else "model"
+                api_contents.append(
+                    types.Content(
+                        role=role_type, 
+                        parts=[types.Part.from_text(text=msg["content"])]
+                    )
+                )
+            
+            system_instruction = (
+                "You are Gaurav, a funny, witty, sarcastic, and deeply loyal close best friend. "
+                "CRUCIAL: Read the user's text carefully and answer their exact question contextually. "
+                "Never use hardcoded greeting lists or switch topics randomly. Respond dynamically. "
+                "Chat casually using informal internet slang and short sentences like a text message. "
+                "You speak naturally in a mix of Hindi and English (Hinglish). Use casual terms like 'Bhai', "
+                "'Yaar', 'Bro', 'Chill mar', and 'tension mat le'. "
+                "Do NOT use Gujarati phrases like 'Kem cho' or 'Majama' in every sentence. Only use them rarely "
+                "if explicitly asked about Gujarati or if it fits a niche joke naturally. "
+                "Crucially, you must use emojis effectively: include exactly ONE or a maximum of TWO highly relevant emojis "
+                "per turn. Do not spam arrays of emojis under any circumstance."
+            )
+            response = client.models.generate_content(
+                model="gemini-3.5-flash", 
+                contents=api_contents, 
+                config=types.GenerateContentConfig(system_instruction=system_instruction, temperature=0.4)
+            )
+            bot_response = response.text
+        except Exception as e:
+            fallback_options = [
+                "Bhai, thoda busy hoon! Mummy ne kaam saupa hai. 😂", 
+                "Arey yaar, internet bohot slow chal raha hai yahan... chill mar! ☕", 
+                "Bro, phone ki battery khatam hone wali hai! Late text karu? 😉", 
+                "Tension mat le bhai, main yahin hoon. Thoda breaks chahiye! 😂"
+            ]
+            bot_response = random.choice(fallback_options)
+            
+        if bot_response:
+            for chunk in bot_response.split():
+                full_response += chunk + " "
+                time.sleep(0.60)
+                message_placeholder.markdown(full_response)
+            message_placeholder.markdown(full_response)
+        st.session_state.messages.append({"role": "assistant", "content": bot_response})
+    st.markdown('</div></div></div>', unsafe_allow_html=True)
+    st.rerun()
