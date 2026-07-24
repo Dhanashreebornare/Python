@@ -6,7 +6,7 @@ from google import genai
 from google.genai import types
 
 # 1. Global Page Layout Configurations
-st.set_page_config(page_title="Vibe with Gaurav", page_icon="🤝", layout="centered")
+st.set_page_config(page_title="Vibe with Gaurav", page_icon="💐", layout="centered")
 
 # --- PASSCODE AUTHENTICATION LOCK ---
 if "authenticated" not in st.session_state:
@@ -14,7 +14,7 @@ if "authenticated" not in st.session_state:
 
 if not st.session_state.authenticated:
     st.markdown("""<style>.stApp {font-family: 'Inter', sans-serif !important; background: linear-gradient(135deg, #2d1124 0%, #4a1539 100%) !important; color: #000000 !important;} .lock-container {text-align: center; padding: 45px 35px; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 24px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.5); margin-top: 40px; margin-bottom: 20px;} div[data-testid="stTextInput"] input {border-radius: 25px !important; border: 1px solid rgba(0, 0, 0, 0.2) !important; background-color: #ffffff !important; padding: 12px 20px !important; font-size: 1.1rem !important; color: #000000 !important; text-align: center !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important; transition: all 0.3s ease;} div[data-testid="stTextInput"] input:focus {border-color: #000000 !important; box-shadow: 0 0 12px rgba(0, 0, 0, 0.2) !important;} div[data-testid="stTextInput"] label {display: none !important;} footer {visibility: hidden !important;}</style>""", unsafe_allow_html=True)
-    st.markdown("""<div class="lock-container"><img style="width: 90px; height: auto;" src="https://openclipart.org" alt="Handshake"><h2 style="color: #000000; font-weight: 800; font-size: 2.2rem; margin: 15px 0 0 0;">Vibe with Gaurav.</h2><div style="color: #444444; font-size: 1rem; font-weight: 500; margin-top: 8px; margin-bottom: 12px;">Verify code to connect securely</div><div style="font-size: 1.2rem; margin-bottom: 20px; letter-spacing: 4px;">🌸 ✨ 🪻 ✨ 🌸</div></div>""", unsafe_allow_html=True)
+    st.markdown("""<div class="lock-container"><img style="width: 100px; height: auto;" src="https://openclipart.org" alt="Bouquet"><h2 style="color: #000000; font-weight: 800; font-size: 2.2rem; margin: 15px 0 0 0;">Vibe with Gaurav.</h2><div style="color: #444444; font-size: 1rem; font-weight: 500; margin-top: 8px; margin-bottom: 12px;">Verify code to connect securely</div><div style="font-size: 1.2rem; margin-bottom: 20px; letter-spacing: 4px;">🌸 ✨ 🪻 ✨ 🌸</div></div>""", unsafe_allow_html=True)
     passcode = st.text_input("Secret Code:", type="password", key="secret_gate", placeholder="Enter passcode here...")
     if passcode:
         if passcode.strip().lower() == "cutie pie":
@@ -88,7 +88,17 @@ st.markdown(
 
 # Avatars Configuration
 USER_AVATAR = "🌸"
-BOT_AVATAR = "https://githubusercontent.com"
+BOT_AVATAR = (
+    "data:image/svg+xml;utf8,<svg xmlns='http://w3.org' viewBox='0 0 100 100'>"
+    "<circle cx='50' cy='50' r='45' fill='%23f5ecef' stroke='%232d1124' stroke-width='3'/>"
+    "<path d='M35,35 Q40,25 45,35' stroke='%23000000' stroke-width='4' fill='none' stroke-linecap='round'/>"
+    "<path d='M65,35 Q60,25 55,35' stroke='%23000000' stroke-width='4' fill='none' stroke-linecap='round'/>"
+    "<circle cx='40' cy='42' r='4' fill='%23000000'/>"
+    "<circle cx='60' cy='42' r='4' fill='%23000000'/>"
+    "<path d='M40,65 Q50,75 60,65' stroke='%23000000' stroke-width='4' fill='none' stroke-linecap='round'/>"
+    "<path d='M25,25 L35,10 L45,22 L50,5 L58,22 L68,10 L75,25' stroke='%232d1124' stroke-width='4' fill='none' stroke-linejoin='round'/>"
+    "</svg>"
+)
 
 def get_gemini_client():
     if "GEMINI_API_KEY" in st.secrets:
@@ -145,9 +155,9 @@ if user_query := st.chat_input("Say something to Gaurav..."):
             bot_response = random.choice(fallback_options)
             
         if bot_response:
-            for chunk in bot_response.split():
-                full_response += chunk + " "
-                time.sleep(0.60)
+            for char in bot_response:
+                full_response += char
+                time.sleep(0.02)
                 message_placeholder.markdown(full_response)
             message_placeholder.markdown(full_response)
             
