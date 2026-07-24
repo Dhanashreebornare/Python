@@ -143,7 +143,7 @@ if user_query := st.chat_input("Say something to Gaurav..."):
         with st.spinner("Gaurav is typing..."):
             try:
                 response_data = get_gemini_client().models.generate_content(
-                    model="gemini-2.5-flash", 
+                    model="gemini-3.5-flash", 
                     contents=api_contents, 
                     config=types.GenerateContentConfig(system_instruction=system_instruction, temperature=0.5)
                 )
@@ -161,7 +161,7 @@ if user_query := st.chat_input("Say something to Gaurav..."):
                 bot_response = f"{random.choice(system_fallbacks)}\n\n*(Debug Trace: {str(e)})*"
             
             # --- CRUSH-PROOF COUNTDOWN DELAY ---
-            elapsed_time = time.time() - start_time; remaining_time = max(0.0, 5.0 - elapsed_time)
+            elapsed_time = time.time() - start_time; remaining_time = max(0.02, 5.0 - elapsed_time)
             if remaining_time > 0: time.sleep(remaining_time)
 
         # --- WORD TYPEWRITER STREAMING ANIMATION ---
