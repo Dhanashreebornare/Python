@@ -69,7 +69,7 @@ st.markdown(
         100% { opacity: 1; transform: translateX(0); }
     }
     
-    /* Cloud-Like Fluffy Chat Bubbles with Slower Left-to-Right Glide Effect */
+    /* Cloud-Like Fluffy Chat Bubbles with Slower 12-second Left-to-Right Glide Effect */
     div[data-testid="stChatMessage"]:nth-child(even) div[data-testid="stChatMessageContent"] {
         background-color: #ffffff !important;
         color: #000000 !important;
@@ -77,7 +77,7 @@ st.markdown(
         padding: 14px 20px !important;
         border: 1px solid rgba(0, 0, 0, 0.04) !important;
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06) !important;
-        animation: smoothCloudPop 12s ease-out forwards !important; /* Slowed down to 1.2 seconds */
+        animation: smoothCloudPop 12s ease-out forwards !important;
     }
     div[data-testid="stChatMessage"]:nth-child(odd) div[data-testid="stChatMessageContent"] {
         background-color: #f5ecef !important; 
@@ -86,27 +86,7 @@ st.markdown(
         padding: 14px 20px !important;
         border: 1px solid rgba(0, 0, 0, 0.04) !important;
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06) !important;
-        animation: smoothCloudPop 1.2s ease-out forwards !important; /* Slowed down to 1.2 seconds */
-    }
-    
-    /* Cloud-Like Fluffy Chat Bubbles with Pure Black Text & Smooth Animation Target */
-    div[data-testid="stChatMessage"]:nth-child(even) div[data-testid="stChatMessageContent"] {
-        background-color: #ffffff !important;
-        color: #000000 !important;
-        border-radius: 25px 25px 5px 25px !important; 
-        padding: 14px 20px !important;
-        border: 1px solid rgba(0, 0, 0, 0.04) !important;
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06) !important;
-        animation: smoothCloudPop 0.5s ease-out forwards !important;
-    }
-    div[data-testid="stChatMessage"]:nth-child(odd) div[data-testid="stChatMessageContent"] {
-        background-color: #f5ecef !important; 
-        color: #000000 !important;
-        border-radius: 25px 25px 25px 5px !important; 
-        padding: 14px 20px !important;
-        border: 1px solid rgba(0, 0, 0, 0.04) !important;
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06) !important;
-        animation: smoothCloudPop 0.5s ease-out forwards !important;
+        animation: smoothCloudPop 12s ease-out forwards !important;
     }
     
     /* Minimalist Cloud Text Input Box */
@@ -171,30 +151,34 @@ if user_query := st.chat_input("Say something to Gaurav..."):
         st.markdown(user_query)
     st.session_state.messages.append({"role": "user", "content": user_query})
     
-    fallback_options = [
-        "Bhai, thoda busy hoon! Mummy ne kaam saupa hai. 😂",
-        "Arey yaar, internet bohot slow chal raha hai yahan... chill mar! ☕",
-        "Bro, phone ki battery khatam hone wali hai! Late text karu? 😉",
-        "Tension mat le bhai, main yahin hoon. Thoda breaks chahiye! 😂"
-    ]
-    api_contents = [types.Content(role="user" if msg["role"] == "user" else "model", parts=[types.Part.from_text(text=msg["content"])]) for msg in st.session_state.messages]
-    
-    system_instruction = (
-        "You are Gaurav, a funny, witty, deeply loving, and loyal close best friend. "
-        "CRUCIAL: Read the user's text carefully and answer their exact question contextually. "
-        "Never use hardcoded greeting lists or switch topics randomly. Respond dynamically. "
-        "Chat casually using informal internet slang and short sentences like a text message. "
-        "You speak naturally in a mix of Hindi and English (Hinglish). Use casual terms "
-        "like 'Bhai', 'Yaar', 'Bro', 'Chill mar', 'tension mat le', and 'Mast'. "
-        "Crucially, you must use emojis in a highly optimistic, joyful, and supportive way to "
-        "lift the user's spirits and spread positive vibes. Include exactly ONE or a maximum of "
-        "TWO highly relevant, bright, happy emojis per turn. Do not spam arrays of emojis."
-    )
-    
-    # --- RENDER SPINNER INSIDE GAURAV'S BLOCK ---
+    # Render active loader segment inside Gaurav's bubble block path directly next to his spiky icon
     with st.chat_message("assistant", avatar=BOT_AVATAR):
+        message_placeholder = st.empty()
+        full_response = ""
+        
+        fallback_options = [
+            "Bhai, thoda busy hoon! Mummy ne kaam saupa hai. 😂",
+            "Arey yaar, internet bohot slow chal raha hai yahan... chill mar! ☕",
+            "Bro, phone ki battery khatam hone wali hai! Late text karu? 😉",
+            "Tension mat le bhai, main yahin hoon. Thoda breaks chahiye! 😂"
+        ]
+        api_contents = [types.Content(role="user" if msg["role"] == "user" else "model", parts=[types.Part.from_text(text=msg["content"])]) for msg in st.session_state.messages]
+        
+        system_instruction = (
+            "You are Gaurav, a funny, witty, deeply loving, and loyal close best friend. "
+            "CRUCIAL: Read the user's text carefully and answer their exact question contextually. "
+            "Never use hardcoded greeting lists or switch topics randomly. Respond dynamically. "
+            "Chat casually using informal internet slang and short sentences like a text message. "
+            "You speak naturally in a mix of Hindi and English (Hinglish). Use casual terms "
+            "like 'Bhai', 'Yaar', 'Bro', 'Chill mar', 'tension mat le', and 'Mast'. "
+            "Crucially, you must use emojis in a highly optimistic, joyful, and supportive way to "
+            "lift the user's spirits and spread positive vibes. Include exactly ONE or a maximum of "
+            "TWO highly relevant, bright, happy emojis per turn. Do not spam arrays of emojis."
+        )
+        
         start_time = time.time()
         
+        # Displays the "Gaurav is typing..." animation frame directly inside his context block next to his icon
         with st.spinner("Gaurav is typing..."):
             try:
                 bot_response = get_gemini_client().models.generate_content(
@@ -205,15 +189,18 @@ if user_query := st.chat_input("Say something to Gaurav..."):
             except:
                 bot_response = random.choice(fallback_options)
             
-            # Match strict 5-second countdown duration layout metrics
+            # Enforce 5-second countdown duration layout tracking thresholds
             elapsed_time = time.time() - start_time
             remaining_time = max(0.0, 5.0 - elapsed_time)
             if remaining_time > 0:
                 time.sleep(remaining_time)
 
-        # --- SMOOTH CSS-ANIMATED POP UP ---
+        # Word-by-word streaming effect calibrated to run smoothly over exactly 5 seconds
         if bot_response:
-            st.markdown(bot_response)
-            st.session_state.messages.append({"role": "assistant", "content": bot_response})
-        
-    st.rerun()
+            word_list = bot_response.split()
+            word_delay = max(0.01, 5.0 / len(word_list))
+            
+            for index, word in enumerate(word_list):
+                full_response += word + " "
+                time.sleep(word_delay)
+message_placeholder.markdown(full_response.strip())message_placeholder.markdown(bot_response)st.session_state.messages.append({"role": "assistant", "content": bot_response})st.rerun()
