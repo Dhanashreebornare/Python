@@ -8,6 +8,32 @@ from google.genai import types
 # 1. Global Page Layout Configurations
 st.set_page_config(page_title="Vibe with Gaurav", page_icon="🌸", layout="centered")
 
+# Initialize global authentication tracking state safely from Streamlit Sessions
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+
+# --- PASSCODE AUTHENTICATION LOCK ---
+if not st.session_state.authenticated:
+    st.markdown("""<style>.stApp {font-family: 'Inter', sans-serif !important; background: linear-gradient(135deg, #2d1124 0%, #4a1539 100%) !important; color: #000000 !important;} .lock-container {text-align: center; padding: 45px 35px; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 24px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.5); margin-top: 40px; margin-bottom: 20px;} div[data-testid="stTextInput"] input {border-radius: 25px !important; border: 1px solid rgba(0, 0, 0, 0.2) !important; background-color: #ffffff !important; padding: 12px 20px !important; font-size: 1.1rem !important; color: #000000 !important; text-align: center !important; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05) !important; transition: all 0.3s ease;} div[data-testid="stTextInput"] input:focus {border-color: #000000 !important; box-shadow: 0 0 12px rgba(0, 0, 0, 0.2) !important;} div[data-testid="stTextInput"] label {display: none !important;} footer {visibility: hidden !important;}</style>""", unsafe_allow_html=True)
+    st.markdown("""<div class="lock-container"><h2 style="color: #000000; font-weight: 800; font-size: 2.2rem; margin: 15px 0 0 0;">Vibe with Gaurav.</h2><div style="color: #444444; font-size: 1rem; font-weight: 500; margin-top: 8px; margin-bottom: 12px;">Verify code to connect securely</div><div style="font-size: 1.2rem; letter-spacing: 4px; margin-bottom: 5px;">🌸 ✨ 🪻 ✨ 🌸</div></div>""", unsafe_allow_html=True)
+    
+    passcode_input = st.text_input("Secret Code:", type="password", key="secret_gate", placeholder="Enter passcode here...")
+    
+    if passcode_input:
+        if "SECRET_PASSCODE" in st.secrets:
+            master_passcode = st.secrets["SECRET_PASSCODE"]
+        elif os.environ.get("SECRET_PASSCODE"):
+            master_passcode = os.environ.get("SECRET_PASSCODE")
+        else:
+            master_passcode = "cutie pie"
+            
+        if passcode_input.strip().lower() == master_passcode.strip().lower():
+            st.session_state.authenticated = True
+            st.rerun()
+        else:
+            st.error("❌ Invalid entry, buddy! Try again.")
+    st.stop()
+
 # 2. Main Lounge UI Core Styles (Dark Purple-Pink Theme, Cloud Bubbles, Black Text)
 st.markdown(
     """
@@ -87,6 +113,7 @@ USER_AVATAR = "🌸"
 BOT_AVATAR = "👦🏻"  
 
 def get_gemini_client():
+    # Store the client instance in session state permanently to prevent 'client is closed' bugs
     if "gemini_client" not in st.session_state:
         if "GEMINI_API_KEY" in st.secrets:
             api_key_val = st.secrets["GEMINI_API_KEY"]
@@ -95,7 +122,10 @@ def get_gemini_client():
         else:
             st.error("🔑 API Key missing! Please add 'GEMINI_API_KEY' to your Streamlit Secrets.")
             st.stop()
+        
+        # Open a single persistent connection cache block
         st.session_state.gemini_client = genai.Client(api_key=api_key_val)
+        
     return st.session_state.gemini_client
 
 if "messages" not in st.session_state:
@@ -142,14 +172,14 @@ if user_query := st.chat_input("Say something to Gaurav..."):
         # --- CLEAN UNIFIED SPINNER CONTEXT ---
         with st.spinner("Gaurav is typing..."):
             try:
+                # Connected to your modern Gemini AI Studio endpoint using persistent state cache references
                 response_data = get_gemini_client().models.generate_content(
-                    model="gemini-3.5-flash", 
+                    model="gemini-2.5-flash", 
                     contents=api_contents, 
                     config=types.GenerateContentConfig(system_instruction=system_instruction, temperature=0.5)
                 )
                 bot_response = response_data.text
             except Exception as e:
-                # Witty, caring, and realistic backup lines when the system goes offline
                 system_fallbacks = [
                     "Bhai, thoda system issue chhe yaar! Network haali gayo chhe dimaag mathi. 🥲",
                     "Arey bro, network j locha maari rahyu chhe! Tension mat le, thodi vaar ma vaat kariye. ☕",
@@ -157,19 +187,20 @@ if user_query := st.chat_input("Say something to Gaurav..."):
                     "Yaar, Mummy ne bolavyo kaam mate, etla ma server j bandh thai gayo! 🏃‍♂️",
                     "Tension shu kaam leve chhe bhai? Thodo technical issue chhe, haveli par aav vaat kariye! 😉"
                 ]
-                # Combine a funny line with the real hidden error trace for clean debugging
                 bot_response = f"{random.choice(system_fallbacks)}\n\n*(Debug Trace: {str(e)})*"
             
             # --- CRUSH-PROOF COUNTDOWN DELAY ---
-            elapsed_time = time.time() - start_time; remaining_time = max(0.02, 5.0 - elapsed_time)
+            elapsed_time = time.time() - start_time; remaining_time = max(0.0, 5.0 - elapsed_time)
+            # --- CRUSH-PROOF COUNTDOWN DELAY ---
+            elapsed_time = time.time() - start_time; remaining_time = max(0.0, 5.0 - elapsed_time)
             if remaining_time > 0: time.sleep(remaining_time)
 
-        # --- WORD TYPEWRITER STREAMING ANIMATION ---
+        # --- ANTI-OVERLAP STREAMING & POPUP LAYOUT ---
         if bot_response:
-            word_list = bot_response.split(); word_delay = max(0.02, 5.0 / max(1, len(word_list)))
+            word_list = bot_response.split(); word_delay = max(0.01, 5.0 / max(1, len(word_list)))
             for index, word in enumerate(word_list):
                 full_response += word + " "; time.sleep(word_delay); message_placeholder.markdown(full_response.strip())
             
-            message_placeholder.markdown(bot_response)
+            # --- SAFE DATA TERMINATION AND REFRESH ---
             st.session_state.messages.append({"role": "assistant", "content": bot_response})
-            st.rerun()
+            message_placeholder.empty(); st.rerun()
