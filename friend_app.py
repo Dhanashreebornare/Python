@@ -14,7 +14,7 @@ if "authenticated" not in st.session_state:
 
 # --- PASSCODE AUTHENTICATION LOCK ---
 if not st.session_state.authenticated:
-    st.markdown("""<style>.stApp {font-family: 'Inter', sans-serif !important; background: #e6007e !important; color: #000000 !important;} .lock-container {text-align: center; padding: 45px 35px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 24px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.4); margin-top: 60px; margin-bottom: 20px;} div[data-testid="stTextInput"] input {border-radius: 25px !important; border: 1px solid rgba(0, 0, 0, 0.15) !important; background-color: #ffffff !important; padding: 12px 20px !important; font-size: 1.1rem !important; color: #000000 !important; text-align: center !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03) !important; transition: all 0.3s ease;} div[data-testid="stTextInput"] input:focus {border-color: #000000 !important; box-shadow: 0 0 12px rgba(0, 0, 0, 0.15) !important;} div[data-testid="stTextInput"] label {display: none !important;} footer {visibility: hidden !important;}</style>""", unsafe_allow_html=True)
+    st.markdown("""<style>.stApp {font-family: 'Inter', sans-serif !important; background: linear-gradient(135deg, #2d1124 0%, #4a1539 100%) !important; color: #000000 !important;} .lock-container {text-align: center; padding: 45px 35px; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 24px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.5); margin-top: 40px; margin-bottom: 20px;} div[data-testid="stTextInput"] input {border-radius: 25px !important; border: 1px solid rgba(0, 0, 0, 0.2) !important; background-color: #ffffff !important; padding: 12px 20px !important; font-size: 1.1rem !important; color: #000000 !important; text-align: center !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important; transition: all 0.3s ease;} div[data-testid="stTextInput"] input:focus {border-color: #000000 !important; box-shadow: 0 0 12px rgba(0, 0, 0, 0.2) !important;} div[data-testid="stTextInput"] label {display: none !important;} footer {visibility: hidden !important;}</style>""", unsafe_allow_html=True)
     st.markdown("""<div class="lock-container"><h2 style="color: #000000; font-weight: 800; font-size: 2.2rem; margin: 15px 0 0 0;">Vibe with Gaurav.</h2><div style="color: #444444; font-size: 1rem; font-weight: 500; margin-top: 8px; margin-bottom: 12px;">Verify code to connect securely</div><div style="font-size: 1.2rem; letter-spacing: 4px; margin-bottom: 5px;">🌸  ✨  🪻  ✨  🌸</div></div>""", unsafe_allow_html=True)
     
     passcode_input = st.text_input("Secret Code:", type="password", key="secret_gate", placeholder="Enter passcode here...")
@@ -34,24 +34,24 @@ if not st.session_state.authenticated:
             st.error("❌ Invalid entry, buddy! Try again.")
     st.stop()
 
-# 2. Main Lounge UI Core Styles (Rani Pink Theme, Cloud Bubbles, Black Text)
+# 2. Main Lounge UI Core Styles (Dark Purple-Pink Theme, Cloud Bubbles, Black Text)
 st.markdown(
     """
     <style>
     .stApp {
         font-family: 'Inter', sans-serif !important;
-        background: #e6007e !important; /* Striking Rani Pink Background Canvas */
+        background: linear-gradient(135deg, #2d1124 0%, #4a1539 100%) !important; /* Premium Dark Purple Pink Canvas */
         color: #000000 !important;
     }
     .lounge-header {
         text-align: center;
         padding: 24px 15px;
-        background: rgba(255, 255, 255, 0.85);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border-radius: 24px;
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
         margin-bottom: 35px;
     }
     .lounge-title {
@@ -61,7 +61,7 @@ st.markdown(
         margin: 0;
         font-size: 2.2rem;
     }
-    .lounge-subtitle { color: #222222; font-size: 0.95rem; margin-top: 5px; font-weight: 500; margin-bottom: 12px; }
+    .lounge-subtitle { color: #444444; font-size: 0.95rem; margin-top: 5px; font-weight: 500; margin-bottom: 12px; }
     
     /* Cloud-Like Fluffy Chat Bubbles with Pure Black Text */
     div[data-testid="stChatMessage"]:nth-child(even) div[data-testid="stChatMessageContent"] {
@@ -73,7 +73,7 @@ st.markdown(
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06) !important;
     }
     div[data-testid="stChatMessage"]:nth-child(odd) div[data-testid="stChatMessageContent"] {
-        background-color: #fff2f6 !important; /* Matte blossom cloud tint */
+        background-color: #f5ecef !important; 
         color: #000000 !important;
         border-radius: 25px 25px 25px 5px !important; 
         padding: 14px 20px !important;
@@ -85,7 +85,7 @@ st.markdown(
     div[data-testid="stChatInput"] {
         border-radius: 35px !important;
         background-color: #ffffff !important;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
         border: none !important;
     }
     div[data-testid="stChatInput"] textarea { 
@@ -100,7 +100,7 @@ st.markdown(
 
 # Avatars Configuration
 USER_AVATAR = "🌸"
-BOT_AVATAR = "👦🏻"  
+BOT_AVATAR = "👦🏻"  # Boy with spiky hair emoji profile asset configuration
 
 def get_gemini_client():
     if "GEMINI_API_KEY" in st.secrets:
@@ -137,9 +137,6 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"], avatar=avatar):
         st.markdown(message["content"])
 
-# Create a permanent empty placeholder slot anchored right above the chat input box
-typing_indicator_container = st.empty()
-
 # 5. Live Interaction Engine
 if user_query := st.chat_input("Say something to Gaurav..."):
     with st.chat_message("user", avatar=USER_AVATAR):
@@ -166,8 +163,11 @@ if user_query := st.chat_input("Say something to Gaurav..."):
         "TWO highly relevant, bright, happy emojis per turn. Do not spam arrays of emojis."
     )
     
-    # Spinner pops up first above the box while the model computes response content data
-    with typing_indicator_container:
+    # --- FIXED: SPINNER ENCLOSED NEATLY INSIDE GAURAV'S ACTIVE CHAT BLOCK NEXT TO HIS ICON ---
+    with st.chat_message("assistant", avatar=BOT_AVATAR):
+        message_placeholder = st.empty()
+        full_response = ""
+        
         with st.spinner("Gaurav is typing..."):
             try:
                 bot_response = get_gemini_client().models.generate_content(
@@ -178,13 +178,14 @@ if user_query := st.chat_input("Say something to Gaurav..."):
             except:
                 bot_response = random.choice(fallback_options)
             
-            # Artificial brief pause so the loading state tracks visually
-            time.sleep(1.2)
-
-    # Clean instant message popup execution
-    if bot_response:
-        with st.chat_message("assistant", avatar=BOT_AVATAR):
-            st.markdown(bot_response)
+        if bot_response:
+            # Steady character-by-character typewriter loop calibrated at a 20x slower speed rate
+            for char in bot_response:
+                full_response += char
+                time.sleep(0.40)  # Intentional deep deceleration rhythm
+                message_placeholder.markdown(full_response)
+            message_placeholder.markdown(full_response)
+            
         st.session_state.messages.append({"role": "assistant", "content": bot_response})
         
     st.rerun()
