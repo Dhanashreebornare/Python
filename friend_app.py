@@ -170,7 +170,7 @@ if user_query := st.chat_input("Say something to Gaurav..."):
         if bot_response:
             for char in bot_response:
                 full_response += char
-                time.sleep(0.02)
+                time.sleep(0.008)
                 message_placeholder.markdown(full_response)
             message_placeholder.markdown(full_response)
             
