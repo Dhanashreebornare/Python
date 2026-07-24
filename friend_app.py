@@ -203,4 +203,5 @@ if user_query := st.chat_input("Say something to Gaurav..."):
             for index, word in enumerate(word_list):
                 full_response += word + " "
                 time.sleep(word_delay)
-message_placeholder.markdown(full_response.strip())message_placeholder.markdown(bot_response)st.session_state.messages.append({"role": "assistant", "content": bot_response})st.rerun()
+message_placeholder.markdown(full_response.strip())message_placeholder.markdown(bot_response)st.session_state.messages.append({"role": "assistant", "content": bot_response})
+st.rerun()
