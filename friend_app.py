@@ -8,9 +8,10 @@ from google.genai import types
 # 1. Global Page Layout Configurations
 st.set_page_config(page_title="Vibe with Gaurav", page_icon="🤝", layout="centered")
 
-# --- PASSCODE AUTHENTICATION LOCK ---
 if "authenticated" not in st.session_state:
-    if not st.session_state.authenticated:
+    st.session_state.authenticated = False
+
+if not st.session_state.authenticated:
     st.markdown(
         """
         <link rel="preconnect" href="https://googleapis.com">
