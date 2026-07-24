@@ -69,7 +69,7 @@ st.markdown(
         100% { opacity: 1; transform: translateX(0); }
     }
     
-    /* Cloud-Like Fluffy Chat Bubbles with Slower 12-second Left-to-Right Glide Effect */
+    /* Standard Instant Entry for User Chat Bubbles */
     div[data-testid="stChatMessage"]:nth-child(even) div[data-testid="stChatMessageContent"] {
         background-color: #ffffff !important;
         color: #000000 !important;
@@ -77,8 +77,10 @@ st.markdown(
         padding: 14px 20px !important;
         border: 1px solid rgba(0, 0, 0, 0.04) !important;
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06) !important;
-        animation: smoothCloudPop 12s ease-out forwards !important;
+        animation: none !important;
     }
+    
+    /* Slower 12-second Left-to-Right Glide Effect EXCLUSIVELY for Gaurav's Chat Bubbles */
     div[data-testid="stChatMessage"]:nth-child(odd) div[data-testid="stChatMessageContent"] {
         background-color: #f5ecef !important; 
         color: #000000 !important;
@@ -201,7 +203,6 @@ if user_query := st.chat_input("Say something to Gaurav..."):
                 time.sleep(word_delay)
                 message_placeholder.markdown(full_response.strip())
             
-            # --- FINAL CLEAN LOGIC PLACEMENT ---
             message_placeholder.markdown(bot_response)
             st.session_state.messages.append({"role": "assistant", "content": bot_response})
             st.rerun()
