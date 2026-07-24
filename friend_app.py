@@ -8,16 +8,29 @@ from google.genai import types
 # 1. Global Page Layout Configurations
 st.set_page_config(page_title="Vibe with Gaurav", page_icon="💐", layout="centered")
 
-# --- PASSCODE AUTHENTICATION LOCK ---
+# Initialize global authentication tracking state safely
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
+# --- PASSCODE AUTHENTICATION LOCK ---
 if not st.session_state.authenticated:
     st.markdown("""<style>.stApp {font-family: 'Inter', sans-serif !important; background: linear-gradient(135deg, #2d1124 0%, #4a1539 100%) !important; color: #000000 !important;} .lock-container {text-align: center; padding: 45px 35px; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 24px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.5); margin-top: 40px; margin-bottom: 20px;} div[data-testid="stTextInput"] input {border-radius: 25px !important; border: 1px solid rgba(0, 0, 0, 0.2) !important; background-color: #ffffff !important; padding: 12px 20px !important; font-size: 1.1rem !important; color: #000000 !important; text-align: center !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important; transition: all 0.3s ease;} div[data-testid="stTextInput"] input:focus {border-color: #000000 !important; box-shadow: 0 0 12px rgba(0, 0, 0, 0.2) !important;} div[data-testid="stTextInput"] label {display: none !important;} footer {visibility: hidden !important;}</style>""", unsafe_allow_html=True)
     st.markdown("""<div class="lock-container"><img style="width: 100px; height: auto;" src="https://openclipart.org" alt="Bouquet"><h2 style="color: #000000; font-weight: 800; font-size: 2.2rem; margin: 15px 0 0 0;">Vibe with Gaurav.</h2><div style="color: #444444; font-size: 1rem; font-weight: 500; margin-top: 8px; margin-bottom: 12px;">Verify code to connect securely</div><div style="font-size: 1.2rem; margin-bottom: 20px; letter-spacing: 4px;">🌸 ✨ 🪻 ✨ 🌸</div></div>""", unsafe_allow_html=True)
-    passcode = st.text_input("Secret Code:", type="password", key="secret_gate", placeholder="Enter passcode here...")
-    if passcode:
-        if passcode.strip().lower() == "cutie pie":
+    
+    passcode_input = st.text_input("Secret Code:", type="password", key="secret_gate", placeholder="Enter passcode here...")
+    
+    if passcode_input:
+        # Securely fetch the master passcode value from the Streamlit Secrets file environment
+        if "SECRET_PASSCODE" in st.secrets:
+            master_passcode = st.secrets["SECRET_PASSCODE"]
+        elif os.environ.get("SECRET_PASSCODE"):
+            master_passcode = os.environ.get("SECRET_PASSCODE")
+        else:
+            st.error("🔒 Security configuration missing! Please add 'SECRET_PASSCODE' to your Streamlit Secrets.")
+            st.stop()
+            
+        # Cleanly validate the entry case-insensitively
+        if passcode_input.strip().lower() == master_passcode.strip().lower():
             st.session_state.authenticated = True
             st.rerun()
         else:
