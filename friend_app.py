@@ -35,7 +35,7 @@ if not st.session_state.authenticated:
 
 # --- MAIN LOUNGE APP (Loads ONLY when authenticated) ---
 else:
-                # 2. Main Lounge UI Core Styles (Strict Left/Right Avatar Mirroring & Colors)
+                    # 2. Main Lounge UI Core Styles (Rectangle Bubbles, Left/Right Avatars & New Custom Colors)
     st.markdown(
         """
         <style>
@@ -74,45 +74,49 @@ else:
             100% { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- STABLE AVATAR ALIGNMENT MATRIX --- */
-        /* Targets the inner structural message grid row directly */
-        div[data-testid="stChatMessage"] > div {
+        /* --- GLOBAL CHAT FLEX LAYOUT --- */
+        div[data-testid="stChatMessage"] {
             display: flex !important;
             width: 100% !important;
+            background-color: transparent !important;
             gap: 12px !important;
             align-items: flex-start !important;
         }
 
-        /* --- USER MESSAGES (EVEN ROW: AVATAR ON RIGHT SIDE EDGE) --- */
-        div[data-testid="stChatMessage"]:nth-child(even) > div {
-            flex-direction: row-reverse !important; /* Forcefully mirrors the inner avatar placement layout */
+        /* --- USER CHAT BUBBLES (AVATAR RIGHT, LIGHT BLUE BOX) --- */
+        div[data-testid="stChatMessage"]:nth-child(even) {
+            flex-direction: row-reverse !important;
         }
         div[data-testid="stChatMessage"]:nth-child(even) div[data-testid="stChatMessageContent"] {
-            background-color: #e3f2fd !important; /* Light Blue Box */
+            /* Light blue background optimized for black text readability */
+            background-color: #e3f2fd !important; 
             color: #000000 !important;
+            
             border-radius: 12px !important; 
             padding: 14px 20px !important;
             border: 1px solid rgba(0, 0, 0, 0.04) !important;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06) !important;
             text-align: left !important;
-            margin-left: auto !important; /* Locks layout alignment firmly on the right screen side margin */
+            margin-left: auto !important;
             margin-right: 0 !important;
             animation: none !important;
         }
 
-        /* --- GAURAV MESSAGES (ODD ROW: AVATAR ON LEFT SIDE EDGE) --- */
-        div[data-testid="stChatMessage"]:nth-child(odd) > div {
-            flex-direction: row !important; /* Strictly locks Gaurav's avatar structure on the left side margin */
+        /* --- GAURAV CHAT BUBBLES (AVATAR LEFT, WHITE BOX) --- */
+        div[data-testid="stChatMessage"]:nth-child(odd) {
+            flex-direction: row !important;
         }
         div[data-testid="stChatMessage"]:nth-child(odd) div[data-testid="stChatMessageContent"] {
-            background-color: #ffffff !important; /* Pure White Box */
+            /* Clean pure white background */
+            background-color: #ffffff !important; 
             color: #000000 !important;
+            
             border-radius: 12px !important; 
             padding: 14px 20px !important;
             border: 1px solid rgba(0, 0, 0, 0.04) !important;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06) !important;
             text-align: left !important;
-            margin-right: auto !important; /* Locks layout alignment firmly on the left screen side margin */
+            margin-right: auto !important;
             margin-left: 0 !important;
             animation: smoothCloudPop 0.3s ease-out forwards !important;
         }
