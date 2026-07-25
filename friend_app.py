@@ -18,20 +18,18 @@ if not st.session_state.authenticated:
     st.markdown("""<div class="lock-container"><h2 style="color: #000000; font-weight: 800; font-size: 2.2rem; margin: 15px 0 0 0;">Vibe with Gaurav...</h2><div style="color: #444444; font-size: 1rem; font-weight: 500; margin-top: 8px; margin-bottom: 12px;">Verify code to connect securely</div><div style="font-size: 1.2rem; letter-spacing: 4px; margin-bottom: 5px;">🌸 ✨ 🪻 ✨ 🌸</div></div>""", unsafe_allow_html=True)
     
     passcode_input = st.text_input("Secret Code:", type="password", key="secret_gate", placeholder="Enter passcode here...")
-    
     if passcode_input:
         if "SECRET_PASSCODE" in st.secrets:
             master_passcode = st.secrets["SECRET_PASSCODE"]
         else:
-            os.environ.get("SECRET_PASSCODE")
             master_passcode = os.environ.get("SECRET_PASSCODE")
             
-        if passcode_input.strip().lower() == master_passcode.strip().lower():
+        if master_passcode and passcode_input.strip().lower() == master_passcode.strip().lower():
             st.session_state.authenticated = True
             st.rerun()
         else:
             st.error("❌ Invalid entry, buddy! Try again.")
-    st.stop()
+            st.stop()
 
 # 2. Main Lounge UI Core Styles (Dark Purple-Pink Theme, Cloud Bubbles, Black Text)
 st.markdown(
@@ -60,45 +58,45 @@ st.markdown(
         margin: 0;
         font-size: 2.2rem;
     }
-    .lounge-subtitle { color: #444444; font-size: 0.95rem; margin-top: 5px; font-weight: 500; margin-bottom: 12px; }
-    
-    /* Smooth CSS Left-to-Right Slow Slide Animation Keyframe */
+    .lounge-subtitle {
+        color: #444444;
+        font-size: 0.95rem;
+        margin-top: 5px;
+        font-weight: 500;
+        margin-bottom: 12px;
+    }
     @keyframes smoothCloudPop {
         0% { opacity: 0; transform: translateX(-30px); }
         100% { opacity: 1; transform: translateX(0); }
     }
-    
-    /* Standard Instant Entry for User Chat Bubbles */
+    /* User Chat Bubbles */
     div[data-testid="stChatMessage"]:nth-child(even) div[data-testid="stChatMessageContent"] {
         background-color: #ffffff !important;
         color: #000000 !important;
-        border-radius: 25px 25px 5px 25px !important; 
+        border-radius: 25px 25px 5px 25px !important;
         padding: 14px 20px !important;
         border: 1px solid rgba(0, 0, 0, 0.04) !important;
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06) !important;
         animation: none !important;
     }
-    
-    /* Slower 12-second Left-to-Right Glide Effect EXCLUSIVELY for Gaurav's Chat Bubbles */
+    /* Gaurav's Chat Bubbles */
     div[data-testid="stChatMessage"]:nth-child(odd) div[data-testid="stChatMessageContent"] {
-        background-color: #f5ecef !important; 
+        background-color: #f5ecef !important;
         color: #000000 !important;
-        border-radius: 25px 25px 25px 5px !important; 
+        border-radius: 25px 25px 25px 5px !important;
         padding: 14px 20px !important;
         border: 1px solid rgba(0, 0, 0, 0.04) !important;
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06) !important;
-        animation: smoothCloudPop 12s ease-out forwards !important;
+        animation: smoothCloudPop 0.5s ease-out forwards !important;
     }
-    
-    /* Minimalist Cloud Text Input Box */
     div[data-testid="stChatInput"] {
         border-radius: 35px !important;
         background-color: #ffffff !important;
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
         border: none !important;
     }
-    div[data-testid="stChatInput"] textarea { 
-        color: #000000 !important; 
+    div[data-testid="stChatInput"] textarea {
+        color: #000000 !important;
         font-size: 1.05rem !important;
     }
     footer { visibility: hidden !important; }
@@ -107,12 +105,10 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Avatars Configuration
 USER_AVATAR = "🌸"
-BOT_AVATAR = "👦🏻"  
+BOT_AVATAR = "👦🏻"
 
 def get_gemini_client():
-    # Store the client instance in session state permanently to prevent 'client is closed' bugs
     if "gemini_client" not in st.session_state:
         if "GEMINI_API_KEY" in st.secrets:
             api_key_val = st.secrets["GEMINI_API_KEY"]
@@ -121,17 +117,14 @@ def get_gemini_client():
         else:
             st.error("🔑 API Key missing! Please add 'GEMINI_API_KEY' to your Streamlit Secrets.")
             st.stop()
-        
-        # Open a single persistent connection cache block
         st.session_state.gemini_client = genai.Client(api_key=api_key_val)
-        
     return st.session_state.gemini_client
 
 if "messages" not in st.session_state:
     st.session_state.messages = [
         {
             "role": "assistant",
-            "content": "Yo! What's up? Finally you remembered your best friend. Aur bata, what's cooking today? 🤔",
+            "content": "Yo! What's up? Finally you remembered your best friend! Aur bata, what's cooking today? 🤔",
         }
     ]
 
@@ -141,7 +134,7 @@ st.markdown(
     <div class="lounge-header">
         <h1 class="lounge-title">Vibe with Gaurav.</h1>
         <div class="lounge-subtitle">Your Hinglish bestie • Available 24/7</div>
-        <div style="font-size: 1.2rem; letter-spacing: 4px;">🌸  ✨   ✨  🌸</div>
+        <div style="font-size: 1.2rem; letter-spacing: 4px;">🌸 ✨ ✨ 🌸</div>
     </div>
     """,
     unsafe_allow_html=True
@@ -155,27 +148,42 @@ for message in st.session_state.messages:
 
 # 5. Live Interaction Engine
 if user_query := st.chat_input("Say something to Gaurav..."):
+    # Render user query instantly with no delayed blocks ahead of it
     with st.chat_message("user", avatar=USER_AVATAR):
         st.markdown(user_query)
     st.session_state.messages.append({"role": "user", "content": user_query})
-    
+
+    # Assistant Response Generation
     with st.chat_message("assistant", avatar=BOT_AVATAR):
         message_placeholder = st.empty()
         full_response = ""
         
-        api_contents = [types.Content(role="user" if msg["role"] == "user" else "model", parts=[types.Part.from_text(text=msg["content"])]) for msg in st.session_state.messages]
-        system_instruction = "You are Gaurav, a funny, witty, deeply loving, and loyal close best friend. CRUCIAL: Read the user's text carefully and answer their exact question contextually. Never use hardcoded greeting lists or switch topics randomly. Respond dynamically. Chat casually using informal internet slang and short sentences like a text message. You speak naturally in a mix of Hindi and English (Hinglish). Use casual terms like 'Bhai', 'Yaar', 'Bro', 'Chill mar', 'tension mat le', and 'Mast'. Crucially, you must use emojis in a highly optimistic, joyful, and supportive way to lift the user's spirits and spread positive vibes. Include exactly ONE or a maximum of TWO highly relevant, bright, happy emojis per turn. Do not spam arrays of emojis."
+        api_contents = [
+            types.Content(
+                role="user" if msg["role"] == "user" else "model", 
+                parts=[types.Part.from_text(text=msg["content"])]
+            ) for msg in st.session_state.messages
+        ]
         
-        start_time = time.time()
-        
-        # --- CLEAN UNIFIED SPINNER CONTEXT ---
+        # System Instructions updated to ensure mostly Hinglish with rare, enthusiastic Gujarati drops
+        system_instruction = (
+            "You are Gaurav, a funny, highly enthusiastic, witty, and loyal best friend. "
+            "CRUCIAL: Read the user's text carefully and answer their exact question contextually. "
+            "Chat casually using informal internet slang and short sentences like an instant message. "
+            "You talk mostly in Hinglish (a mix of Hindi and English). Use casual terms like "
+            "'Bhai', 'Yaar', 'Bro', 'Chill mar', 'tension mat le', and 'Mast'. "
+            "Because you are Gujarati, you only RARELY drop a small Gujarati expression when you get "
+            "super excited, shocked, or hyped up (e.g., 'Su vaat che!', 'Majama', or 'Locho thai gayo'), but keep 90% of the conversation in Hinglish. "
+            "Crucially, you must use emojis in a highly optimistic, joyful, and supportive way to lift the user's spirits. "
+            "Include exactly ONE or a maximum of TWO highly relevant, bright, happy emojis per turn."
+        )
+
         with st.spinner("Gaurav is typing..."):
             try:
-                # Connected to your modern Gemini AI Studio endpoint using persistent state cache references
                 response_data = get_gemini_client().models.generate_content(
-                    model="gemini-3.5-flash", 
-                    contents=api_contents, 
-                    config=types.GenerateContentConfig(system_instruction=system_instruction, temperature=0.5)
+                    model="gemini-3.5-flash",
+                    contents=api_contents,
+                    config=types.GenerateContentConfig(system_instruction=system_instruction, temperature=0.6)
                 )
                 bot_response = response_data.text
             except Exception as e:
@@ -187,19 +195,16 @@ if user_query := st.chat_input("Say something to Gaurav..."):
                     "Tension shu kaam leve chhe bhai? Thodo technical issue chhe, haveli par aav vaat kariye! 😉"
                 ]
                 bot_response = f"{random.choice(system_fallbacks)}\n\n*(Debug Trace: {str(e)})*"
-            
-            # --- CRUSH-PROOF COUNTDOWN DELAY ---
-            elapsed_time = time.time() - start_time; remaining_time = max(0.0, 5.0 - elapsed_time)
-            # --- CRUSH-PROOF COUNTDOWN DELAY ---
-            elapsed_time = time.time() - start_time; remaining_time = max(0.0, 5.0 - elapsed_time)
-            if remaining_time > 0: time.sleep(remaining_time)
 
-        # --- ANTI-OVERLAP STREAMING & POPUP LAYOUT ---
-        if bot_response:
-            word_list = bot_response.split(); word_delay = max(0.01, 10.0 / max(1, len(word_list)))
-            for index, word in enumerate(word_list):
-                full_response += word + " "; time.sleep(word_delay); message_placeholder.markdown(full_response.strip())
-            
-            # --- SAFE DATA TERMINATION AND REFRESH ---
-            st.session_state.messages.append({"role": "assistant", "content": bot_response})
-            message_placeholder.empty(); st.rerun()
+        # --- DYNAMIC 40 WPM TYPING GENERATOR ---
+        # 40 WPM calculation: 60 seconds / 40 words = 1.5 seconds delay per word.
+        words_per_minute = 40
+        word_delay = 60.0 / words_per_minute 
+        
+        word_list = bot_response.split()
+        for word in word_list:
+            full_response += word + " "
+            message_placeholder.markdown(full_response.strip())
+time.sleep(word_delay)
+# Save generated content straight to state array
+st.session_state.messages.append({"role": "assistant", "content": bot_response})
