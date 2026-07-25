@@ -195,7 +195,7 @@ if user_query := st.chat_input("Say something to Gaurav..."):
                 ]
                 bot_response = f"{random.choice(system_fallbacks)}\n\n*(Debug Trace: {str(e)})*"
 
-        # --- DYNAMIC 60 WPM TYPING GENERATOR ---
+               # --- DYNAMIC 60 WPM TYPING GENERATOR ---
         # 60 WPM calculation: 60 seconds / 60 words = 1.0 second delay per word.
         words_per_minute = 60
         word_delay = 60.0 / words_per_minute 
@@ -207,4 +207,4 @@ if user_query := st.chat_input("Say something to Gaurav..."):
             time.sleep(word_delay)
 
         # Save generated content straight to state array
-st.session_state.messages.append({"role": "assistant", "content": bot_response})
+        st.session_state.messages.append({"role": "assistant", "content": bot_response})
