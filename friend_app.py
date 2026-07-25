@@ -6,7 +6,7 @@ from google import genai
 from google.genai import types
 
 # 1. Global Page Layout Configurations
-st.set_page_config(page_title="Vibe with Gaurav", page_icon="🌸", layout="centered")
+st.set_page_config(page_title="Vibe with Gaurav..", page_icon="🌸", layout="centered")
 
 # Initialize global authentication tracking state safely from Streamlit Sessions
 if "authenticated" not in st.session_state:
