@@ -200,7 +200,8 @@ else:
 
                 # --- 60 WPM DELAY CALCULATION (NON-STREAMING) ---
                 word_count = len(bot_response.split())
-                total_delay = max(1.0, float(word_count) * 1.0)
+                total_delay = max(1.0, float(word_count) * 0.75)
+
                 
                 # Keeps the loading spinner running while simulating the typing pause
                 time.sleep(total_delay)
