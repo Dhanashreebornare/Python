@@ -87,7 +87,7 @@ st.markdown(
         padding: 14px 20px !important;
         border: 1px solid rgba(0, 0, 0, 0.04) !important;
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06) !important;
-        animation: smoothCloudPop 0.5s ease-out forwards !important;
+        animation: smoothCloudPop 0.4s ease-out forwards !important;
     }
     div[data-testid="stChatInput"] {
         border-radius: 35px !important;
@@ -165,7 +165,6 @@ if user_query := st.chat_input("Say something to Gaurav..."):
             ) for msg in st.session_state.messages
         ]
         
-        # System Instructions updated to ensure mostly Hinglish with rare, enthusiastic Gujarati drops
         system_instruction = (
             "You are Gaurav, a funny, highly enthusiastic, witty, and loyal best friend. "
             "CRUCIAL: Read the user's text carefully and answer their exact question contextually. "
@@ -196,15 +195,16 @@ if user_query := st.chat_input("Say something to Gaurav..."):
                 ]
                 bot_response = f"{random.choice(system_fallbacks)}\n\n*(Debug Trace: {str(e)})*"
 
-        # --- DYNAMIC 40 WPM TYPING GENERATOR ---
-        # 40 WPM calculation: 60 seconds / 40 words = 1.5 seconds delay per word.
-        words_per_minute = 40
+        # --- DYNAMIC 60 WPM TYPING GENERATOR ---
+        # 60 WPM calculation: 60 seconds / 60 words = 1.0 second delay per word.
+        words_per_minute = 60
         word_delay = 60.0 / words_per_minute 
         
         word_list = bot_response.split()
         for word in word_list:
             full_response += word + " "
             message_placeholder.markdown(full_response.strip())
-time.sleep(word_delay)
-# Save generated content straight to state array
+            time.sleep(word_delay)
+
+        # Save generated content straight to state array
 st.session_state.messages.append({"role": "assistant", "content": bot_response})
