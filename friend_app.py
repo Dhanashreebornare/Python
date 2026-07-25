@@ -35,7 +35,7 @@ if not st.session_state.authenticated:
 
 # --- MAIN LOUNGE APP (Loads ONLY when authenticated) ---
 else:
-        # 2. Main Lounge UI Core Styles (Puffy Cloud Bubble Shapes)
+            # 2. Main Lounge UI Core Styles (Rectangle Bubbles & Outer Avatar Alignment)
     st.markdown(
         """
         <style>
@@ -70,8 +70,8 @@ else:
             margin-bottom: 12px;
         }
         @keyframes smoothCloudPop {
-            0% { opacity: 0; transform: scale(0.9) translateY(10px); }
-            100% { opacity: 1; transform: scale(1) translateY(0); }
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
 
         /* --- GLOBAL CHAT FLEX LAYOUT --- */
@@ -79,45 +79,48 @@ else:
             display: flex !important;
             width: 100% !important;
             background-color: transparent !important;
+            gap: 12px !important;
+            align-items: flex-start !important;
         }
 
-        /* --- USER CHAT BUBBLES (RIGHT-SIDE PUFFY CLOUD) --- */
+        /* --- USER CHAT BUBBLES (AVATAR ON RIGHT SIDE EDGE) --- */
         div[data-testid="stChatMessage"]:nth-child(even) {
-            flex-direction: row-reverse !important;
-            text-align: right !important;
+            flex-direction: row-reverse !important; /* Pushes the User avatar to the right side of the bubble */
         }
         div[data-testid="stChatMessage"]:nth-child(even) div[data-testid="stChatMessageContent"] {
             background-color: #ffffff !important;
             color: #000000 !important;
             
-            /* Organic Cloud Geometry configuration */
-            border-radius: 40px 35px 5px 40px / 35px 40px 25px 40px !important;
+            /* Clean modern rectangle shape with subtle rounding */
+            border-radius: 12px !important; 
             
-            padding: 16px 24px !important;
+            padding: 14px 20px !important;
             border: 1px solid rgba(0, 0, 0, 0.04) !important;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06) !important;
             text-align: left !important;
-            margin-left: auto !important;
+            margin-left: auto !important; /* Holds alignment tightly on the right side */
+            margin-right: 0 !important;
             animation: none !important;
         }
 
-        /* --- GAURAV CHAT BUBBLES (LEFT-SIDE PUFFY CLOUD) --- */
+        /* --- GAURAV CHAT BUBBLES (AVATAR ON LEFT SIDE EDGE) --- */
         div[data-testid="stChatMessage"]:nth-child(odd) {
-            flex-direction: row !important;
-            text-align: left !important;
+            flex-direction: row !important; /* Keeps Gaurav avatar on the left side of the bubble */
         }
         div[data-testid="stChatMessage"]:nth-child(odd) div[data-testid="stChatMessageContent"] {
             background-color: #f5ecef !important;
             color: #000000 !important;
             
-            /* Organic Cloud Geometry configuration */
-            border-radius: 35px 40px 40px 5px / 40px 35px 40px 25px !important;
+            /* Clean modern rectangle shape with subtle rounding */
+            border-radius: 12px !important; 
             
-            padding: 16px 24px !important;
+            padding: 14px 20px !important;
             border: 1px solid rgba(0, 0, 0, 0.04) !important;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06) !important;
-            margin-right: auto !important;
-            animation: smoothCloudPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06) !important;
+            text-align: left !important;
+            margin-right: auto !important; /* Holds alignment tightly on the left side */
+            margin-left: 0 !important;
+            animation: smoothCloudPop 0.3s ease-out forwards !important;
         }
 
         div[data-testid="stChatInput"] {
