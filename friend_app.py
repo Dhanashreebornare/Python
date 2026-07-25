@@ -181,19 +181,15 @@ else:
             )
 
             with st.spinner("Gaurav is typing..."):
-                try:
-                    response_data = get_gemini_client().models.generate_content(
-                        model="gemini-3.5-flash",
-                        contents=api_contents,
-                        config=types.GenerateContentConfig(system_instruction=system_instruction, temperature=0.6)
-                    )
-                    bot_response = response_data.text
-                except Exception as e:
-                    system_fallbacks = [
-                        "Bhai, thoda system issue chhe yaar! Network haali gayo chhe dimaag mathi. 🥲",
-                        "Arey bro, network j locha maari rahyu chhe! Tension mat le, thodi vaar ma vaat kariye. ☕",
-                        "Gaurav no dimaag thakyo chhe... lag chhe pachhad thi server j down thadh gayo! 😂",
-                                        system_fallbacks = [
+                            try:
+                response_data = get_gemini_client().models.generate_content(
+                    model="gemini-3.5-flash",
+                    contents=api_contents,
+                    config=types.GenerateContentConfig(system_instruction=system_instruction, temperature=0.6)
+                )
+                bot_response = response_data.text
+            except Exception as e:
+                system_fallbacks = [
                     "Bhai, thoda system issue chhe yaar! Network haali gayo chhe dimaag mathi. 🥲",
                     "Arey bro, network j locha maari rahyu chhe! Tension mat le, thodi vaar ma vaat kariye. ☕",
                     "Gaurav no dimaag thakyo chhe... lag chhe pachhad thi server j down thadh gayo! 😂",
@@ -215,4 +211,3 @@ else:
 
         # Save generated content straight to state array
         st.session_state.messages.append({"role": "assistant", "content": bot_response})
-
