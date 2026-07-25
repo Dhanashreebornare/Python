@@ -150,7 +150,7 @@ else:
         with st.chat_message(message["role"], avatar=avatar):
             st.markdown(message["content"])
 
-    # 5. Live Interaction Engine
+       # 5. Live Interaction Engine
     if user_query := st.chat_input("Say something to Gaurav..."):
         # Render user query instantly with no delayed blocks ahead of it
         with st.chat_message("user", avatar=USER_AVATAR):
@@ -181,33 +181,32 @@ else:
             )
 
             with st.spinner("Gaurav is typing..."):
-                            try:
-                response_data = get_gemini_client().models.generate_content(
-                    model="gemini-3.5-flash",
-                    contents=api_contents,
-                    config=types.GenerateContentConfig(system_instruction=system_instruction, temperature=0.6)
-                )
-                bot_response = response_data.text
-            except Exception as e:
-                system_fallbacks = [
-                    "Bhai, thoda system issue chhe yaar! Network haali gayo chhe dimaag mathi. 🥲",
-                    "Arey bro, network j locha maari rahyu chhe! Tension mat le, thodi vaar ma vaat kariye. ☕",
-                    "Gaurav no dimaag thakyo chhe... lag chhe pachhad thi server j down thadh gayo! 😂",
-                    "Yaar, wife ne bolavyo kaam mate, etla ma server j bandh thai gayo! 🏃‍♂️",
-                    "Tension shu kaam leve chhe bhai? Thodo technical issue chhe, haveli par aav vaat kariye! 😉"
-                ]
-                bot_response = f"{random.choice(system_fallbacks)}\n\n*(Debug Trace: {str(e)})*"
+                try:
+                    response_data = get_gemini_client().models.generate_content(
+                        model="gemini-3.5-flash",
+                        contents=api_contents,
+                        config=types.GenerateContentConfig(system_instruction=system_instruction, temperature=0.6)
+                    )
+                    bot_response = response_data.text
+                except Exception as e:
+                    system_fallbacks = [
+                        "Bhai, thoda system issue chhe yaar! Network haali gayo chhe dimaag mathi. 🥲",
+                        "Arey bro, network j locha maari rahyu chhe! Tension mat le, thodi vaar ma vaat kariye. ☕",
+                        "Gaurav no dimaag thakyo chhe... lag chhe pachhad thi server j down thadh gayo! 😂",
+                        "Yaar, wife ne bolavyo kaam mate, etla ma server j bandh thai gayo! 🏃‍♂️",
+                        "Tension shu kaam leve chhe bhai? Thodo technical issue chhe, haveli par aav vaat kariye! 😉"
+                    ]
+                    bot_response = f"{random.choice(system_fallbacks)}\n\n*(Debug Trace: {str(e)})*"
 
-            # --- 60 WPM DELAY CALCULATION (NON-STREAMING) ---
-            # 60 WPM = 1 word per second. Calculate total words to find wait time.
-            word_count = len(bot_response.split())
-            total_delay = max(1.0, float(word_count) * 1.0)
-            
-            # Keeps the loading spinner running while simulating the typing pause
-            time.sleep(total_delay)
+                # --- 60 WPM DELAY CALCULATION (NON-STREAMING) ---
+                word_count = len(bot_response.split())
+                total_delay = max(1.0, float(word_count) * 1.0)
+                
+                # Keeps the loading spinner running while simulating the typing pause
+                time.sleep(total_delay)
 
-        # Pop up the message all at once instantly after the delay completes
-        message_placeholder.markdown(bot_response)
+            # Pop up the message all at once instantly after the delay completes
+            message_placeholder.markdown(bot_response)
 
-        # Save generated content straight to state array
-        st.session_state.messages.append({"role": "assistant", "content": bot_response})
+            # Save generated content straight to state array
+            st.session_state.messages.append({"role": "assistant", "content": bot_response})
