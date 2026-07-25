@@ -204,8 +204,8 @@ if user_query := st.chat_input("Say something to Gaurav..."):
         
         word_list = bot_response.split()
         for word in word_list:
-        full_response += word + " "
-        message_placeholder.markdown(full_response.strip())
-        time.sleep(word_delay)
+            full_response += word + " "
+            message_placeholder.markdown(full_response.strip())
+            time.sleep(word_delay)
 # Save generated content straight to state array (Omitting structural st.rerun to keep app steady)
-        st.session_state.messages.append({"role": "assistant", "content": bot_response})
+            st.session_state.messages.append({"role": "assistant", "content": bot_response})
