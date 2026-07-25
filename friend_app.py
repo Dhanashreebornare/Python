@@ -19,12 +19,14 @@ if not st.session_state.authenticated:
     
     passcode_input = st.text_input("Secret Code:", type="password", key="secret_gate", placeholder="Enter passcode here...")
     if passcode_input:
+        master_passcode = None
+        # Explicit check for Streamlit Cloud Secrets storage keys
         if "SECRET_PASSCODE" in st.secrets:
             master_passcode = st.secrets["SECRET_PASSCODE"]
         else:
             master_passcode = os.environ.get("SECRET_PASSCODE")
             
-        if master_passcode and passcode_input.strip().lower() == master_passcode.strip().lower():
+        if master_passcode and passcode_input.strip().lower() == str(master_passcode).strip().lower():
             st.session_state.authenticated = True
             st.rerun()
         else:
@@ -156,7 +158,6 @@ if user_query := st.chat_input("Say something to Gaurav..."):
     # Assistant Response Generation
     with st.chat_message("assistant", avatar=BOT_AVATAR):
         message_placeholder = st.empty()
-        full_response = ""
         
         api_contents = [
             types.Content(
@@ -195,16 +196,15 @@ if user_query := st.chat_input("Say something to Gaurav..."):
                 ]
                 bot_response = f"{random.choice(system_fallbacks)}\n\n*(Debug Trace: {str(e)})*"
 
-               # --- DYNAMIC 60 WPM TYPING GENERATOR ---
-        # 60 WPM calculation: 60 seconds / 60 words = 1.0 second delay per word.
-        words_per_minute = 60
-        word_delay = 60.0 / words_per_minute 
-        
-        word_list = bot_response.split()
-        for word in word_list:
-            full_response += word + " "
-            message_placeholder.markdown(full_response.strip())
-            time.sleep(word_delay)
+            # --- 60 WPM DELAY CALCULATION (NON-STREAMING) ---
+            # 60 WPM = 1 word per second. Calculate total words to find wait time.
+            word_count = len(bot_response.split())
+            total_delay = max(1.0, float(word_count) * 1.0)
+            
+            # Keeps the loading spinner running while simulating the typing pause
+            time.sleep(total_delay)
 
-        # Save generated content straight to state array
-        st.session_state.messages.append({"role": "assistant", "content": bot_response})
+# Pop up the message all at once instantly after the delay complete
+            message_placeholder.markdown(bot_response)
+            # Save generated content straight to state array
+            st.session_state.messages.append({"role": "assistant", "content": bot_response})
