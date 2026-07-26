@@ -143,7 +143,7 @@ else:
         </style>
         """,
         unsafe_allow_html=True
-    )
+        )
     USER_AVATAR = "🌸"
     BOT_AVATAR = "👦🏻"
 
