@@ -35,7 +35,7 @@ if not st.session_state.authenticated:
 
 # --- MAIN LOUNGE APP (Loads ONLY when authenticated) ---
 else:
-                                    # 2. Main Lounge UI Core Styles (Hand-Drawn Comic Cloud Simulation & Plus Jakarta Sans)
+                                        # 2. Main Lounge UI Core Styles (Left/Right Anchored Hand-Drawn Clouds)
     st.markdown(
         """
         <style>
@@ -87,7 +87,7 @@ else:
             align-items: flex-start !important;
         }
         
-        /* --- USER CHAT BUBBLES (AVATAR RIGHT, COMIC HAND-DRAWN SIMULATION) --- */
+        /* --- USER CHAT BUBBLES (RIGHT-SIDE CLOUD MAPPED TO USER AVATAR) --- */
         div[data-testid="stChatMessage"]:nth-child(even) {
             flex-direction: row-reverse !important;
         }
@@ -95,22 +95,21 @@ else:
             background-color: #ffffff !important;
             color: #111111 !important;
             font-family: 'Plus Jakarta Sans', sans-serif !important;
-            /* Creates an organic, bubbly cloud shape layout */
-            border-radius: 40px 30px 45px 35px / 35px 45px 30px 40px !important; 
+            /* Pointed upper-right corner anchoring it to the right avatar */
+            border-radius: 30px 10px 35px 30px / 30px 10px 30px 35px !important; 
             padding: 16px 26px !important;
             font-size: 1rem !important;
             line-height: 1.5 !important;
-            /* Solid thick black line matching the hand-drawn sketch border */
             border: 2.5px solid #000000 !important;
-            /* Creates the offset warm peach/yellow silhouette shadow from your image */
+            /* Shadow offsets to the left since the bubble is sitting on the right side */
             box-shadow: -4px 4px 0px #ffe5b4 !important;
             text-align: left !important;
-            margin-left: auto !important;
+            margin-left: auto !important; /* Forces layout tracking to the right edge */
             margin-right: 0 !important;
             animation: none !important;
         }
         
-        /* --- GAURAV CHAT BUBBLES (AVATAR LEFT, COMIC HAND-DRAWN SIMULATION) --- */
+        /* --- GAURAV CHAT BUBBLES (LEFT-SIDE CLOUD MAPPED TO BOT AVATAR) --- */
         div[data-testid="stChatMessage"]:nth-child(odd) {
             flex-direction: row !important;
         }
@@ -118,17 +117,16 @@ else:
             background-color: #ffffff !important;
             color: #111111 !important;
             font-family: 'Plus Jakarta Sans', sans-serif !important;
-            /* Reversed organic bubbly layout configuration */
-            border-radius: 30px 40px 35px 45px / 45px 35px 40px 30px !important;
+            /* Pointed upper-left corner anchoring it to the left avatar */
+            border-radius: 10px 30px 30px 35px / 10px 30px 35px 30px !important;
             padding: 16px 26px !important;
             font-size: 1rem !important;
             line-height: 1.5 !important;
-            /* Solid thick black line matching the hand-drawn sketch border */
             border: 2.5px solid #000000 !important;
-            /* Creates the offset warm peach/yellow silhouette shadow from your image */
+            /* Shadow offsets to the right since the bubble is sitting on the left side */
             box-shadow: 4px 4px 0px #ffe5b4 !important;
             text-align: left !important;
-            margin-right: auto !important;
+            margin-right: auto !important; /* Forces layout tracking to the left edge */
             margin-left: 0 !important;
             animation: smoothCloudPop 0.3s ease-out forwards !important;
         }
@@ -151,7 +149,7 @@ else:
         """,
         unsafe_allow_html=True
     )
-
+    
     USER_AVATAR = "🌸"
     BOT_AVATAR = "👦🏻"
 
