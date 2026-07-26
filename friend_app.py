@@ -35,12 +35,14 @@ if not st.session_state.authenticated:
 
 # --- MAIN LOUNGE APP (Loads ONLY when authenticated) ---
 else:
-                    # 2. Main Lounge UI Core Styles (Rectangle Bubbles, Left/Right Avatars & New Custom Colors)
+                        # 2. Main Lounge UI Core Styles (Rectangle Bubbles, Left/Right Avatars & New Custom Colors)
     st.markdown(
         """
         <style>
+        @import url('https://googleapis.com');
+
         .stApp {
-            font-family: 'Inter', sans-serif !important;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
             background: linear-gradient(135deg, #2d1124 0%, #4a1539 100%) !important;
             color: #000000 !important;
         }
@@ -56,6 +58,7 @@ else:
             margin-bottom: 35px;
         }
         .lounge-title {
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
             font-weight: 800;
             letter-spacing: -0.5px;
             color: #000000 !important;
@@ -73,7 +76,7 @@ else:
             0% { opacity: 0; transform: translateY(10px); }
             100% { opacity: 1; transform: translateY(0); }
         }
-
+        
         /* --- GLOBAL CHAT FLEX LAYOUT --- */
         div[data-testid="stChatMessage"] {
             display: flex !important;
@@ -82,45 +85,47 @@ else:
             gap: 12px !important;
             align-items: flex-start !important;
         }
-
-        /* --- USER CHAT BUBBLES (AVATAR RIGHT, LIGHT BLUE BOX) --- */
+        
+        /* --- USER CHAT BUBBLES (AVATAR RIGHT, LIGHT BLUE GLASS-CLOUD) --- */
         div[data-testid="stChatMessage"]:nth-child(even) {
             flex-direction: row-reverse !important;
         }
         div[data-testid="stChatMessage"]:nth-child(even) div[data-testid="stChatMessageContent"] {
-            /* Light blue background optimized for black text readability */
-            background-color: #e3f2fd !important; 
-            color: #000000 !important;
-            
-            border-radius: 12px !important; 
-            padding: 14px 20px !important;
-            border: 1px solid rgba(0, 0, 0, 0.04) !important;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06) !important;
+            background-color: rgba(227, 242, 253, 0.95) !important;
+            color: #111111 !important;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            border-radius: 18px 4px 18px 18px !important; /* Elegant asymmetrical curve */
+            padding: 12px 18px !important;
+            font-size: 1rem !important;
+            line-height: 1.5 !important;
+            border: 1px solid rgba(255, 255, 255, 0.4) !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
             text-align: left !important;
             margin-left: auto !important;
             margin-right: 0 !important;
             animation: none !important;
         }
-
-        /* --- GAURAV CHAT BUBBLES (AVATAR LEFT, WHITE BOX) --- */
+        
+        /* --- GAURAV CHAT BUBBLES (AVATAR LEFT, CRISP WHITE CLOUD) --- */
         div[data-testid="stChatMessage"]:nth-child(odd) {
             flex-direction: row !important;
         }
         div[data-testid="stChatMessage"]:nth-child(odd) div[data-testid="stChatMessageContent"] {
-            /* Clean pure white background */
-            background-color: #ffffff !important; 
-            color: #000000 !important;
-            
-            border-radius: 12px !important; 
-            padding: 14px 20px !important;
-            border: 1px solid rgba(0, 0, 0, 0.04) !important;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06) !important;
+            background-color: #ffffff !important;
+            color: #111111 !important;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            border-radius: 4px 18px 18px 18px !important; /* Elegant asymmetrical curve */
+            padding: 12px 18px !important;
+            font-size: 1rem !important;
+            line-height: 1.5 !important;
+            border: 1px solid rgba(0, 0, 0, 0.02) !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
             text-align: left !important;
             margin-right: auto !important;
             margin-left: 0 !important;
             animation: smoothCloudPop 0.3s ease-out forwards !important;
         }
-
+        
         div[data-testid="stChatInput"] {
             border-radius: 35px !important;
             background-color: #ffffff !important;
@@ -128,13 +133,18 @@ else:
             border: none !important;
         }
         div[data-testid="stChatInput"] textarea {
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
             color: #000000 !important;
             font-size: 1.05rem !important;
         }
-        footer { visibility: hidden !important; }
+        footer {
+            visibility: hidden !important;
+        }
         </style>
         """,
         unsafe_allow_html=True
+    )
+
     )
     USER_AVATAR = "🌸"
     BOT_AVATAR = "👦🏻"
