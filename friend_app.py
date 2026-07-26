@@ -35,7 +35,7 @@ if not st.session_state.authenticated:
 
 # --- MAIN LOUNGE APP (Loads ONLY when authenticated) ---
 else:
-                            # 2. Main Lounge UI Core Styles (Rectangle Bubbles, Left/Right Avatars & New Custom Colors)
+                                # 2. Main Lounge UI Core Styles (Comic Clouds, Plus Jakarta Sans Body & Artistic Title)
     st.markdown(
         """
         <style>
@@ -58,12 +58,13 @@ else:
             margin-bottom: 35px;
         }
         .lounge-title {
-            font-family: 'Plus Jakarta Sans', sans-serif !important;
-            font-weight: 800;
-            letter-spacing: -0.5px;
+            font-family: 'Caveat', cursive !important; /* Artistic handwriting font */
+            font-weight: 700;
+            letter-spacing: 0.5px;
             color: #000000 !important;
             margin: 0;
-            font-size: 2.2rem;
+            font-size: 3.5rem; /* Increased size because handwriting fonts run slightly smaller */
+            line-height: 1.1;
         }
         .lounge-subtitle {
             color: #444444;
@@ -86,7 +87,7 @@ else:
             align-items: flex-start !important;
         }
         
-        /* --- USER CHAT BUBBLES (AVATAR RIGHT, LIGHT BLUE GLASS-CLOUD) --- */
+        /* --- USER CHAT BUBBLES (AVATAR RIGHT, COMIC BOOK TALK-CLOUD) --- */
         div[data-testid="stChatMessage"]:nth-child(even) {
             flex-direction: row-reverse !important;
         }
@@ -94,8 +95,8 @@ else:
             background-color: rgba(227, 242, 253, 0.95) !important;
             color: #111111 !important;
             font-family: 'Plus Jakarta Sans', sans-serif !important;
-            border-radius: 18px 4px 18px 18px !important; /* Elegant asymmetrical curve */
-            padding: 12px 18px !important;
+            border-radius: 30px 15px 30px 20px !important;
+            padding: 14px 24px !important;
             font-size: 1rem !important;
             line-height: 1.5 !important;
             border: 1px solid rgba(255, 255, 255, 0.4) !important;
@@ -106,7 +107,7 @@ else:
             animation: none !important;
         }
         
-        /* --- GAURAV CHAT BUBBLES (AVATAR LEFT, CRISP WHITE CLOUD) --- */
+        /* --- GAURAV CHAT BUBBLES (AVATAR LEFT, COMIC BOOK TALK-CLOUD) --- */
         div[data-testid="stChatMessage"]:nth-child(odd) {
             flex-direction: row !important;
         }
@@ -114,8 +115,8 @@ else:
             background-color: #ffffff !important;
             color: #111111 !important;
             font-family: 'Plus Jakarta Sans', sans-serif !important;
-            border-radius: 4px 18px 18px 18px !important; /* Elegant asymmetrical curve */
-            padding: 12px 18px !important;
+            border-radius: 15px 30px 20px 30px !important;
+            padding: 14px 24px !important;
             font-size: 1rem !important;
             line-height: 1.5 !important;
             border: 1px solid rgba(0, 0, 0, 0.02) !important;
