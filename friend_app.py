@@ -35,7 +35,7 @@ if not st.session_state.authenticated:
 
 # --- MAIN LOUNGE APP (Loads ONLY when authenticated) ---
 else:
-                                # 2. Main Lounge UI Core Styles (Comic Clouds, Plus Jakarta Sans Body & Artistic Title)
+                                    # 2. Main Lounge UI Core Styles (Hand-Drawn Comic Cloud Simulation & Plus Jakarta Sans)
     st.markdown(
         """
         <style>
@@ -58,12 +58,12 @@ else:
             margin-bottom: 35px;
         }
         .lounge-title {
-            font-family: 'Caveat', cursive !important; /* Artistic handwriting font */
+            font-family: 'Caveat', cursive !important;
             font-weight: 700;
             letter-spacing: 0.5px;
             color: #000000 !important;
             margin: 0;
-            font-size: 3.5rem; /* Increased size because handwriting fonts run slightly smaller */
+            font-size: 3.5rem;
             line-height: 1.1;
         }
         .lounge-subtitle {
@@ -87,27 +87,30 @@ else:
             align-items: flex-start !important;
         }
         
-        /* --- USER CHAT BUBBLES (AVATAR RIGHT, COMIC BOOK TALK-CLOUD) --- */
+        /* --- USER CHAT BUBBLES (AVATAR RIGHT, COMIC HAND-DRAWN SIMULATION) --- */
         div[data-testid="stChatMessage"]:nth-child(even) {
             flex-direction: row-reverse !important;
         }
         div[data-testid="stChatMessage"]:nth-child(even) div[data-testid="stChatMessageContent"] {
-            background-color: rgba(227, 242, 253, 0.95) !important;
+            background-color: #ffffff !important;
             color: #111111 !important;
             font-family: 'Plus Jakarta Sans', sans-serif !important;
-            border-radius: 30px 15px 30px 20px !important;
-            padding: 14px 24px !important;
+            /* Creates an organic, bubbly cloud shape layout */
+            border-radius: 40px 30px 45px 35px / 35px 45px 30px 40px !important; 
+            padding: 16px 26px !important;
             font-size: 1rem !important;
             line-height: 1.5 !important;
-            border: 1px solid rgba(255, 255, 255, 0.4) !important;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
+            /* Solid thick black line matching the hand-drawn sketch border */
+            border: 2.5px solid #000000 !important;
+            /* Creates the offset warm peach/yellow silhouette shadow from your image */
+            box-shadow: -4px 4px 0px #ffe5b4 !important;
             text-align: left !important;
             margin-left: auto !important;
             margin-right: 0 !important;
             animation: none !important;
         }
         
-        /* --- GAURAV CHAT BUBBLES (AVATAR LEFT, COMIC BOOK TALK-CLOUD) --- */
+        /* --- GAURAV CHAT BUBBLES (AVATAR LEFT, COMIC HAND-DRAWN SIMULATION) --- */
         div[data-testid="stChatMessage"]:nth-child(odd) {
             flex-direction: row !important;
         }
@@ -115,12 +118,15 @@ else:
             background-color: #ffffff !important;
             color: #111111 !important;
             font-family: 'Plus Jakarta Sans', sans-serif !important;
-            border-radius: 15px 30px 20px 30px !important;
-            padding: 14px 24px !important;
+            /* Reversed organic bubbly layout configuration */
+            border-radius: 30px 40px 35px 45px / 45px 35px 40px 30px !important;
+            padding: 16px 26px !important;
             font-size: 1rem !important;
             line-height: 1.5 !important;
-            border: 1px solid rgba(0, 0, 0, 0.02) !important;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
+            /* Solid thick black line matching the hand-drawn sketch border */
+            border: 2.5px solid #000000 !important;
+            /* Creates the offset warm peach/yellow silhouette shadow from your image */
+            box-shadow: 4px 4px 0px #ffe5b4 !important;
             text-align: left !important;
             margin-right: auto !important;
             margin-left: 0 !important;
