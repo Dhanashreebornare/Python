@@ -187,63 +187,61 @@ else:
             st.markdown(message["content"])
 
        # 5. Live Interaction Engine
-    if user_query := st.chat_input("Say something to Gaurav..."):
-        # Render user query instantly with no delayed blocks ahead of it
-        with st.chat_message("user", avatar=USER_AVATAR):
-            st.markdown(user_query)
-        st.session_state.messages.append({"role": "user", "content": user_query})
+if user_query := st.chat_input("Say something to Gaurav..."):
+    # Render user query instantly
+    with st.chat_message("user", avatar=USER_AVATAR):
+        st.markdown(user_query)
+    st.session_state.messages.append({"role": "user", "content": user_query})
 
-        # Assistant Response Generation
-        with st.chat_message("assistant", avatar=BOT_AVATAR):
-            message_placeholder = st.empty()
-            
-            api_contents = [
-                types.Content(
-                    role="user" if msg["role"] == "user" else "model", 
-                    parts=[types.Part.from_text(text=msg["content"])]
-                ) for msg in st.session_state.messages
-            ]
-            
-            system_instruction = (
-                "You are Gaurav, a funny, highly enthusiastic, witty, and loyal best friend. "
-                "CRUCIAL: Read the user's text carefully and answer their exact question contextually. "
-                "Chat casually using informal internet slang and short sentences like an instant message. "
-                "You talk mostly in Hinglish (a mix of Hindi and English). Use casual terms like "
-                "'Bhai', 'Yaar', 'Bro', 'Chill mar', 'tension mat le', and 'Mast'. "
-                "Because you are Gujarati, you only RARELY drop a small Gujarati expression when you get "
-                "super excited, shocked, or hyped up (e.g., 'Su vaat che!', 'Majama', or 'Locho thai gayo'), but keep 90% of the conversation in Hinglish. "
-                "Crucially, you must use emojis in a highly optimistic, joyful, and supportive way to lift the user's spirits. "
-                "Include exactly ONE or a maximum of TWO highly relevant, bright, happy emojis per turn."
+    # Assistant Response Generation
+    with st.chat_message("assistant", avatar=BOT_AVATAR):
+        api_contents = [
+            types.Content(
+                role="user" if msg["role"] == "user" else "model",
+                parts=[types.Part.from_text(text=msg["content"])]
             )
+            for msg in st.session_state.messages
+        ]
+        
+        system_instruction = (
+            "You are Gaurav, a funny, highly enthusiastic, witty, and loyal best friend. "
+            "CRUCIAL: Read the user's text carefully and answer their exact question contextually. "
+            "Chat casually using informal internet slang and short sentences like an instant message. "
+            "You talk mostly in Hinglish (a mix of Hindi and English). Use casual terms like "
+            "'Bhai', 'Yaar', 'Bro', 'Chill mar', 'tension mat le', and 'Mast'. "
+            "Because you are Gujarati, you only RARELY drop a small Gujarati expression when you get "
+            "super excited, shocked, or hyped up (e.g., 'Su vaat che!', 'Majama', or 'Locho thai gayo'), but keep 90% of the conversation in Hinglish. "
+            "Crucially, you must use emojis in a highly optimistic, joyful, and supportive way to lift the user's spirits. "
+            "Include exactly ONE or a maximum of TWO highly relevant, bright, happy emojis per turn."
+        )
 
-            with st.spinner("Gaurav is typing..."):
-                try:
-                    response_data = get_gemini_client().models.generate_content(
-                        model="gemini-3.5-flash",
-                        contents=api_contents,
-                        config=types.GenerateContentConfig(system_instruction=system_instruction, temperature=0.6)
-                    )
-                    bot_response = response_data.text
-                except Exception as e:
-                    system_fallbacks = [
-                        "Bhai, thoda system issue chhe yaar! Network haali gayo chhe dimaag mathi. 🥲",
-                        "Arey bro, network j locha maari rahyu chhe! Tension mat le, thodi vaar ma vaat kariye. ☕",
-                        "Gaurav no dimaag thakyo chhe... lag chhe pachhad thi server j down thadh gayo! 😂",
-                        "Yaar, wife ne bolavyo kaam mate, etla ma server j bandh thai gayo! 🏃‍♂️",
-                        "Tension shu kaam leve chhe bhai? Thodo technical issue chhe, haveli par aav vaat kariye! 😉"
-                    ]
-                    bot_response = f"{random.choice(system_fallbacks)}\n\n*(Debug Trace: {str(e)})*"
+        try:
+            # 1. Call the streaming API variant
+            response_stream = get_gemini_client().models.generate_content_stream(
+                model="gemini-3.5-flash",
+                contents=api_contents,
+                config=types.GenerateContentConfig(system_instruction=system_instruction, temperature=0.6)
+            )
+            
+            # 2. Helper generator to yield text fragments instantly as they land
+            def stream_chunks():
+                for chunk in response_stream:
+                    if chunk.text:
+                        yield chunk.text
 
-                # --- 60 WPM DELAY CALCULATION (NON-STREAMING) ---
-                word_count = len(bot_response.split())
-                total_delay = max(1.0, float(word_count) * 0.75)
+            # 3. Stream out onto screen dynamically with no artificial delays
+            bot_response = st.write_stream(stream_chunks())
+            
+        except Exception as e:
+            system_fallbacks = [
+                "Bhai, thoda system issue chhe yaar! Network haali gayo chhe dimaag mathi. 🥲",
+                "Arey bro, network j locha maari rahyu chhe! Tension mat le, thodi vaar ma vaat kariye. ☕",
+                "Gaurav no dimaag thakyo chhe... lag chhe pachhad thi server j down thadh gayo! 😂",
+                "Yaar, wife ne bolavyo kaam mate, etla ma server j bandh thai gayo! 🏃‍♂️",
+                "Tension shu kaam leve chhe bhai? Thodo technical issue chhe, haveli par aav vaat kariye! 😉"
+            ]
+            bot_response = f"{random.choice(system_fallbacks)}\n\n*(Debug Trace: {str(e)})*"
+            st.markdown(bot_response)
 
-                
-                # Keeps the loading spinner running while simulating the typing pause
-                time.sleep(total_delay)
-
-            # Pop up the message all at once instantly after the delay completes
-            message_placeholder.markdown(bot_response)
-
-            # Save generated content straight to state array
-            st.session_state.messages.append({"role": "assistant", "content": bot_response})
+        # Save generated content straight to state array
+        st.session_state.messages.append({"role": "assistant", "content": bot_response})
