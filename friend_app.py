@@ -35,8 +35,8 @@ if not st.session_state.authenticated:
 
 # --- MAIN LOUNGE APP (Loads ONLY when authenticated) ---
 else:
-                        # 2. Main Lounge UI Core Styles (Rectangle Bubbles, Left/Right Avatars & New Custom Colors)
-        st.markdown(
+                            # 2. Main Lounge UI Core Styles (Rectangle Bubbles, Left/Right Avatars & New Custom Colors)
+    st.markdown(
         """
         <style>
         @import url('https://googleapis.com');
@@ -143,7 +143,8 @@ else:
         </style>
         """,
         unsafe_allow_html=True
-        )
+    )
+
     USER_AVATAR = "🌸"
     BOT_AVATAR = "👦🏻"
 
