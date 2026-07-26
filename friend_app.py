@@ -35,7 +35,7 @@ if not st.session_state.authenticated:
 
 # --- MAIN LOUNGE APP (Loads ONLY when authenticated) ---
 else:
-                                        # 2. Main Lounge UI Core Styles (Left/Right Anchored Hand-Drawn Clouds)
+                                            # 2. Main Lounge UI Core Styles (Left/Right Avatar Separation & Comic Clouds)
     st.markdown(
         """
         <style>
@@ -87,46 +87,64 @@ else:
             align-items: flex-start !important;
         }
         
-        /* --- USER CHAT BUBBLES (RIGHT-SIDE CLOUD MAPPED TO USER AVATAR) --- */
+        /* --- USER MESSAGES (FORCE ENTIRE CONTAINER TO REVERSE TO THE RIGHT) --- */
+        div[data-testid="stChatMessage"][data-user="true"],
         div[data-testid="stChatMessage"]:nth-child(even) {
             flex-direction: row-reverse !important;
+            text-align: right !important;
         }
+        
+        /* --- USER CHAT BUBBLES --- */
         div[data-testid="stChatMessage"]:nth-child(even) div[data-testid="stChatMessageContent"] {
             background-color: #ffffff !important;
             color: #111111 !important;
             font-family: 'Plus Jakarta Sans', sans-serif !important;
-            /* Pointed upper-right corner anchoring it to the right avatar */
             border-radius: 30px 10px 35px 30px / 30px 10px 30px 35px !important; 
-            padding: 16px 26px !important;
+            padding: 12px 22px !important;
             font-size: 1rem !important;
             line-height: 1.5 !important;
             border: 2.5px solid #000000 !important;
-            /* Shadow offsets to the left since the bubble is sitting on the right side */
-            box-shadow: -4px 4px 0px #ffe5b4 !important;
+            box-shadow: -5px 5px 0px #ffe5b4 !important;
             text-align: left !important;
-            margin-left: auto !important; /* Forces layout tracking to the right edge */
+            
+            /* Tighten up space and block row-expansion */
+            width: fit-content !important;
+            max-width: 75% !important;
+            margin-left: auto !important;
             margin-right: 0 !important;
             animation: none !important;
         }
         
-        /* --- GAURAV CHAT BUBBLES (LEFT-SIDE CLOUD MAPPED TO BOT AVATAR) --- */
+        /* Force Streamlit's inner block wrapper to also collapse on the right side */
+        div[data-testid="stChatMessage"]:nth-child(even) > div:nth-child(2) {
+            display: flex !important;
+            justify-content: flex-end !important;
+            width: 100% !important;
+        }
+        
+        /* --- GAURAV MESSAGES (LEFT SIDE ARCHITECTURE) --- */
+        div[data-testid="stChatMessage"][data-user="false"],
         div[data-testid="stChatMessage"]:nth-child(odd) {
             flex-direction: row !important;
+            text-align: left !important;
         }
+        
+        /* --- GAURAV CHAT BUBBLES --- */
         div[data-testid="stChatMessage"]:nth-child(odd) div[data-testid="stChatMessageContent"] {
             background-color: #ffffff !important;
             color: #111111 !important;
             font-family: 'Plus Jakarta Sans', sans-serif !important;
-            /* Pointed upper-left corner anchoring it to the left avatar */
             border-radius: 10px 30px 30px 35px / 10px 30px 35px 30px !important;
-            padding: 16px 26px !important;
+            padding: 12px 22px !important;
             font-size: 1rem !important;
             line-height: 1.5 !important;
             border: 2.5px solid #000000 !important;
-            /* Shadow offsets to the right since the bubble is sitting on the left side */
-            box-shadow: 4px 4px 0px #ffe5b4 !important;
+            box-shadow: 5px 5px 0px #ffe5b4 !important;
             text-align: left !important;
-            margin-right: auto !important; /* Forces layout tracking to the left edge */
+            
+            width: fit-content !important;
+            max-width: 75% !important;
+            margin-right: auto !important;
             margin-left: 0 !important;
             animation: smoothCloudPop 0.3s ease-out forwards !important;
         }
