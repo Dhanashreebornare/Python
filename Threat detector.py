@@ -18,6 +18,16 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib import colors
 import re
 
+import streamlit as st
+import openai
+import base64
+import plotly.graph_objects as go
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib import colors
+import re
+
 # 1. Page Configuration & Custom CSS for Modern College Aesthetic
 st.set_page_config(page_title="SafeChat AI Analyzer", page_icon="🛡️", layout="centered")
 
@@ -68,6 +78,7 @@ div.stButton > button:first-child:hover {
 """, unsafe_allow_html=True)
 
 st.title("🛡️ SafeChat AI Analyzer")
+
 
         margin-top: 20px;
         border: 1px solid #E2E8F0;
