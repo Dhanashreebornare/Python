@@ -177,11 +177,16 @@ with tab1:
     user_text = st.text_area("Paste the conversation or sample text here:", value=default_text, height=180)
     analyze_text_button = st.button("Analyze Text", type="primary", key="txt_btn")
 
-with tab2:
-    uploaded_image = st.file_uploader("Upload a WhatsApp Screenshot (PNG/JPG):", type=["png", "jpg", "jpeg"])
-    analyze_image_button = st.button("Analyze Screenshot", type="primary", key="img_btn")
-
-# Initialize session state tracking variables for data storage across clicks
+                if analyze_text_button and user_text:
+                    response = client.chat.completions.create(
+                        model="gpt-4o-mini",
+                        messages=[
+                            {"role": "system", "content": SYSTEM_PROMPT},
+                            {"role": "user", "content": f"Analyze this text chat:\n\n{user_text}"}
+                        ]
+                    )
+                    ai_output = response.choices.message.content
+                    
                 elif analyze_image_button and uploaded_image:
                     base64_image = encode_image(uploaded_image)
                     response = client.chat.completions.create(
@@ -198,8 +203,6 @@ with tab2:
                         ]
                     )
                     ai_output = response.choices.message.content
-                
-                if ai_output:
                     st.session_state.analysis_result = ai_output
                 else:
                     st.warning("Please provide input data before clicking analyze.")
