@@ -187,8 +187,8 @@ if "analysis_result" not in st.session_state:
 if "feedback_submitted" not in st.session_state:
     st.session_state.feedback_submitted = False
 
-                    # 6. API Processing Logic (Inside the image upload execution block)
-                    base64_image = encode_image(uploaded_image)
+        # 6. API Processing Logic (Inside the image upload execution block)
+                base64_image = encode_image(uploaded_image)
                     response = client.chat.completions.create(
                         model="gpt-4o-mini",
                         messages=[
