@@ -8,49 +8,67 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib import colors
 import re
 
+import streamlit as st
+import openai
+import base64
+import plotly.graph_objects as go
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib import colors
+import re
+
 # 1. Page Configuration & Custom CSS for Modern College Aesthetic
 st.set_page_config(page_title="SafeChat AI Analyzer", page_icon="🛡️", layout="centered")
 
-# Custom UI Styling: Pastel accents, rounded cards, clean look
+# Custom UI Styling: Clean look, custom button classes
 st.markdown("""
-    <style>
-    .stApp {
-        background-color: #F7FAFC;
-    }
-    h1 {
-        color: #4A5568 !important;
-        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-        font-weight: 800;
-    }
-    .stTabs [data-baseweb="tab"] {
-        font-size: 16px;
-        font-weight: 600;
-        color: #718096;
-        border-radius: 8px 8px 0px 0px;
-        padding: 10px 20px;
-    }
-    .stTabs [aria-selected="true"] {
-        color: #3182CE !important;
-        border-bottom-color: #3182CE !important;
-    }
-    div.stButton > button:first-child {
-        background-color: #3182CE;
-        color: white;
-        border-radius: 12px;
-        padding: 10px 24px;
-        font-weight: 600;
-        border: none;
-        box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
-        transition: all 0.15s ease;
-    }
-    div.stButton > button:first-child:hover {
-        background-color: #2B6CB0;
-        transform: translateY(-1px);
-    }
-    .feedback-box {
-        background-color: #EDF2F7;
-        padding: 15px;
-        border-radius: 12px;
+<style>
+.stApp {
+    background-color: #F7FAFC;
+}
+h1 {
+    color: #4A5568 !important;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-weight: 800;
+}
+.stTabs [data-baseweb="tab"] {
+    font-size: 16px;
+    font-weight: 600;
+    color: #718096;
+    border-radius: 8px 8px 0px 0px;
+    padding: 10px 20px;
+}
+.stTabs [aria-selected="true"] {
+    color: #3182CE !important;
+    border-bottom-color: #3182CE !important;
+}
+div.stButton > button:first-child {
+    background-color: #3182CE;
+    color: white;
+    border-radius: 12px;
+    padding: 10px 24px;
+    font-weight: 600;
+    border: none;
+    box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+    transition: all 0.15s ease;
+}
+div.stButton > button:first-child:hover {
+    background-color: #2B6CB0;
+    transform: translateY(-1px);
+}
+.feedback-box {
+    background-color: #EDF2F7;
+    padding: 15px;
+    border-radius: 12px;
+    margin-top: 20px;
+    border: 1px solid #E2E8F0;
+}
+</style>
+""", unsafe_allow_html=True)
+
+st.title("🛡️ SafeChat AI Analyzer")
+
         margin-top: 20px;
         border: 1px solid #E2E8F0;
     }
