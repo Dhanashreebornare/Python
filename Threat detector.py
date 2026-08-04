@@ -170,52 +170,41 @@ if "analysis_result" not in st.session_state:
 if "feedback_submitted" not in st.session_state:
     st.session_state.feedback_submitted = False
 
-# 6. Processing Execution
+# 6. Processing Execution (Gemini 3.5 Powered Engine)
 if analyze_text_button or analyze_image_button:
     if not api_key:
-        st.error("Please configure your OpenAI API Key inside Streamlit Cloud Secrets dashboard settings to run live analysis.")
+        st.error("Please configure GEMINI_API_KEY inside Streamlit Cloud Secrets dashboard settings.")
     else:
         st.session_state.feedback_submitted = False
-        client = openai.OpenAI(api_key=api_key)
         
-        with st.spinner("Analyzing communication patterns..."):
+        # FIXXED: Initializing the native Gemini 3.5 model identifier
+        model = genai.GenerativeModel('gemini-3.5-flash')
+        
+        with st.spinner("Analyzing communication patterns via Gemini 3.5 engine..."):
             try:
                 ai_output = ""
                 if analyze_text_button and user_text:
                     st.session_state.current_chat_content = user_text
-                    response = client.chat.completions.create(
-                        model="gpt-4o-mini",
-                        messages=[
-                            {"role": "system", "content": SYSTEM_PROMPT},
-                            {"role": "user", "content": f"Analyze this text chat:\n\n{user_text}"}
-                        ]
-                    )
-                    ai_output = response.choices.message.content
+                    full_prompt = f"{SYSTEM_PROMPT}\n\nAnalyze this text chat:\n\n{user_text}"
+                    response = model.generate_content(full_prompt)
+                    ai_output = response.text
                     
                 elif analyze_image_button and uploaded_image:
-                    st.session_state.current_chat_content = f"[Screenshot File: {uploaded_image.name}]"
-                    base64_image = encode_image(uploaded_image)
-                    response = client.chat.completions.create(
-                        model="gpt-4o-mini",
-                        messages=[
-                            {"role": "system", "content": SYSTEM_PROMPT},
-                            {
-                                "role": "user",
-                                "content": [
-                                    {"type": "text", "text": "Analyze this WhatsApp screenshot written in Hinglish text:"},
-                                    {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}}
-                                ]
-                            }
-                        ]
-                    )
-                    ai_output = response.choices.message.content
+                    st.session_state.current_chat_content = f"[Screenshot: {uploaded_image.name}]"
+                    image_data = Image.open(uploaded_image)
+                    response = model.generate_content([
+                        SYSTEM_PROMPT, 
+                        "Analyze this WhatsApp screenshot written in Hinglish text:", 
+                        image_data
+                    ])
+                    ai_output = response.text
                 
                 if ai_output:
                     st.session_state.analysis_result = ai_output
                     log_data_to_sheets(
-                        chat_text=st.session_state.current_chat_content,
-                        threat_rating=extract_threat_level(ai_output),
-                        user_review="Pending Click"
+                        st.session_state.current_chat_content, 
+                        extract_threat_level(ai_output), 
+                        "Pending Click"
                     )
                 else:
                     st.warning("Please provide input data before clicking analyze.")
