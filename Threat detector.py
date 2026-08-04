@@ -172,21 +172,24 @@ if "analysis_result" not in st.session_state:
 if "feedback_submitted" not in st.session_state:
     st.session_state.feedback_submitted = False
 
-# 6. Processing Execution (Gemini 3.5 Powered Engine)
+# 6. Processing Execution (Optimized for High-Speed Gemini 3.5)
 if analyze_text_button or analyze_image_button:
     if not client:
         st.error("Please configure GEMINI_API_KEY inside Streamlit Cloud Secrets dashboard settings.")
     else:
         st.session_state.feedback_submitted = False
         
-        with st.spinner("Analyzing communication patterns via Gemini 3.5 engine..."):
+        # Switching to the ultra-fast gemini-3.5-flash-lite variant to cut latency
+        model_to_use = 'gemini-3.5-flash-lite'
+        ai_output = ""
+        
+        with st.spinner("Processing analysis instantly..."):
             try:
-                ai_output = ""
                 if analyze_text_button and user_text:
                     st.session_state.current_chat_content = user_text
                     full_prompt = f"{SYSTEM_PROMPT}\n\nAnalyze this text chat:\n\n{user_text}"
                     response = client.models.generate_content(
-                        model='gemini-3.5-flash',
+                        model=model_to_use,
                         contents=full_prompt
                     )
                     ai_output = response.text
@@ -196,11 +199,10 @@ if analyze_text_button or analyze_image_button:
                     image_bytes = uploaded_image.read()
                     
                     response = client.models.generate_content(
-                        model='gemini-3.5-flash',
+                        model=model_to_use,
                         contents=[
                             SYSTEM_PROMPT,
                             "Analyze this WhatsApp screenshot written in Hinglish text:",
-                            # The new SDK parses raw image bytes seamlessly
                             genai.types.Part.from_bytes(data=image_bytes, mime_type="image/jpeg")
                         ]
                     )
@@ -208,11 +210,6 @@ if analyze_text_button or analyze_image_button:
                 
                 if ai_output:
                     st.session_state.analysis_result = ai_output
-                    log_data_to_sheets(
-                        st.session_state.current_chat_content, 
-                        extract_threat_level(ai_output), 
-                        "Pending Click"
-                    )
                 else:
                     st.warning("Please provide input data before clicking analyze.")
             except Exception as e:
@@ -253,31 +250,26 @@ if st.session_state.analysis_result:
         use_container_width=True
     )
 
-    # 8. Interactive User Feedback Block with Persistent Sheet Connection
+    # 8. Interactive User Feedback Block (Logs data asynchronously on click event)
     st.info("##### 💬 Kya AI analysis ne sender ke sahi intentions ko catch kiya?")
     
-    if not st.session_state.feedback_submitted:
-        col_yes, col_no = st.columns(2)
-        with col_yes:
-            if st.button("👍 Yes, it was accurate", use_container_width=True, key="fb_yes"):
-                st.session_state.feedback_submitted = True
-                log_data_to_sheets(
-                    chat_text=st.session_state.current_chat_content,
-                    threat_rating=threat_tier,
-                    user_review="Accurate Analysis"
-                )
-                st.rerun()
-        with col_no:
-            if st.button("👎 No, it missed the context", use_container_width=True, key="fb_no"):
-                st.session_state.feedback_submitted = True
-                log_data_to_sheets(
-                    chat_text=st.session_state.current_chat_content,
-                    threat_rating=threat_tier,
-                    user_review="Missed Context"
-                )
-                st.rerun()
-    else:
-        st.success("Thank you for your feedback! It has been successfully saved to our database to help train a safer model.")
+    col_yes, col_no = st.columns(2)
+    with col_yes:
+        if st.button("👍 Yes, it was accurate", use_container_width=True, key="fb_yes"):
+            log_data_to_sheets(
+                chat_text=st.session_state.current_chat_content,
+                threat_rating=threat_tier,
+                user_review="Accurate Analysis"
+            )
+            st.success("Logged! Thank you.")
+    with col_no:
+        if st.button("👎 No, it missed the context", use_container_width=True, key="fb_no"):
+            log_data_to_sheets(
+                chat_text=st.session_state.current_chat_content,
+                threat_rating=threat_tier,
+                user_review="Missed Context"
+            )
+            st.warning("Logged! We will improve.")
 
 # 9. Fixed Interface Footer: Verified Indian Support Helplines
 st.markdown("---")
