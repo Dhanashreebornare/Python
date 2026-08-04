@@ -180,7 +180,7 @@ if "analysis_result" not in st.session_state:
 if "feedback_submitted" not in st.session_state:
     st.session_state.feedback_submitted = False
 
-# 6. Processing Execution (Indentation-Aligned Layer)
+# 6. Processing Execution
 if analyze_text_button or analyze_image_button:
     if not api_key:
         st.error("Please enter your OpenAI API Key in the sidebar to proceed.")
@@ -207,7 +207,7 @@ if analyze_text_button or analyze_image_button:
                         model="gpt-4o-mini",
                         messages=[
                             {"role": "system", "content": SYSTEM_PROMPT},
-                            
+                            {
                 elif analyze_image_button and uploaded_image:
                     base64_image = encode_image(uploaded_image)
                     response = client.chat.completions.create(
