@@ -177,7 +177,7 @@ with tab1:
     user_text = st.text_area("Paste the conversation or sample text here:", value=default_text, height=180)
     analyze_text_button = st.button("Analyze Text", type="primary", key="txt_btn")
 
-                if analyze_text_button and user_text:
+                                if analyze_text_button and user_text:
                     response = client.chat.completions.create(
                         model="gpt-4o-mini",
                         messages=[
@@ -200,6 +200,10 @@ with tab1:
                                     {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}}
                                 ]
                             }
+                        ]
+                    )
+                    ai_output = response.choices.message.content
+
                         ]
                     )
                     ai_output = response.choices.message.content
