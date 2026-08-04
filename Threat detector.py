@@ -1,16 +1,5 @@
 import streamlit as st
 import openai
-
-# This securely fetches your hidden key from the cloud environment configuration
-if "OPENAI_API_KEY" in st.secrets:
-    api_key = st.secrets["OPENAI_API_KEY"]
-else:
-    api_key = st.sidebar.text_input("Enter OpenAI API Key:", type="password")
-
-if api_key:
-    client = openai.OpenAI(api_key=api_key)
-else:
-    st.warning("Please provide your OpenAI API Key to start analysis.")
 import base64
 import plotly.graph_objects as go
 from reportlab.lib.pagesizes import letter
@@ -85,15 +74,19 @@ SAMPLE_CHATS = {
         "Sender: Hey! Bas ye check karne ke liye message kiya ki tum study group ke baad safely ghar pahonch gayi na? Jab bhi next week free ho batana, saath me psychology presentation complete kar lenge. Koi jaldbaazi nahi hai, pehle tum apne weekend exams pe focus karo! All the best!"
 }
 
-# 3. Sidebar Configuration
+# 3. Sidebar Configuration (Secure API Secrets Check)
 st.sidebar.header("⚙️ Configuration")
-api_key = st.sidebar.text_input("Enter your OpenAI API Key:", type="password")
+if "OPENAI_API_KEY" in st.secrets:
+    api_key = st.secrets["OPENAI_API_KEY"]
+    st.sidebar.success("🔑 API Key securely loaded from Secrets!")
+else:
+    api_key = st.sidebar.text_input("Enter your OpenAI API Key:", type="password")
 
 st.sidebar.markdown("---")
 st.sidebar.header("📖 Test with Examples")
 selected_sample = st.sidebar.selectbox("Choose a sample scenario to load:", list(SAMPLE_CHATS.keys()))
 
-# 4. System Prompt for Hinglish Extraction
+# 4. Advanced System Prompt for Hinglish Extraction
 SYSTEM_PROMPT = """
 You are an expert psychological profiler and communication safety assistant specialized in Indian dating culture and digital interactions. Your job is to protect young Indian women and college students from digital manipulation, grooming, "sugar-coated" traps, love-bombing, financial scams, or isolation tactics.
 
@@ -177,7 +170,28 @@ with tab1:
     user_text = st.text_area("Paste the conversation or sample text here:", value=default_text, height=180)
     analyze_text_button = st.button("Analyze Text", type="primary", key="txt_btn")
 
-                                if analyze_text_button and user_text:
+with tab2:
+    uploaded_image = st.file_uploader("Upload a WhatsApp Screenshot (PNG/JPG):", type=["png", "jpg", "jpeg"])
+    analyze_image_button = st.button("Analyze Screenshot", type="primary", key="img_btn")
+
+# Initialize session state variables
+if "analysis_result" not in st.session_state:
+    st.session_state.analysis_result = None
+if "feedback_submitted" not in st.session_state:
+    st.session_state.feedback_submitted = False
+
+# 6. Processing Execution (Indentation-Aligned Layer)
+if analyze_text_button or analyze_image_button:
+    if not api_key:
+        st.error("Please enter your OpenAI API Key in the sidebar to proceed.")
+    else:
+        st.session_state.feedback_submitted = False
+        client = openai.OpenAI(api_key=api_key)
+        
+        with st.spinner("Analyzing communication patterns..."):
+            try:
+                ai_output = ""
+                if analyze_text_button and user_text:
                     response = client.chat.completions.create(
                         model="gpt-4o-mini",
                         messages=[
@@ -194,6 +208,13 @@ with tab1:
                         messages=[
                             {"role": "system", "content": SYSTEM_PROMPT},
                             {
+                elif analyze_image_button and uploaded_image:
+                    base64_image = encode_image(uploaded_image)
+                    response = client.chat.completions.create(
+                        model="gpt-4o-mini",
+                        messages=[
+                            {"role": "system", "content": SYSTEM_PROMPT},
+                            {
                                 "role": "user",
                                 "content": [
                                     {"type": "text", "text": "Analyze this WhatsApp screenshot written in Hinglish text:"},
@@ -203,10 +224,8 @@ with tab1:
                         ]
                     )
                     ai_output = response.choices.message.content
-
-                        ]
-                    )
-                    ai_output = response.choices.message.content
+                
+                if ai_output:
                     st.session_state.analysis_result = ai_output
                 else:
                     st.warning("Please provide input data before clicking analyze.")
