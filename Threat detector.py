@@ -10,7 +10,7 @@ import re
 import datetime
 import pandas as pd
 
-# 1. Page Configuration & Cloud Engine Integration
+# 1. Page Configuration using Streamlit's native engine
 st.set_page_config(page_title="SafeChat AI Analyzer", page_icon="🛡️", layout="centered")
 
 st.title("🛡️ SafeChat AI Analyzer")
@@ -193,111 +193,6 @@ if analyze_text_button or analyze_image_button:
                             {"role": "user", "content": f"Analyze this text chat:\n\n{user_text}"}
                         ]
                     )
-                    ai_output = response.choices.message.content
-                    
 git add "Threat detector.py"
-git commit -m "Cleaned image handling layout and set complete chart coordinate arrays"
+git commit -m "Fixed block indentation alignment from image processing onwards"
 git push origin main
-                elif analyze_image_button and uploaded_image:
-                    st.session_state.current_chat_content = f"[Screenshot File: {uploaded_image.name}]"
-                    base64_image = encode_image(uploaded_image)
-                    response = client.chat.completions.create(
-                        model="gpt-4o-mini",
-                        messages=[
-                            {"role": "system", "content": SYSTEM_PROMPT},
-                            {
-                                "role": "user",
-                                "content": [
-                                    {"type": "text", "text": "Analyze this WhatsApp screenshot written in Hinglish text:"},
-                                    {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}}
-                                ]
-                            }
-                        ]
-                    )
-                    ai_output = response.choices.message.content
-                
-                if ai_output:
-                    st.session_state.analysis_result = ai_output
-                    # Automatic initial baseline data log stream
-                    log_data_to_sheets(
-                        chat_text=st.session_state.current_chat_content,
-                        threat_rating=extract_threat_level(ai_output),
-                        user_review="Pending Click"
-                    )
-                else:
-                    st.warning("Please provide input data before clicking analyze.")
-            except Exception as e:
-                st.error(f"An error occurred: {str(e)}")
-
-# 7. Render Output Dashboard from State
-if st.session_state.analysis_result:
-    output = st.session_state.analysis_result
-    st.success("Analysis Complete!")
-    
-    metrics = extract_metrics(output)
-    threat_tier = extract_threat_level(output)
-    
-    st.write("### 📊 Psychological Risk Profile")
-    fig = go.Figure(go.Bar(
-        x=list(metrics.values()),
-        y=list(metrics.keys()),
-        orientation='h',
-        marker=dict(color=['#E53E3E' if v > 60 else '#DD6B20' if v > 30 else '#38A169' for v in metrics.values()])
-    ))
-    fig.update_layout(
-        xaxis=dict(title="Risk Level (%)", range=[0, 100]), 
-        yaxis=dict(autorange="reversed"), 
-        height=280, 
-        margin=dict(l=5, r=5, t=10, b=10)
-    )
-    st.plotly_chart(fig, use_container_width=True)
-    
-    st.markdown(output)
-    
-    pdf_data = generate_pdf(output)
-    st.markdown("---")
-    st.download_button(
-        label="📥 Download Full Safety Report + Emergency Helplines (PDF)",
-        data=pdf_data,
-        file_name="SafeChat_Safety_Report.pdf",
-        mime="application/pdf",
-        use_container_width=True
-    )
-
-    # 8. Interactive User Feedback Block with Persistent Sheet Connection
-    st.info("##### 💬 Kya AI analysis ne sender ke sahi intentions ko catch kiya?")
-    
-    if not st.session_state.feedback_submitted:
-        col_yes, col_no = st.columns(2)
-        with col_yes:
-            if st.button("👍 Yes, it was accurate", use_container_width=True, key="fb_yes"):
-                st.session_state.feedback_submitted = True
-                log_data_to_sheets(
-                    chat_text=st.session_state.current_chat_content,
-                    threat_rating=threat_tier,
-                    user_review="Accurate Analysis"
-                )
-                st.rerun()
-        with col_no:
-            if st.button("👎 No, it missed the context", use_container_width=True, key="fb_no"):
-                st.session_state.feedback_submitted = True
-                log_data_to_sheets(
-                    chat_text=st.session_state.current_chat_content,
-                    threat_rating=threat_tier,
-                    user_review="Missed Context"
-                )
-                st.rerun()
-    else:
-        st.success("Thank you for your feedback! It has been successfully saved to our database to help train a safer model.")
-
-# 9. Fixed Interface Footer: Verified Indian Support Helplines
-st.markdown("---")
-st.error("### 🚨 Emergency Support Helpline Directory (India)")
-col1, col2, col3 = st.columns(3)
-with col1:
-    st.metric(label="Cyber Crime (Scams)", value="📞 1930")
-with col2:
-    st.metric(label="Women Helpline", value="📞 1091")
-with col3:
-    st.metric(label="National Emergency", value="📞 112")
-st.caption("If you feel threatened, blackmailed, or forced, please reach out immediately. Your safety comes first.")
