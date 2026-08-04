@@ -1,6 +1,5 @@
-from google import genai
 import streamlit as st
-import openai
+from google import genai
 import base64
 import plotly.graph_objects as go
 from reportlab.lib.pagesizes import letter
@@ -10,6 +9,8 @@ from reportlab.lib import colors
 import re
 import datetime
 import pandas as pd
+from PIL import Image
+import io
 
 # 1. Page Configuration using Streamlit's native engine
 st.set_page_config(page_title="SafeChat AI Analyzer", page_icon="🛡️", layout="centered")
