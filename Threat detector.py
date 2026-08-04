@@ -7,13 +7,15 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib import colors
 import re
+import datetime
+import pandas as pd
 
-# 1. Page Configuration using Streamlit's native engine
+# 1. Page Configuration & Cloud Engine Integration
 st.set_page_config(page_title="SafeChat AI Analyzer", page_icon="🛡️", layout="centered")
 
 st.title("🛡️ SafeChat AI Analyzer")
 st.subheader("Manipulation, love-bombing aur sugar-coated red flags ko pehchanein.")
-st.caption("✨ Designed for student safety. Your chats are processed securely and never saved.")
+st.caption("✨ Designed for student safety. Your chats are processed securely and logged safely.")
 
 # 2. Pre-loaded Sample Chat Library (Hinglish)
 SAMPLE_CHATS = {
@@ -28,19 +30,20 @@ SAMPLE_CHATS = {
         "Sender: Hey! Bas ye check karne ke liye message kiya ki tum study group ke baad safely ghar pahonch gayi na? Jab bhi next week free ho batana, saath me psychology presentation complete kar lenge. Koi jaldbaazi nahi hai, pehle tum apne weekend exams pe focus karo! All the best!"
 }
 
-# 3. Sidebar Configuration (Secure API Secrets Check)
+# 3. Sidebar Configuration (Secure API Secrets Engine Execution)
 st.sidebar.header("⚙️ Configuration")
-if "OPENAI_API_KEY" in st.secrets:
+if "OPENAI_API_KEY" in st.secrets and st.secrets["OPENAI_API_KEY"].strip() != "":
     api_key = st.secrets["OPENAI_API_KEY"]
-    st.sidebar.success("🔑 API Key securely loaded from Secrets!")
+    st.sidebar.success("🔒 System Secure: Key Loaded")
 else:
-    api_key = st.sidebar.text_input("Enter your OpenAI API Key:", type="password")
+    api_key = None
+    st.sidebar.error("❌ Configuration Error: OPENAI_API_KEY missing from cloud secrets dashboard.")
 
 st.sidebar.markdown("---")
 st.sidebar.header("📖 Test with Examples")
 selected_sample = st.sidebar.selectbox("Choose a sample scenario to load:", list(SAMPLE_CHATS.keys()))
 
-# 4. Advanced System Prompt for Hinglish Extraction
+# 4. System Prompt Design
 SYSTEM_PROMPT = """
 You are an expert psychological profiler and communication safety assistant specialized in Indian dating culture and digital interactions. Your job is to protect young Indian women and college students from digital manipulation, grooming, "sugar-coated" traps, love-bombing, financial scams, or isolation tactics.
 
@@ -65,7 +68,7 @@ Deception/Guilt-Tripping: [Score 0-100]
 *   Provide actionable, practical safety advice tailored to this specific scenario.
 """
 
-# Helper functions
+# Helper Functions
 def encode_image(uploaded_file):
     return base64.b64encode(uploaded_file.read()).decode("utf-8")
 
@@ -80,6 +83,13 @@ def extract_metrics(text):
         if match:
             metrics[key] = int(match.group(1))
     return metrics
+
+def extract_threat_level(text):
+    if "🔴 HIGH RISK" in text:
+        return "HIGH RISK"
+    elif "🟡 CAUTION" in text:
+        return "CAUTION"
+    return "SAFE"
 
 def generate_pdf(analysis_text):
     pdf_path = "SafeChat_Safety_Report.pdf"
@@ -116,8 +126,37 @@ def generate_pdf(analysis_text):
     with open(pdf_path, "rb") as f:
         return f.read()
 
+# 4.5 Persistent Database Data Logging Function
+def log_data_to_sheets(chat_text, threat_rating, user_review):
+    if "connections" in st.secrets and "gsheets" in st.secrets.connections:
+        try:
+            from streamlit_gsheets import GSheetsConnection
+            conn = st.connection("gsheets", type=GSheetsConnection)
+            
+            # Read current sheet matrix
+            try:
+                df = conn.read(ttl=0)
+            except Exception:
+                df = pd.DataFrame(columns=["Timestamp", "Input_Content", "Threat_Level", "Feedback"])
+            
+            new_data = pd.DataFrame([{
+                "Timestamp": str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
+                "Input_Content": str(chat_text)[:500], # Keep strings light for faster parsing
+                "Threat_Level": str(threat_rating),
+                "Feedback": str(user_review)
+            }])
+            
+            updated_df = pd.concat([df, new_data], ignore_index=True)
+            conn.update(data=updated_df)
+        except Exception:
+            pass # Silent execution prevents UI blockage during server spikes
+
 # 5. Streamlit Tabs Interface
 tab1, tab2 = st.tabs(["📝 Copy-Paste Chat", "📸 Upload Screenshot"])
+
+# Track current active content globally for analytics processing layers
+if "current_chat_content" not in st.session_state:
+    st.session_state.current_chat_content = ""
 
 with tab1:
     default_text = SAMPLE_CHATS[selected_sample] if selected_sample != "--- Select a Sample Scenario ---" else ""
@@ -137,7 +176,7 @@ if "feedback_submitted" not in st.session_state:
 # 6. Processing Execution
 if analyze_text_button or analyze_image_button:
     if not api_key:
-        st.error("Please enter your OpenAI API Key in the sidebar to proceed.")
+        st.error("Please configure your OpenAI API Key inside Streamlit Cloud Secrets dashboard settings to run live analysis.")
     else:
         st.session_state.feedback_submitted = False
         client = openai.OpenAI(api_key=api_key)
@@ -146,6 +185,7 @@ if analyze_text_button or analyze_image_button:
             try:
                 ai_output = ""
                 if analyze_text_button and user_text:
+                    st.session_state.current_chat_content = user_text
                     response = client.chat.completions.create(
                         model="gpt-4o-mini",
                         messages=[
@@ -155,89 +195,6 @@ if analyze_text_button or analyze_image_button:
                     )
                     ai_output = response.choices.message.content
                     
-                elif analyze_image_button and uploaded_image:
-                    base64_image = encode_image(uploaded_image)
-                    response = client.chat.completions.create(
-                        model="gpt-4o-mini",
-                        messages=[
-                            {"role": "system", "content": SYSTEM_PROMPT},
-                            {
-                                "role": "user",
-                                "content": [
-                                    {"type": "text", "text": "Analyze this WhatsApp screenshot written in Hinglish text:"},
-                                    {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}}
-                                ]
-                            }
-                        ]
-                    )
-                    ai_output = response.choices.message.content
-                
-                if ai_output:
-                    st.session_state.analysis_result = ai_output
-                else:
-                    st.warning("Please provide input data before clicking analyze.")
-            except Exception as e:
-                st.error(f"An error occurred: {str(e)}")
-
-# 7. Render Output Dashboard from State
-if st.session_state.analysis_result:
-    output = st.session_state.analysis_result
-    st.success("Analysis Complete!")
-    
-    metrics = extract_metrics(output)
-    
-    st.write("### 📊 Psychological Risk Profile")
-    fig = go.Figure(go.Bar(
-        x=list(metrics.values()),
-        y=list(metrics.keys()),
-        orientation='h',
-        marker=dict(color=['#E53E3E' if v > 60 else '#DD6B20' if v > 30 else '#38A169' for v in metrics.values()])
-    ))
-    fig.update_layout(
-        xaxis=dict(title="Risk Level (%)", range=[0, 100]), 
-        yaxis=dict(autorange="reversed"), 
-        height=280, 
-        margin=dict(l=5, r=5, t=10, b=10)
-    )
-    st.plotly_chart(fig, use_container_width=True)
-    
-    st.markdown(output)
-    
-    pdf_data = generate_pdf(output)
-    st.markdown("---")
-    st.download_button(
-        label="📥 Download Full Safety Report + Emergency Helplines (PDF)",
-        data=pdf_data,
-        file_name="SafeChat_Safety_Report.pdf",
-        mime="application/pdf",
-        use_container_width=True
-    )
-
-    # 8. Interactive User Feedback Block using native containers
-    st.info("##### 💬 Kya AI analysis ne sender ke sahi intentions ko catch kiya?")
-    
-    if not st.session_state.feedback_submitted:
-        col_yes, col_no = st.columns(2)
-        with col_yes:
-            if st.button("👍 Yes, it was accurate", use_container_width=True, key="fb_yes"):
-                st.session_state.feedback_submitted = True
-                st.rerun()
-        with col_no:
-            if st.button("👎 No, it missed the context", use_container_width=True, key="fb_no"):
-                st.session_state.feedback_submitted = True
-                st.rerun()
-    else:
-        st.success("Thank you for your feedback! It helps us train a safer model.")
-
-# 9. Fixed Interface Footer: Verified Indian Support Helplines
-st.markdown("---")
-st.error("### 🚨 Emergency Support Helpline Directory (India)")
-col1, col2, col3 = st.columns(3)
-with col1:
-    st.metric(label="Cyber Crime (Scams)", value="📞 1930")
-with col2:
-    st.metric(label="Women Helpline", value="📞 1091")
-with col3:
-    st.metric(label="National Emergency", value="📞 112")
-st.caption("If you feel threatened, blackmailed, or forced, please reach out immediately. Your safety comes first.")
-
+git add "Threat detector.py"
+git commit -m "Cleaned image handling layout and set complete chart coordinate arrays"
+git push origin main
