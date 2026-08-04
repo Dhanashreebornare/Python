@@ -11,18 +11,38 @@ import re
 # 1. Page Configuration
 st.set_page_config(page_title="SafeChat AI Analyzer", page_icon="🛡️", layout="centered")
 
-st.title("🛡️ SafeChat AI Analyzer")
-st.subheader("Detect manipulation, love-bombing, and sugar-coated red flags.")
+st.title("🛡️ SafeChat AI Analyzer (Hinglish Supported)")
+st.subheader("Manipulation, love-bombing aur sugar-coated red flags ko pehchanein.")
 st.caption("Your chats are processed securely. No data is saved on our servers.")
 
-# Secure API Key Management
+# 2. Pre-loaded Sample Chat Library (Hinglish Scenarios)
+SAMPLE_CHATS = {
+    "--- Select a Sample Scenario ---": "",
+    "🚨 Scenario 1: Love-Bombing & Isolation (High Risk)": 
+        "Sender: Yaar honestly, jab se kal tumse mila hoon, I feel like you are my soulmate. Pata nahi log dating apps pe kaise time waste karte hain, main toh bas tumhare sath hi poori life spend karna chahta hoon. Suno, apne college ke dosto ko hamare baare me mat batana abhi, unhe bohot jalan hoti hai tumse. Wo bas hamara relation kharab karna chahte hain. Aaj raat ko akele milte hain na please?",
+    
+    "💸 Scenario 2: Sugar-Coated Financial/Crypto Trap (High Risk)": 
+        "Sender: Babe, agle mahine tumko ek super luxury vacation pe le chalunga, you deserve the best! Actually, abhi main ek bohot badi crypto trade execute kar raha hoon mere mama ki company ke sath. 24 hours me paise double hone ki guarantee hai. Ek slot bacha hai jo 10 mins me close ho jayega par mere paas abhi ₹15,000 kam pad rahe hain wallet me load karne ke liye. Tum jaldi se mujhe GPay ya UPI kar do na? Kal subah tak direct ₹30,000 wapas kar dunga, trust me baby.",
+    
+    "🟢 Scenario 3: Healthy & Safe Communication (Safe)": 
+        "Sender: Hey! Bas ye check karne ke liye message kiya ki tum study group ke baad safely ghar pahonch gayi na? Jab bhi next week free ho batana, saath me psychology presentation complete kar lenge. Koi jaldbaazi nahi hai, pehle tum apne weekend exams pe focus karo! All the best!"
+}
+
+# 3. Sidebar Configuration (API Key & Examples)
+st.sidebar.header("⚙️ Configuration")
 api_key = st.sidebar.text_input("Enter your OpenAI API Key:", type="password")
 
-# 2. Advanced System Prompt for Data Extraction
-SYSTEM_PROMPT = """
-You are an expert psychological profiler and communication safety assistant. Your job is to protect young women and college students from digital manipulation, grooming, "sugar-coated" traps, love-bombing, financial scams, or isolation tactics.
+st.sidebar.markdown("---")
+st.sidebar.header("📖 Test with Examples")
+selected_sample = st.sidebar.selectbox("Choose a sample scenario to load:", list(SAMPLE_CHATS.keys()))
 
-Analyze the provided chat history or screenshot. You MUST format your response EXACTLY as structured below, using the specific markdown headers.
+# 4. Advanced System Prompt for Hinglish Extraction
+SYSTEM_PROMPT = """
+You are an expert psychological profiler and communication safety assistant specialized in Indian dating culture and digital interactions. Your job is to protect young Indian women and college students from digital manipulation, grooming, "sugar-coated" traps, love-bombing, financial scams, or isolation tactics.
+
+The input conversation will be provided in Hinglish (a mix of Hindi and English words typed in the Roman script). You must deeply understand the contextual meaning of Hinglish slang, expressions, and emotional undertones.
+
+Analyze the text or screenshot and format your response EXACTLY as structured below using markdown headers. Keep the explanations simple, using clear language (mix of simple English/Hinglish) so it is universally accessible.
 
 ### 🚨 Threat Level Assessment
 [🟢 SAFE / 🟡 CAUTION / 🔴 HIGH RISK] - Give a brief 1-sentence reason.
@@ -35,10 +55,10 @@ Financial Risk: [Score 0-100]
 Deception/Guilt-Tripping: [Score 0-100]
 
 ### 🔍 Flagged Behaviors & Tactics
-*   **[Tactic Name]**: "Quote from chat" -> Explain why this is a psychological manipulation tactic.
+*   **[Tactic Name]**: "Quote from chat" -> Explain the psychology behind this tactic and why it is a red flag in this context.
 
 ### 💡 What to Do Next
-*   Actionable safety advice tailored to this specific scenario.
+*   Provide actionable, practical safety advice tailored to this specific scenario.
 """
 
 # Helper function to convert uploaded images to base64
@@ -71,7 +91,6 @@ def generate_pdf(analysis_text):
     story.append(Paragraph("🛡️ SafeChat AI Safety Report", title_style))
     story.append(Spacer(1, 10))
     
-    # Process text line by line to keep formatting clean in PDF
     lines = analysis_text.split('\n')
     for line in lines:
         if line.startswith("###"):
@@ -88,25 +107,26 @@ def generate_pdf(analysis_text):
     with open(pdf_path, "rb") as f:
         return f.read()
 
-# 3. Streamlit Tabs Interface
+# 5. Streamlit Tabs Interface
 tab1, tab2 = st.tabs(["📝 Copy-Paste Chat", "📸 Upload Screenshot"])
 
 with tab1:
-    user_text = st.text_area("Paste the suspicious conversation here:", height=150)
+    default_text = SAMPLE_CHATS[selected_sample] if selected_sample != "--- Select a Sample Scenario ---" else ""
+    user_text = st.text_area("Paste the conversation or sample text here:", value=default_text, height=180)
     analyze_text_button = st.button("Analyze Text", type="primary", key="txt_btn")
 
 with tab2:
     uploaded_image = st.file_uploader("Upload a WhatsApp Screenshot (PNG/JPG):", type=["png", "jpg", "jpeg"])
     analyze_image_button = st.button("Analyze Screenshot", type="primary", key="img_btn")
 
-# 4. Processing Execution
+# 6. Processing Execution
 if analyze_text_button or analyze_image_button:
     if not api_key:
         st.error("Please enter your OpenAI API Key in the sidebar to proceed.")
     else:
         client = openai.OpenAI(api_key=api_key)
         
-        with st.spinner("Analyzing communication patterns for hidden intentions..."):
+        with st.spinner("Analyzing communication patterns... Subtleties aur emotions check ho rahe hain..."):
             try:
                 ai_output = ""
                 if analyze_text_button and user_text:
@@ -128,7 +148,7 @@ if analyze_text_button or analyze_image_button:
                             {
                                 "role": "user",
                                 "content": [
-                                    {"type": "text", "text": "Analyze this WhatsApp screenshot:"},
+                                    {"type": "text", "text": "Analyze this WhatsApp screenshot written in Hinglish text:"},
                                     {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}}
                                 ]
                             }
@@ -139,7 +159,7 @@ if analyze_text_button or analyze_image_button:
                 if ai_output:
                     st.success("Analysis Complete!")
                     
-                    # 5. Generate and Display Visual Chart (Radar/Bar Chart)
+                    # 7. Generate and Display Visual Chart
                     metrics = extract_metrics(ai_output)
                     
                     st.write("### 📊 Psychological Risk Profile")
@@ -149,13 +169,18 @@ if analyze_text_button or analyze_image_button:
                         orientation='h',
                         marker=dict(color=['#E53E3E' if v > 60 else '#DD6B20' if v > 30 else '#38A169' for v in metrics.values()])
                     ))
-                    fig.update_layout(xaxis=dict(title="Risk Level (%)", range=[0, 100]), yaxis=dict(autorange="reversed"), height=300, margin=dict(l=5, r=5, t=10, b=10))
+                    fig.update_layout(
+                        xaxis=dict(title="Risk Level (%)", range=[0, 100]), 
+                        yaxis=dict(autorange="reversed"), 
+                        height=300, 
+                        margin=dict(l=5, r=5, t=10, b=10)
+                    )
                     st.plotly_chart(fig, use_container_width=True)
                     
                     # Display the text analysis below the chart
                     st.markdown(ai_output)
                     
-                    # 6. PDF Generation & Download Button
+                    # 8. PDF Generation & Download Button
                     pdf_data = generate_pdf(ai_output)
                     st.download_button(
                         label="📥 Download Full Safety Report (PDF)",
@@ -166,5 +191,3 @@ if analyze_text_button or analyze_image_button:
                     )
                 else:
                     st.warning("Please provide input data before clicking analyze.")
-            except Exception as e:
-                st.error(f"An error occurred: {str(e)}")
