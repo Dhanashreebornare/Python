@@ -8,14 +8,60 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib import colors
 import re
 
-# 1. Page Configuration
+# 1. Page Configuration & Custom CSS for Modern College Aesthetic
 st.set_page_config(page_title="SafeChat AI Analyzer", page_icon="🛡️", layout="centered")
 
-st.title("🛡️ SafeChat AI Analyzer (Hinglish Supported)")
-st.subheader("Manipulation, love-bombing aur sugar-coated red flags ko pehchanein.")
-st.caption("Your chats are processed securely. No data is saved on our servers.")
+# Custom UI Styling: Pastel accents, rounded cards, clean look
+st.markdown("""
+    <style>
+    .stApp {
+        background-color: #F7FAFC;
+    }
+    h1 {
+        color: #4A5568 !important;
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-weight: 800;
+    }
+    .stTabs [data-baseweb="tab"] {
+        font-size: 16px;
+        font-weight: 600;
+        color: #718096;
+        border-radius: 8px 8px 0px 0px;
+        padding: 10px 20px;
+    }
+    .stTabs [aria-selected="true"] {
+        color: #3182CE !important;
+        border-bottom-color: #3182CE !important;
+    }
+    div.stButton > button:first-child {
+        background-color: #3182CE;
+        color: white;
+        border-radius: 12px;
+        padding: 10px 24px;
+        font-weight: 600;
+        border: none;
+        box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+        transition: all 0.15s ease;
+    }
+    div.stButton > button:first-child:hover {
+        background-color: #2B6CB0;
+        transform: translateY(-1px);
+    }
+    .feedback-box {
+        background-color: #EDF2F7;
+        padding: 15px;
+        border-radius: 12px;
+        margin-top: 20px;
+        border: 1px solid #E2E8F0;
+    }
+    </style>
+""", unsafe_allowed_html=True)
 
-# 2. Pre-loaded Sample Chat Library (Hinglish Scenarios)
+st.title("🛡️ SafeChat AI Analyzer")
+st.subheader("Manipulation, love-bombing aur sugar-coated red flags ko pehchanein.")
+st.caption("✨ Designed for student safety. Your chats are processed securely and never saved.")
+
+# 2. Pre-loaded Sample Chat Library (Hinglish)
 SAMPLE_CHATS = {
     "--- Select a Sample Scenario ---": "",
     "🚨 Scenario 1: Love-Bombing & Isolation (High Risk)": 
@@ -28,7 +74,7 @@ SAMPLE_CHATS = {
         "Sender: Hey! Bas ye check karne ke liye message kiya ki tum study group ke baad safely ghar pahonch gayi na? Jab bhi next week free ho batana, saath me psychology presentation complete kar lenge. Koi jaldbaazi nahi hai, pehle tum apne weekend exams pe focus karo! All the best!"
 }
 
-# 3. Sidebar Configuration (API Key & Examples)
+# 3. Sidebar Configuration
 st.sidebar.header("⚙️ Configuration")
 api_key = st.sidebar.text_input("Enter your OpenAI API Key:", type="password")
 
@@ -36,7 +82,7 @@ st.sidebar.markdown("---")
 st.sidebar.header("📖 Test with Examples")
 selected_sample = st.sidebar.selectbox("Choose a sample scenario to load:", list(SAMPLE_CHATS.keys()))
 
-# 4. Advanced System Prompt for Hinglish Extraction
+# 4. System Prompt for Hinglish Extraction
 SYSTEM_PROMPT = """
 You are an expert psychological profiler and communication safety assistant specialized in Indian dating culture and digital interactions. Your job is to protect young Indian women and college students from digital manipulation, grooming, "sugar-coated" traps, love-bombing, financial scams, or isolation tactics.
 
@@ -61,11 +107,10 @@ Deception/Guilt-Tripping: [Score 0-100]
 *   Provide actionable, practical safety advice tailored to this specific scenario.
 """
 
-# Helper function to convert uploaded images to base64
+# Helper functions
 def encode_image(uploaded_file):
     return base64.b64encode(uploaded_file.read()).decode("utf-8")
 
-# Helper function to parse metric scores from AI text for the chart
 def extract_metrics(text):
     metrics = {
         "Love Bombing": 0, "Isolation Tactics": 0, 
@@ -78,7 +123,6 @@ def extract_metrics(text):
             metrics[key] = int(match.group(1))
     return metrics
 
-# Helper function to generate PDF
 def generate_pdf(analysis_text):
     pdf_path = "SafeChat_Safety_Report.pdf"
     doc = SimpleDocTemplate(pdf_path, pagesize=letter, rightMargin=40, leftMargin=40, topMargin=40, bottomMargin=40)
@@ -87,6 +131,7 @@ def generate_pdf(analysis_text):
     styles = getSampleStyleSheet()
     title_style = ParagraphStyle('Title', parent=styles['Heading1'], fontSize=22, textColor=colors.HexColor("#1A365D"), spaceAfter=15)
     body_style = ParagraphStyle('Body', parent=styles['Normal'], fontSize=11, leading=16, spaceAfter=8)
+    alert_style = ParagraphStyle('Alert', parent=styles['Normal'], fontSize=11, leading=16, textColor=colors.HexColor("#C53030"), spaceAfter=8)
     
     story.append(Paragraph("🛡️ SafeChat AI Safety Report", title_style))
     story.append(Spacer(1, 10))
@@ -103,6 +148,12 @@ def generate_pdf(analysis_text):
         elif line.strip():
             story.append(Paragraph(line.strip(), body_style))
             
+    story.append(Spacer(1, 20))
+    story.append(Paragraph("<b>🚨 Emergency Support Resources (India)</b>", ParagraphStyle('H2', parent=styles['Heading2'], fontSize=14, textColor=colors.HexColor("#C53030"), spaceAfter=5)))
+    story.append(Paragraph("• National Cyber Crime Helpline: Call 1930 (For financial scams/online harassment)", alert_style))
+    story.append(Paragraph("• National Emergency Number: Call 112", alert_style))
+    story.append(Paragraph("• Women Helpline: Call 1091", alert_style))
+    
     doc.build(story)
     with open(pdf_path, "rb") as f:
         return f.read()
@@ -119,27 +170,13 @@ with tab2:
     uploaded_image = st.file_uploader("Upload a WhatsApp Screenshot (PNG/JPG):", type=["png", "jpg", "jpeg"])
     analyze_image_button = st.button("Analyze Screenshot", type="primary", key="img_btn")
 
-# 6. Processing Execution
-if analyze_text_button or analyze_image_button:
-    if not api_key:
-        st.error("Please enter your OpenAI API Key in the sidebar to proceed.")
-    else:
-        client = openai.OpenAI(api_key=api_key)
-        
-        with st.spinner("Analyzing communication patterns... Subtleties aur emotions check ho rahe hain..."):
-            try:
-                ai_output = ""
-                if analyze_text_button and user_text:
-                    response = client.chat.completions.create(
-                        model="gpt-4o-mini",
-                        messages=[
-                            {"role": "system", "content": SYSTEM_PROMPT},
-                            {"role": "user", "content": f"Analyze this text chat:\n\n{user_text}"}
-                        ]
-                    )
-                    ai_output = response.choices.message.content
-                    
-                elif analyze_image_button and uploaded_image:
+# Initialize session state tracking variables for data storage across clicks
+if "analysis_result" not in st.session_state:
+    st.session_state.analysis_result = None
+if "feedback_submitted" not in st.session_state:
+    st.session_state.feedback_submitted = False
+
+                    # 6. API Processing Logic (Inside the image upload execution block)
                     base64_image = encode_image(uploaded_image)
                     response = client.chat.completions.create(
                         model="gpt-4o-mini",
@@ -157,39 +194,74 @@ if analyze_text_button or analyze_image_button:
                     ai_output = response.choices.message.content
                 
                 if ai_output:
-                    st.success("Analysis Complete!")
-                    
-                    # 7. Generate and Display Visual Chart
-                    metrics = extract_metrics(ai_output)
-                    
-                    st.write("### 📊 Psychological Risk Profile")
-                    fig = go.Figure(go.Bar(
-                        x=list(metrics.values()),
-                        y=list(metrics.keys()),
-                        orientation='h',
-                        marker=dict(color=['#E53E3E' if v > 60 else '#DD6B20' if v > 30 else '#38A169' for v in metrics.values()])
-                    ))
-                    fig.update_layout(
-                        xaxis=dict(title="Risk Level (%)", range=[0, 100]), 
-                        yaxis=dict(autorange="reversed"), 
-                        height=300, 
-                        margin=dict(l=5, r=5, t=10, b=10)
-                    )
-                    st.plotly_chart(fig, use_container_width=True)
-                    
-                    # Display the text analysis below the chart
-                    st.markdown(ai_output)
-                    
-                    # 8. PDF Generation & Download Button
-                    pdf_data = generate_pdf(ai_output)
-                    st.download_button(
-                        label="📥 Download Full Safety Report (PDF)",
-                        data=pdf_data,
-                        file_name="SafeChat_Safety_Report.pdf",
-                        mime="application/pdf",
-                        use_container_width=True
-                    )
+                    st.session_state.analysis_result = ai_output
                 else:
                     st.warning("Please provide input data before clicking analyze.")
-                    except Exception as e:
-                    st.error(f"An error occurred: {str(e)}")
+            except Exception as e:
+                st.error(f"An error occurred: {str(e)}")
+
+# 7. Render Output Dashboard from State
+if st.session_state.analysis_result:
+    output = st.session_state.analysis_result
+    st.success("Analysis Complete!")
+    
+    metrics = extract_metrics(output)
+    
+    st.write("### 📊 Psychological Risk Profile")
+    fig = go.Figure(go.Bar(
+        x=list(metrics.values()),
+        y=list(metrics.keys()),
+        orientation='h',
+        marker=dict(color=['#E53E3E' if v > 60 else '#DD6B20' if v > 30 else '#38A169' for v in metrics.values()])
+    ))
+    fig.update_layout(
+        xaxis=dict(title="Risk Level (%)", range=[0, 100]), 
+        yaxis=dict(autorange="reversed"), 
+        height=280, 
+        margin=dict(l=5, r=5, t=10, b=10),
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+    
+    st.markdown(output)
+    
+    pdf_data = generate_pdf(output)
+    st.markdown("---")
+    st.download_button(
+        label="📥 Download Full Safety Report + Emergency Helplines (PDF)",
+        data=pdf_data,
+        file_name="SafeChat_Safety_Report.pdf",
+        mime="application/pdf",
+        use_container_width=True
+    )
+
+    # 8. Interactive User Feedback Block
+    st.markdown('<div class="feedback-box">', unsafe_allowed_html=True)
+    st.write("##### 💬 Kya AI analysis ne sender ke sahi intentions ko catch kiya?")
+    
+    if not st.session_state.feedback_submitted:
+        col_yes, col_no = st.columns(2)
+        with col_yes:
+            if st.button("👍 Yes, it was accurate", use_container_width=True, key="fb_yes"):
+                st.session_state.feedback_submitted = True
+                st.rerun()
+        with col_no:
+            if st.button("👎 No, it missed the context", use_container_width=True, key="fb_no"):
+                st.session_state.feedback_submitted = True
+                st.rerun()
+    else:
+        st.info("Thank you for your feedback! It helps us train a safer model.")
+    st.markdown('</div>', unsafe_allowed_html=True)
+
+# 9. Fixed Interface Footer: Verified Indian Support Helplines
+st.markdown("---")
+st.error("### 🚨 Emergency Support Helpline Directory (India)")
+col1, col2, col3 = st.columns(3)
+with col1:
+    st.metric(label="Cyber Crime (Scams)", value="📞 1930")
+with col2:
+    st.metric(label="Women Helpline", value="📞 1091")
+with col3:
+    st.metric(label="National Emergency", value="📞 112")
+st.caption("If you feel threatened, blackmailed, or forced, please reach out immediately. Your safety comes first.")
