@@ -8,89 +8,8 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib import colors
 import re
 
-import streamlit as st
-import openai
-import base64
-import plotly.graph_objects as go
-from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib import colors
-import re
-
-import streamlit as st
-import openai
-import base64
-import plotly.graph_objects as go
-from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib import colors
-import re
-
-# 1. Page Configuration & Custom CSS for Modern College Aesthetic
+# 1. Page Configuration using Streamlit's native engine
 st.set_page_config(page_title="SafeChat AI Analyzer", page_icon="🛡️", layout="centered")
-
-# Custom UI Styling: Clean look, custom button classes
-st.markdown("""
-<style>
-.stApp {
-    background-color: #F7FAFC;
-}
-h1 {
-    color: #4A5568 !important;
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-weight: 800;
-}
-.stTabs [data-baseweb="tab"] {
-    font-size: 16px;
-    font-weight: 600;
-    color: #718096;
-    border-radius: 8px 8px 0px 0px;
-    padding: 10px 20px;
-}
-.stTabs [aria-selected="true"] {
-    color: #3182CE !important;
-    border-bottom-color: #3182CE !important;
-}
-div.stButton > button:first-child {
-    background-color: #3182CE;
-    color: white;
-    border-radius: 12px;
-    padding: 10px 24px;
-    font-weight: 600;
-    border: none;
-    box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
-    transition: all 0.15s ease;
-}
-div.stButton > button:first-child:hover {
-    background-color: #2B6CB0;
-    transform: translateY(-1px);
-}
-.feedback-box {
-    background-color: #EDF2F7;
-    padding: 15px;
-    border-radius: 12px;
-    margin-top: 20px;
-    border: 1px solid #E2E8F0;
-}
-</style>
-""", unsafe_allow_html=True)
-
-st.title("🛡️ SafeChat AI Analyzer")
-
-
-        margin-top: 20px;
-        border: 1px solid #E2E8F0;
-    }
-    </style>
-""", unsafe_allow_html=True) # <-- FIXXED: Removed the 'ed' from allowed
-
-        margin-top: 20px;
-        border: 1px solid #E2E8F0;
-    }
-    </style>
-""", unsafe_allowed_html=True)
 
 st.title("🛡️ SafeChat AI Analyzer")
 st.subheader("Manipulation, love-bombing aur sugar-coated red flags ko pehchanein.")
@@ -273,32 +192,22 @@ if st.session_state.analysis_result:
         y=list(metrics.keys()),
         orientation='h',
         marker=dict(color=['#E53E3E' if v > 60 else '#DD6B20' if v > 30 else '#38A169' for v in metrics.values()])
-    ))
-    fig.update_layout(
-        xaxis=dict(title="Risk Level (%)", range=[0, 100]), 
-        yaxis=dict(autorange="reversed"), 
-        height=280, 
-        margin=dict(l=5, r=5, t=10, b=10),
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='rgba(0,0,0,0)'
-    )
-    st.plotly_chart(fig, use_container_width=True)
-    
-    st.markdown(output)
-    
-    pdf_data = generate_pdf(output)
-    st.markdown("---")
-    st.download_button(
-        label="📥 Download Full Safety Report + Emergency Helplines (PDF)",
-        data=pdf_data,
-        file_name="SafeChat_Safety_Report.pdf",
-        mime="application/pdf",
-        use_container_width=True
-    )
+                    # Display the text analysis below the chart
+                    st.markdown(output)
+                    
+                    # Generate PDF report data
+                    pdf_data = generate_pdf(output)
+                    st.markdown("---")
+                    st.download_button(
+                        label="📥 Download Full Safety Report + Emergency Helplines (PDF)",
+                        data=pdf_data,
+                        file_name="SafeChat_Safety_Report.pdf",
+                        mime="application/pdf",
+                        use_container_width=True
+                    )
 
-    # 8. Interactive User Feedback Block
-    st.markdown('<div class="feedback-box">', unsafe_allowed_html=True)
-    st.write("##### 💬 Kya AI analysis ne sender ke sahi intentions ko catch kiya?")
+    # 8. Interactive User Feedback Block using native containers
+    st.info("##### 💬 Kya AI analysis ne sender ke sahi intentions ko catch kiya?")
     
     if not st.session_state.feedback_submitted:
         col_yes, col_no = st.columns(2)
@@ -311,8 +220,7 @@ if st.session_state.analysis_result:
                 st.session_state.feedback_submitted = True
                 st.rerun()
     else:
-        st.info("Thank you for your feedback! It helps us train a safer model.")
-    st.markdown('</div>', unsafe_allowed_html=True)
+        st.success("Thank you for your feedback! It helps us train a safer model.")
 
 # 9. Fixed Interface Footer: Verified Indian Support Helplines
 st.markdown("---")
