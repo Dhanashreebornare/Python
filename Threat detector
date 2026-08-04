@@ -191,3 +191,5 @@ if analyze_text_button or analyze_image_button:
                     )
                 else:
                     st.warning("Please provide input data before clicking analyze.")
+                    except Exception as e:
+                    st.error(f"An error occurred: {str(e)}")
