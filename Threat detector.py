@@ -55,6 +55,12 @@ st.markdown("""
         border: 1px solid #E2E8F0;
     }
     </style>
+""", unsafe_allow_html=True) # <-- FIXXED: Removed the 'ed' from allowed
+
+        margin-top: 20px;
+        border: 1px solid #E2E8F0;
+    }
+    </style>
 """, unsafe_allowed_html=True)
 
 st.title("🛡️ SafeChat AI Analyzer")
