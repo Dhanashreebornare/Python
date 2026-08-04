@@ -1,0 +1,170 @@
+import streamlit as st
+import openai
+import base64
+import plotly.graph_objects as go
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib import colors
+import re
+
+# 1. Page Configuration
+st.set_page_config(page_title="SafeChat AI Analyzer", page_icon="🛡️", layout="centered")
+
+st.title("🛡️ SafeChat AI Analyzer")
+st.subheader("Detect manipulation, love-bombing, and sugar-coated red flags.")
+st.caption("Your chats are processed securely. No data is saved on our servers.")
+
+# Secure API Key Management
+api_key = st.sidebar.text_input("Enter your OpenAI API Key:", type="password")
+
+# 2. Advanced System Prompt for Data Extraction
+SYSTEM_PROMPT = """
+You are an expert psychological profiler and communication safety assistant. Your job is to protect young women and college students from digital manipulation, grooming, "sugar-coated" traps, love-bombing, financial scams, or isolation tactics.
+
+Analyze the provided chat history or screenshot. You MUST format your response EXACTLY as structured below, using the specific markdown headers.
+
+### 🚨 Threat Level Assessment
+[🟢 SAFE / 🟡 CAUTION / 🔴 HIGH RISK] - Give a brief 1-sentence reason.
+
+### 📊 Metric Scores
+Love Bombing: [Score 0-100]
+Isolation Tactics: [Score 0-100]
+Urgency & Pressure: [Score 0-100]
+Financial Risk: [Score 0-100]
+Deception/Guilt-Tripping: [Score 0-100]
+
+### 🔍 Flagged Behaviors & Tactics
+*   **[Tactic Name]**: "Quote from chat" -> Explain why this is a psychological manipulation tactic.
+
+### 💡 What to Do Next
+*   Actionable safety advice tailored to this specific scenario.
+"""
+
+# Helper function to convert uploaded images to base64
+def encode_image(uploaded_file):
+    return base64.b64encode(uploaded_file.read()).decode("utf-8")
+
+# Helper function to parse metric scores from AI text for the chart
+def extract_metrics(text):
+    metrics = {
+        "Love Bombing": 0, "Isolation Tactics": 0, 
+        "Urgency & Pressure": 0, "Financial Risk": 0, 
+        "Deception/Guilt-Tripping": 0
+    }
+    for key in metrics.keys():
+        match = re.search(rf"{re.escape(key)}:\s*(\d+)", text)
+        if match:
+            metrics[key] = int(match.group(1))
+    return metrics
+
+# Helper function to generate PDF
+def generate_pdf(analysis_text):
+    pdf_path = "SafeChat_Safety_Report.pdf"
+    doc = SimpleDocTemplate(pdf_path, pagesize=letter, rightMargin=40, leftMargin=40, topMargin=40, bottomMargin=40)
+    story = []
+    
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle('Title', parent=styles['Heading1'], fontSize=22, textColor=colors.HexColor("#1A365D"), spaceAfter=15)
+    body_style = ParagraphStyle('Body', parent=styles['Normal'], fontSize=11, leading=16, spaceAfter=8)
+    
+    story.append(Paragraph("🛡️ SafeChat AI Safety Report", title_style))
+    story.append(Spacer(1, 10))
+    
+    # Process text line by line to keep formatting clean in PDF
+    lines = analysis_text.split('\n')
+    for line in lines:
+        if line.startswith("###"):
+            header_text = line.replace("###", "").strip()
+            story.append(Spacer(1, 10))
+            story.append(Paragraph(f"<b>{header_text}</b>", ParagraphStyle('H2', parent=styles['Heading2'], fontSize=14, textColor=colors.HexColor("#2C5282"), spaceAfter=5)))
+        elif line.strip().startswith("*"):
+            bullet_text = line.replace("*", "").strip()
+            story.append(Paragraph(f"• {bullet_text}", body_style))
+        elif line.strip():
+            story.append(Paragraph(line.strip(), body_style))
+            
+    doc.build(story)
+    with open(pdf_path, "rb") as f:
+        return f.read()
+
+# 3. Streamlit Tabs Interface
+tab1, tab2 = st.tabs(["📝 Copy-Paste Chat", "📸 Upload Screenshot"])
+
+with tab1:
+    user_text = st.text_area("Paste the suspicious conversation here:", height=150)
+    analyze_text_button = st.button("Analyze Text", type="primary", key="txt_btn")
+
+with tab2:
+    uploaded_image = st.file_uploader("Upload a WhatsApp Screenshot (PNG/JPG):", type=["png", "jpg", "jpeg"])
+    analyze_image_button = st.button("Analyze Screenshot", type="primary", key="img_btn")
+
+# 4. Processing Execution
+if analyze_text_button or analyze_image_button:
+    if not api_key:
+        st.error("Please enter your OpenAI API Key in the sidebar to proceed.")
+    else:
+        client = openai.OpenAI(api_key=api_key)
+        
+        with st.spinner("Analyzing communication patterns for hidden intentions..."):
+            try:
+                ai_output = ""
+                if analyze_text_button and user_text:
+                    response = client.chat.completions.create(
+                        model="gpt-4o-mini",
+                        messages=[
+                            {"role": "system", "content": SYSTEM_PROMPT},
+                            {"role": "user", "content": f"Analyze this text chat:\n\n{user_text}"}
+                        ]
+                    )
+                    ai_output = response.choices.message.content
+                    
+                elif analyze_image_button and uploaded_image:
+                    base64_image = encode_image(uploaded_image)
+                    response = client.chat.completions.create(
+                        model="gpt-4o-mini",
+                        messages=[
+                            {"role": "system", "content": SYSTEM_PROMPT},
+                            {
+                                "role": "user",
+                                "content": [
+                                    {"type": "text", "text": "Analyze this WhatsApp screenshot:"},
+                                    {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}}
+                                ]
+                            }
+                        ]
+                    )
+                    ai_output = response.choices.message.content
+                
+                if ai_output:
+                    st.success("Analysis Complete!")
+                    
+                    # 5. Generate and Display Visual Chart (Radar/Bar Chart)
+                    metrics = extract_metrics(ai_output)
+                    
+                    st.write("### 📊 Psychological Risk Profile")
+                    fig = go.Figure(go.Bar(
+                        x=list(metrics.values()),
+                        y=list(metrics.keys()),
+                        orientation='h',
+                        marker=dict(color=['#E53E3E' if v > 60 else '#DD6B20' if v > 30 else '#38A169' for v in metrics.values()])
+                    ))
+                    fig.update_layout(xaxis=dict(title="Risk Level (%)", range=[0, 100]), yaxis=dict(autorange="reversed"), height=300, margin=dict(l=5, r=5, t=10, b=10))
+                    st.plotly_chart(fig, use_container_width=True)
+                    
+                    # Display the text analysis below the chart
+                    st.markdown(ai_output)
+                    
+                    # 6. PDF Generation & Download Button
+                    pdf_data = generate_pdf(ai_output)
+                    st.download_button(
+                        label="📥 Download Full Safety Report (PDF)",
+                        data=pdf_data,
+                        file_name="SafeChat_Safety_Report.pdf",
+                        mime="application/pdf",
+                        use_container_width=True
+                    )
+                else:
+                    st.warning("Please provide input data before clicking analyze.")
+            except Exception as e:
+                st.error(f"An error occurred: {str(e)}")
