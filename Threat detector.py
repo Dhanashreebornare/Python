@@ -1,3 +1,4 @@
+from google import genai
 import streamlit as st
 import openai
 import base64
@@ -30,15 +31,15 @@ SAMPLE_CHATS = {
         "Sender: Hey! Bas ye check karne ke liye message kiya ki tum study group ke baad safely ghar pahonch gayi na? Jab bhi next week free ho batana, saath me psychology presentation complete kar lenge. Koi jaldbaazi nahi hai, pehle tum apne weekend exams pe focus karo! All the best!"
 }
 
-# 3. Sidebar Configuration (Secure API Secrets Engine Execution)
+# 3. Sidebar Configuration (Secure Gemini Secrets Check)
 st.sidebar.header("⚙️ Configuration")
-if "GEMINI_API_KEY" in st.secrets and st.secrets["GEMINI_AI_API_KEY"].strip() != "":
-    api_key = st.secrets["GEMINI_API_KEY"]
-    st.sidebar.success("🔒 System Secure: Key Loaded")
+if "GEMINI_API_KEY" in st.secrets and st.secrets["GEMINI_API_KEY"].strip() != "":
+    # Initializing the modern Google GenAI Client
+    client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
+    st.sidebar.success("🔒 System Secure: Gemini 3.5 Key Loaded")
 else:
-    api_key = None
+    client = None
     st.sidebar.error("❌ Configuration Error: GEMINI_API_KEY missing from cloud secrets dashboard.")
-
 st.sidebar.markdown("---")
 st.sidebar.header("📖 Test with Examples")
 selected_sample = st.sidebar.selectbox("Choose a sample scenario to load:", list(SAMPLE_CHATS.keys()))
@@ -172,13 +173,10 @@ if "feedback_submitted" not in st.session_state:
 
 # 6. Processing Execution (Gemini 3.5 Powered Engine)
 if analyze_text_button or analyze_image_button:
-    if not api_key:
+    if not client:
         st.error("Please configure GEMINI_API_KEY inside Streamlit Cloud Secrets dashboard settings.")
     else:
         st.session_state.feedback_submitted = False
-        
-        # FIXXED: Initializing the native Gemini 3.5 model identifier
-        model = genai.GenerativeModel('gemini-3.5-flash')
         
         with st.spinner("Analyzing communication patterns via Gemini 3.5 engine..."):
             try:
@@ -186,17 +184,25 @@ if analyze_text_button or analyze_image_button:
                 if analyze_text_button and user_text:
                     st.session_state.current_chat_content = user_text
                     full_prompt = f"{SYSTEM_PROMPT}\n\nAnalyze this text chat:\n\n{user_text}"
-                    response = model.generate_content(full_prompt)
+                    response = client.models.generate_content(
+                        model='gemini-3.5-flash',
+                        contents=full_prompt
+                    )
                     ai_output = response.text
                     
                 elif analyze_image_button and uploaded_image:
                     st.session_state.current_chat_content = f"[Screenshot: {uploaded_image.name}]"
-                    image_data = Image.open(uploaded_image)
-                    response = model.generate_content([
-                        SYSTEM_PROMPT, 
-                        "Analyze this WhatsApp screenshot written in Hinglish text:", 
-                        image_data
-                    ])
+                    image_bytes = uploaded_image.read()
+                    
+                    response = client.models.generate_content(
+                        model='gemini-3.5-flash',
+                        contents=[
+                            SYSTEM_PROMPT,
+                            "Analyze this WhatsApp screenshot written in Hinglish text:",
+                            # The new SDK parses raw image bytes seamlessly
+                            genai.types.Part.from_bytes(data=image_bytes, mime_type="image/jpeg")
+                        ]
+                    )
                     ai_output = response.text
                 
                 if ai_output:
