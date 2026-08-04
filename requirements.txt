@@ -4,6 +4,9 @@ streamlit
 streamlit>=1.40.0
 google-genai>=0.5.0
 streamlit>=1.35.0
-openai>=1.30.0
+google-genai>=2.16.0
 plotly>=5.22.0
 reportlab>=4.2.0
+st-files-connection>=0.1.0
+gspread>=6.0.0
+
