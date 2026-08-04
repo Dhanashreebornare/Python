@@ -207,7 +207,7 @@ if analyze_text_button or analyze_image_button:
                         model="gpt-4o-mini",
                         messages=[
                             {"role": "system", "content": SYSTEM_PROMPT},
-                            {
+                            
                 elif analyze_image_button and uploaded_image:
                     base64_image = encode_image(uploaded_image)
                     response = client.chat.completions.create(
