@@ -192,19 +192,26 @@ if st.session_state.analysis_result:
         y=list(metrics.keys()),
         orientation='h',
         marker=dict(color=['#E53E3E' if v > 60 else '#DD6B20' if v > 30 else '#38A169' for v in metrics.values()])
-                    # Display the text analysis below the chart
-                    st.markdown(output)
-                    
-                    # Generate PDF report data
-                    pdf_data = generate_pdf(output)
-                    st.markdown("---")
-                    st.download_button(
-                        label="📥 Download Full Safety Report + Emergency Helplines (PDF)",
-                        data=pdf_data,
-                        file_name="SafeChat_Safety_Report.pdf",
-                        mime="application/pdf",
-                        use_container_width=True
-                    )
+    ))
+    fig.update_layout(
+        xaxis=dict(title="Risk Level (%)", range=[0, 100]), 
+        yaxis=dict(autorange="reversed"), 
+        height=280, 
+        margin=dict(l=5, r=5, t=10, b=10)
+    )
+    st.plotly_chart(fig, use_container_width=True)
+    
+    st.markdown(output)
+    
+    pdf_data = generate_pdf(output)
+    st.markdown("---")
+    st.download_button(
+        label="📥 Download Full Safety Report + Emergency Helplines (PDF)",
+        data=pdf_data,
+        file_name="SafeChat_Safety_Report.pdf",
+        mime="application/pdf",
+        use_container_width=True
+    )
 
     # 8. Interactive User Feedback Block using native containers
     st.info("##### 💬 Kya AI analysis ne sender ke sahi intentions ko catch kiya?")
@@ -233,3 +240,4 @@ with col2:
 with col3:
     st.metric(label="National Emergency", value="📞 112")
 st.caption("If you feel threatened, blackmailed, or forced, please reach out immediately. Your safety comes first.")
+
