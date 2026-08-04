@@ -182,7 +182,26 @@ if "feedback_submitted" not in st.session_state:
 
 # 6. Processing Execution
 if analyze_text_button or analyze_image_button:
-                    elif analyze_image_button and uploaded_image:
+    if not api_key:
+        st.error("Please enter your OpenAI API Key in the sidebar to proceed.")
+    else:
+        st.session_state.feedback_submitted = False
+        client = openai.OpenAI(api_key=api_key)
+        
+        with st.spinner("Analyzing communication patterns..."):
+            try:
+                ai_output = ""
+                if analyze_text_button and user_text:
+                    response = client.chat.completions.create(
+                        model="gpt-4o-mini",
+                        messages=[
+                            {"role": "system", "content": SYSTEM_PROMPT},
+                            {"role": "user", "content": f"Analyze this text chat:\n\n{user_text}"}
+                        ]
+                    )
+                    ai_output = response.choices.message.content
+                    
+                elif analyze_image_button and uploaded_image:
                     base64_image = encode_image(uploaded_image)
                     response = client.chat.completions.create(
                         model="gpt-4o-mini",
