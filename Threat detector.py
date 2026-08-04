@@ -1,5 +1,5 @@
 import streamlit as st
-import GEMINI
+import openai
 import base64
 import plotly.graph_objects as go
 from reportlab.lib.pagesizes import letter
