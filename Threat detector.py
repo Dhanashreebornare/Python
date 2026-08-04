@@ -1,5 +1,5 @@
 import streamlit as st
-import openai
+import GEMINI
 import base64
 import plotly.graph_objects as go
 from reportlab.lib.pagesizes import letter
@@ -32,12 +32,12 @@ SAMPLE_CHATS = {
 
 # 3. Sidebar Configuration (Secure API Secrets Engine Execution)
 st.sidebar.header("⚙️ Configuration")
-if "OPENAI_API_KEY" in st.secrets and st.secrets["OPENAI_API_KEY"].strip() != "":
-    api_key = st.secrets["OPENAI_API_KEY"]
+if "GEMINI_API_KEY" in st.secrets and st.secrets["GEMINI_AI_API_KEY"].strip() != "":
+    api_key = st.secrets["GEMINI_API_KEY"]
     st.sidebar.success("🔒 System Secure: Key Loaded")
 else:
     api_key = None
-    st.sidebar.error("❌ Configuration Error: OPENAI_API_KEY missing from cloud secrets dashboard.")
+    st.sidebar.error("❌ Configuration Error: GEMINI_API_KEY missing from cloud secrets dashboard.")
 
 st.sidebar.markdown("---")
 st.sidebar.header("📖 Test with Examples")
