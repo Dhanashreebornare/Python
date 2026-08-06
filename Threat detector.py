@@ -15,8 +15,8 @@ import io
 # 1. Page Configuration using Streamlit's native engine
 st.set_page_config(page_title="SafeChat AI Analyzer", page_icon="🛡️", layout="centered")
 st.title("🛡️ SafeChat AI Analyzer")
-st.subheader("Manipulation, love-bombing aur sugar-coated red flags ko pehchanein.")
-st.caption("✨ Designed for communication safety. Your chats are processed securely and logged safely.")
+st.subheader("Meethi baaton ko scan karein, red flags se baaz bachein.")
+st.caption("✨ Designed for personal safety. Your chats are processed securely and logged safely.")
 
 # 2. Pre-loaded Sample Chat Library (Hinglish)
 SAMPLE_CHATS = {
@@ -26,15 +26,8 @@ SAMPLE_CHATS = {
     "🟢 Scenario 3: Healthy & Safe Communication (Safe)": "Sender: Hey! Bas ye check karne ke liye message kiya ki tum study group ke baad safely ghar pahonch gayi na? Jab bhi next week free ho batana, saath me psychology presentation complete kar lenge. Koi jaldbaazi nahi hai, pehle tum apne weekend exams pe focus karo! All the best!"
 }
 
-# Dynamic State Management: Clear old reports when inputs or scenario changes
-def reset_analysis_state():
-    st.session_state.analysis_result = None
-
-# 3. Sidebar Configuration (Secure Gemini Secrets Check)
 # 3. Sidebar Configuration (Secure Gemini Secrets Check)
 st.sidebar.header("⚙️ Configuration")
-
-# Initialize global fallback variable first
 client = None
 
 if "GEMINI_API_KEY" in st.secrets and st.secrets["GEMINI_API_KEY"].strip() != "":
@@ -49,12 +42,11 @@ else:
 st.sidebar.markdown("---")
 st.sidebar.header("📖 Test with Examples")
 
-# State callback for the dropdown picker
 def handle_sample_change():
     chosen = st.session_state.sample_selector
     if chosen in SAMPLE_CHATS:
         st.session_state.input_text = SAMPLE_CHATS[chosen]
-        st.session_state.analysis_result = None  # Clear old analysis
+        st.session_state.analysis_result = None
 
 selected_sample = st.sidebar.selectbox(
     "Choose a sample scenario to load:", 
@@ -62,9 +54,10 @@ selected_sample = st.sidebar.selectbox(
     key="sample_selector",
     on_change=handle_sample_change
 )
+
 # 4. System Prompt Design
 SYSTEM_PROMPT = """
-You are an expert psychological profiler and communication safety assistant specialized in Indian dating culture and digital interactions. Your job is to protect young Indian women and college students from digital manipulation, grooming, "sugar-coated" traps, love-bombing, financial scams, or isolation tactics. The input conversation will be provided in Hinglish (a mix of Hindi and English words typed in the Roman script) or visible in visual media. You must deeply understand the contextual meaning of Hinglish slang, expressions, and emotional undertones. Analyze the text/screenshots/videos and format your response EXACTLY as structured below using markdown headers. Keep the explanations simple, using clear language (mix of simple English/Hinglish) so it is universally accessible.
+You are an expert psychological profiler and communication safety assistant specialized in regional digital interactions and dating culture. Your job is to protect individuals and app users from digital manipulation, grooming, "sugar-coated" traps, love-bombing, financial scams, or isolation tactics. The input conversation will be provided in Hinglish (a mix of Hindi and English words typed in the Roman script) or visible/audible in visual or audio media. You must deeply understand the contextual meaning of Hinglish slang, expressions, voice tone nuances, and emotional undertones. Analyze the text/screenshots/videos/audio and format your response EXACTLY as structured below using markdown headers. Keep the explanations simple, using clear language (mix of simple English/Hinglish) so it is universally accessible.
 
 ### 🚨 Threat Level Assessment [🟢 SAFE / 🟡 CAUTION / 🔴 HIGH RISK]
 - Give a brief 1-sentence reason.
@@ -77,16 +70,13 @@ Financial Risk: [Score 0-100]
 Deception/Guilt-Tripping: [Score 0-100]
 
 ### 🔍 Flagged Behaviors & Tactics
-* **[Tactic Name]**: "Quote from chat" -> Explain the psychology behind this tactic and why it is a red flag in this context.
+* **[Tactic Name]**: "Quote from chat/audio" -> Explain the psychology behind this tactic and why it is a red flag in this context.
 
 ### 💡 What to Do Next
 * Provide actionable, practical safety advice tailored to this specific scenario.
 """
 
 # Helper Functions
-def encode_image(uploaded_file):
-    return base64.b64encode(uploaded_file.read()).decode("utf-8")
-
 def extract_metrics(text):
     metrics = {
         "Love Bombing": 0,
@@ -96,15 +86,12 @@ def extract_metrics(text):
         "Deception/Guilt-Tripping": 0
     }
     
-    # Ultra-flexible regex that hunts down any integer after your keyword, skipping spaces, markdown stars, dashes or brackets
     for key in metrics.keys():
         pattern = rf"{re.escape(key)}[^\d]*(\d+)"
         match = re.search(pattern, text, re.IGNORECASE)
         if match:
             metrics[key] = int(match.group(1))
             
-    # Production Fallback Layer: If data mapping failed or metrics are empty, 
-    # parse the safety tier from the AI text context to populate a valid aesthetic graph
     if sum(metrics.values()) == 0:
         if "HIGH RISK" in text or "🔴" in text:
             metrics = {"Love Bombing": 85, "Isolation Tactics": 70, "Urgency & Pressure": 90, "Financial Risk": 75, "Deception/Guilt-Tripping": 80}
@@ -175,19 +162,17 @@ def log_data_to_sheets(chat_text, threat_rating, user_review):
             pass
 
 # 5. Streamlit Tabs Interface
-tab1, tab2, tab3 = st.tabs(["📝 Copy-Paste Chat", "📸 Upload Screenshots", "🎥 Upload Videos"])
+tab1, tab2, tab3, tab4 = st.tabs(["📝 Copy-Paste Chat", "📸 Upload Screenshots", "🎥 Upload Videos", "🎵 Upload Audio Voice Notes"])
 
 if "current_chat_content" not in st.session_state:
     st.session_state.current_chat_content = ""
 if "analysis_result" not in st.session_state:
     st.session_state.analysis_result = None
+if "input_text" not in st.session_state:
+    st.session_state.input_text = ""
 
 with tab1:
-    # Safely fetch the selected text from the pre-loaded dictionary
-    default_text = SAMPLE_CHATS[selected_sample] if selected_sample != "--- Select a Sample Scenario ---" else ""
-    
-    # We let the text area explicitly bind to the default_text variable without mid-air resets
-    user_text = st.text_area("Paste the conversation or sample text here:", value=default_text, height=180, key="input_text")
+    user_text = st.text_area("Paste the conversation or sample text here:", height=180, key="input_text")
     analyze_text_button = st.button("Analyze Text", type="primary", key="txt_btn")
 
 with tab2:
@@ -198,8 +183,13 @@ with tab3:
     uploaded_videos = st.file_uploader("Upload Screen Recording Videos (MP4/MOV/AVI):", type=["mp4", "mov", "avi"], accept_multiple_files=True, key="input_videos")
     analyze_video_button = st.button("Analyze Videos", type="primary", key="vid_btn")
 
+with tab4:
+with tab4:
+    uploaded_audios = st.file_uploader("Upload Audio Voice Notes (MP3/WAV/M4A):", type=["mp3", "wav", "m4a"], accept_multiple_files=True, key="input_audios")
+    analyze_audio_button = st.button("Analyze Audio Files", type="primary", key="aud_btn")
+
 # 6. Processing Execution (Optimized for High-Speed Gemini 3.5)
-if analyze_text_button or analyze_image_button or analyze_video_button:
+if analyze_text_button or analyze_image_button or analyze_video_button or analyze_audio_button:
     if client is None:
         st.error("❌ Processing Blocked: Please configure a valid GEMINI_API_KEY inside your Streamlit Secrets dashboard first.")
     else:
@@ -231,6 +221,16 @@ if analyze_text_button or analyze_image_button or analyze_video_button:
                         vid_bytes = vid.read()
                         mime_type = "video/mp4" if vid.name.endswith("mp4") else "video/quicktime" if vid.name.endswith("mov") else "video/x-msvideo"
                         contents_payload.append(genai.types.Part.from_bytes(data=vid_bytes, mime_type=mime_type))
+                    response = client.models.generate_content(model=model_to_use, contents=contents_payload)
+                    ai_output = response.text
+                    
+                elif analyze_audio_button and uploaded_audios:
+                    st.session_state.current_chat_content = f"[Audio files uploaded: {len(uploaded_audios)} files]"
+                    contents_payload.append("Analyze these audio recordings/voice notes. Listen to the conversation content and tone carefully:")
+                    for aud in uploaded_audios:
+                        aud_bytes = aud.read()
+                        mime_type = "audio/mp3" if aud.name.endswith("mp3") else "audio/wav" if aud.name.endswith("wav") else "audio/x-m4a"
+                        contents_payload.append(genai.types.Part.from_bytes(data=aud_bytes, mime_type=mime_type))
                     response = client.models.generate_content(model=model_to_use, contents=contents_payload)
                     ai_output = response.text
                 
@@ -270,8 +270,8 @@ if st.session_state.analysis_result:
     fig.update_layout(
         xaxis=dict(
             title="<b>Risk Level (%)</b>", 
-            range=[0, 115],                     # Hardcodes strict range constraints
-            tickvals=[0, 20, 40, 60, 80, 100],  # Restricts ticks to clean integer increments
+            range=[0, 115],
+            tickvals=[0, 20, 40, 60, 80, 100],
             gridcolor='#E2E8F0',
             showgrid=True
         ),
@@ -280,7 +280,7 @@ if st.session_state.analysis_result:
             tickfont=dict(size=12, color='#1A202C', weight='bold')
         ),
         height=360,
-        margin=dict(l=180, r=60, t=20, b=40),   # Wide padding to prevent text clipping
+        margin=dict(l=180, r=60, t=20, b=40),
         plot_bgcolor='white',
         paper_bgcolor='white'
     )
@@ -297,25 +297,25 @@ if st.session_state.analysis_result:
         use_container_width=True
     )
 
-    # 8. Interactive User Feedback Block
-    st.info("##### 💬 Kya AI analysis ne sender ke sahi intentions ko catch kiya?")
-    col_yes, col_no = st.columns(2)
-    with col_yes:
-        if st.button("👍 Yes, it was accurate", use_container_width=True, key="fb_yes"):
-            log_data_to_sheets(
-                chat_text=st.session_state.current_chat_content,
-                threat_rating=threat_tier,
-                user_review="Accurate Analysis"
-            )
-            st.success("Logged! Thank you.")
-    with col_no:
-        if st.button("👎 No, it missed the context", use_container_width=True, key="fb_no"):
-            log_data_to_sheets(
-                chat_text=st.session_state.current_chat_content,
-                threat_rating=threat_tier,
-                user_review="Missed Context"
-            )
-            st.warning("Logged! We will improve.")
+# 8. Interactive User Feedback Block
+st.info("##### 💬 Kya AI analysis ne sender ke sahi intentions ko catch kiya?")
+col_yes, col_no = st.columns(2)
+with col_yes:
+    if st.button("👍 Yes, it was accurate", use_container_width=True, key="fb_yes"):
+        log_data_to_sheets(
+            chat_text=st.session_state.current_chat_content,
+            threat_rating=threat_tier,
+            user_review="Accurate Analysis"
+        )
+        st.success("Logged! Thank you.")
+with col_no:
+    if st.button("👎 No, it missed the context", use_container_width=True, key="fb_no"):
+        log_data_to_sheets(
+            chat_text=st.session_state.current_chat_content,
+            threat_rating=threat_tier,
+            user_review="Missed Context"
+        )
+        st.warning("Logged! We will improve.")
 
 # 9. Fixed Interface Footer: Verified Indian Support Helplines
 st.markdown("---")
