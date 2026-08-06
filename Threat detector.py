@@ -151,28 +151,27 @@ def log_data_to_sheets(chat_text, threat_rating, user_review):
 
 # 5. Streamlit Tabs Interface
 tab1, tab2, tab3 = st.tabs(["📝 Copy-Paste Chat", "📸 Upload Screenshots", "🎥 Upload Videos"])
+
 if "current_chat_content" not in st.session_state:
     st.session_state.current_chat_content = ""
 if "analysis_result" not in st.session_state:
     st.session_state.analysis_result = None
 
 with tab1:
+    # Safely fetch the selected text from the pre-loaded dictionary
     default_text = SAMPLE_CHATS[selected_sample] if selected_sample != "--- Select a Sample Scenario ---" else ""
+    
+    # We let the text area explicitly bind to the default_text variable without mid-air resets
     user_text = st.text_area("Paste the conversation or sample text here:", value=default_text, height=180, key="input_text")
     analyze_text_button = st.button("Analyze Text", type="primary", key="txt_btn")
 
 with tab2:
-    # Key-assignment forces element reset on state refresh transitions
     uploaded_images = st.file_uploader("Upload WhatsApp Screenshots (PNG/JPG):", type=["png", "jpg", "jpeg"], accept_multiple_files=True, key="input_images")
     analyze_image_button = st.button("Analyze Screenshots", type="primary", key="img_btn")
 
 with tab3:
     uploaded_videos = st.file_uploader("Upload Screen Recording Videos (MP4/MOV/AVI):", type=["mp4", "mov", "avi"], accept_multiple_files=True, key="input_videos")
     analyze_video_button = st.button("Analyze Videos", type="primary", key="vid_btn")
-
-# Trigger state reset if files are cleared or updated by the user
-if (analyze_text_button and not user_text) or (analyze_image_button and not uploaded_images) or (analyze_video_button and not uploaded_videos):
-    reset_analysis_state()
 
 # 6. Processing Execution (Optimized for High-Speed Gemini 3.5)
 if analyze_text_button or analyze_image_button or analyze_video_button:
