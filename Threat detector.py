@@ -158,7 +158,8 @@ with tab3:
 if "analysis_result" not in st.session_state:
     st.session_state.analysis_result = None
 
-# 6. Processing Execution (Optimized for High-Speed Gemini 3.5)
+#         with st.spinner("Processing analysis instantly..."):
+            try:
                 if analyze_text_button and user_text:
                     st.session_state.current_chat_content = user_text
                     contents_payload.append(f"Analyze this text chat:\n\n{user_text}")
@@ -183,36 +184,13 @@ if "analysis_result" not in st.session_state:
                         contents_payload.append(genai.types.Part.from_bytes(data=vid_bytes, mime_type=mime_type))
                     response = client.models.generate_content(model=model_to_use, contents=contents_payload)
                     ai_output = response.text
-
-                    
-                elif analyze_image_button and uploaded_images:
-                    st.session_state.current_chat_content = f"[Screenshots uploaded: {len(uploaded_images)} files]"
-                contents_payload.append("Analyze these WhatsApp screenshots written in Hinglish text:")
-                for img in uploaded_images:
-                    img_bytes = img.read()
-                    contents_payload.append(genai.types.Part.from_bytes(data=img_bytes, mime_type="image/jpeg"))
-                                # Replace the closing logic of your screenshot analysis block with this:
-                response = client.models.generate_content(model=model_to_use, contents=contents_payload)
-                ai_output = response.text
-
-            elif analyze_video_button and uploaded_videos:
-
-                st.session_state.current_chat_content = f"[Videos uploaded: {len(uploaded_videos)} files]"
-                contents_payload.append("Analyze these chat screen recordings. Read the text frames carefully:")
-                for vid in uploaded_videos:
-                    vid_bytes = vid.read()
-                    # standardizing mime types based on extension
-                    mime_type = "video/mp4" if vid.name.endswith("mp4") else "video/quicktime" if vid.name.endswith("mov") else "video/x-msvideo"
-                    contents_payload.append(genai.types.Part.from_bytes(data=vid_bytes, mime_type=mime_type))
-                response = client.models.generate_content(model=model_to_use, contents=contents_payload)
-                ai_output = response.text
-            
-            if ai_output:
-                st.session_state.analysis_result = ai_output
-            else:
-                st.warning("Please provide input data before clicking analyze.")
-        except Exception as e:
-            st.error(f"An error occurred: {str(e)}")
+                
+                if ai_output:
+                    st.session_state.analysis_result = ai_output
+                else:
+                    st.warning("Please provide input data before clicking analyze.")
+            except Exception as e:
+                st.error(f"An error occurred: {str(e)}")
 
 # 7. Render Output Dashboard from State
 if st.session_state.analysis_result:
