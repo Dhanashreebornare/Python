@@ -181,10 +181,12 @@ if analyze_text_button or analyze_image_button or analyze_video_button:
                 for img in uploaded_images:
                     img_bytes = img.read()
                     contents_payload.append(genai.types.Part.from_bytes(data=img_bytes, mime_type="image/jpeg"))
+                                # Replace the closing logic of your screenshot analysis block with this:
                 response = client.models.generate_content(model=model_to_use, contents=contents_payload)
                 ai_output = response.text
-                
+
             elif analyze_video_button and uploaded_videos:
+
                 st.session_state.current_chat_content = f"[Videos uploaded: {len(uploaded_videos)} files]"
                 contents_payload.append("Analyze these chat screen recordings. Read the text frames carefully:")
                 for vid in uploaded_videos:
