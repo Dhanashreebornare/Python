@@ -208,7 +208,7 @@ if st.session_state.analysis_result:
     metrics = extract_metrics(output)
     threat_tier = extract_threat_level(output)
     
-    st.write("### 📊 Psychological Risk Profile")
+        st.write("### 📊 Psychological Risk Profile")
     
     y_labels = list(metrics.keys())
     x_values = list(metrics.values())
@@ -235,7 +235,7 @@ if st.session_state.analysis_result:
         ),
         yaxis=dict(
             autorange="reversed",
-            tickfont=dict(size=12, color='#1A202C', bold=True)
+            tickfont=dict(size=12, color='#1A202C', weight='bold')
         ),
         height=340,
         margin=dict(l=150, r=40, t=20, b=40),
