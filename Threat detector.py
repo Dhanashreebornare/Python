@@ -158,7 +158,16 @@ with tab3:
 if "analysis_result" not in st.session_state:
     st.session_state.analysis_result = None
 
-#         with st.spinner("Processing analysis instantly..."):
+# 6. Processing Execution (Optimized for High-Speed Gemini 3.5)
+if analyze_text_button or analyze_image_button or analyze_video_button:
+    if not client:
+        st.error("Please configure GEMINI_API_KEY inside Streamlit Cloud Secrets dashboard settings.")
+    else:
+        model_to_use = 'gemini-3.5-flash-lite'
+        ai_output = ""
+        contents_payload = [SYSTEM_PROMPT]
+        
+        with st.spinner("Processing analysis instantly..."):
             try:
                 if analyze_text_button and user_text:
                     st.session_state.current_chat_content = user_text
@@ -168,29 +177,29 @@ if "analysis_result" not in st.session_state:
                     
                 elif analyze_image_button and uploaded_images:
                     st.session_state.current_chat_content = f"[Screenshots uploaded: {len(uploaded_images)} files]"
-                    contents_payload.append("Analyze these WhatsApp screenshots written in Hinglish text:")
-                    for img in uploaded_images:
-                        img_bytes = img.read()
-                        contents_payload.append(genai.types.Part.from_bytes(data=img_bytes, mime_type="image/jpeg"))
-                    response = client.models.generate_content(model=model_to_use, contents=contents_payload)
-                    ai_output = response.text
-                    
-                elif analyze_video_button and uploaded_videos:
-                    st.session_state.current_chat_content = f"[Videos uploaded: {len(uploaded_videos)} files]"
-                    contents_payload.append("Analyze these chat screen recordings. Read the text frames carefully:")
-                    for vid in uploaded_videos:
-                        vid_bytes = vid.read()
-                        mime_type = "video/mp4" if vid.name.endswith("mp4") else "video/quicktime" if vid.name.endswith("mov") else "video/x-msvideo"
-                        contents_payload.append(genai.types.Part.from_bytes(data=vid_bytes, mime_type=mime_type))
-                    response = client.models.generate_content(model=model_to_use, contents=contents_payload)
-                    ai_output = response.text
+                contents_payload.append("Analyze these WhatsApp screenshots written in Hinglish text:")
+                for img in uploaded_images:
+                    img_bytes = img.read()
+                    contents_payload.append(genai.types.Part.from_bytes(data=img_bytes, mime_type="image/jpeg"))
+                response = client.models.generate_content(model=model_to_use, contents=contents_payload)
+                ai_output = response.text
                 
-                if ai_output:
-                    st.session_state.analysis_result = ai_output
-                else:
-                    st.warning("Please provide input data before clicking analyze.")
-            except Exception as e:
-                st.error(f"An error occurred: {str(e)}")
+            elif analyze_video_button and uploaded_videos:
+                st.session_state.current_chat_content = f"[Videos uploaded: {len(uploaded_videos)} files]"
+                contents_payload.append("Analyze these chat screen recordings. Read the text frames carefully:")
+                for vid in uploaded_videos:
+                    vid_bytes = vid.read()
+                    mime_type = "video/mp4" if vid.name.endswith("mp4") else "video/quicktime" if vid.name.endswith("mov") else "video/x-msvideo"
+                    contents_payload.append(genai.types.Part.from_bytes(data=vid_bytes, mime_type=mime_type))
+                response = client.models.generate_content(model=model_to_use, contents=contents_payload)
+                ai_output = response.text
+            
+            if ai_output:
+                st.session_state.analysis_result = ai_output
+            else:
+                st.warning("Please provide input data before clicking analyze.")
+        except Exception as e:
+            st.error(f"An error occurred: {str(e)}")
 
 # 7. Render Output Dashboard from State
 if st.session_state.analysis_result:
@@ -201,7 +210,6 @@ if st.session_state.analysis_result:
     
     st.write("### 📊 Psychological Risk Profile")
     
-    # High visibility graphic optimization updates
     y_labels = list(metrics.keys())
     x_values = list(metrics.values())
     bar_colors = ['#E53E3E' if v > 60 else '#DD6B20' if v > 30 else '#38A169' for v in x_values]
@@ -212,25 +220,25 @@ if st.session_state.analysis_result:
         orientation='h',
         marker=dict(
             color=bar_colors,
-            line=dict(color='#2D3748', width=1.5)  # Dark high-contrast border lines
+            line=dict(color='#2D3748', width=1.5)
         ),
-        text=[f" <b>{v}%</b>" for v in x_values], # Text overlays showing numbers explicitly
+        text=[f" <b>{v}%</b>" for v in x_values],
         textposition='outside'
     ))
     
     fig.update_layout(
         xaxis=dict(
             title="<b>Risk Level (%)</b>", 
-            range=[0, 115], # Left space padding for labels
-            gridcolor='#E2E8F0', # Visible light grids
+            range=[0, 115],
+            gridcolor='#E2E8F0',
             showgrid=True
         ),
         yaxis=dict(
             autorange="reversed",
-            tickfont=dict(size=12, color='#1A202C', bold=True) # Heavy label contrast
+            tickfont=dict(size=12, color='#1A202C', bold=True)
         ),
         height=340,
-        margin=dict(l=150, r=40, t=20, b=40), # Added left padding so labels never truncate
+        margin=dict(l=150, r=40, t=20, b=40),
         plot_bgcolor='white',
         paper_bgcolor='white'
     )
