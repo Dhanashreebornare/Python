@@ -31,24 +31,22 @@ def reset_analysis_state():
     st.session_state.analysis_result = None
 
 # 3. Sidebar Configuration (Secure Gemini Secrets Check)
-st.sidebar.header("⚙️ Configuration")
-if "GEMINI_API_KEY" in st.secrets and st.secrets["GEMINI_API_KEY"].strip() != "":
-    client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
-    st.sidebar.success("🔒 System Secure: Gemini 3.5 Key Loaded")
-else:
-    client = None
-    st.sidebar.error("❌ Configuration Error: GEMINI_API_KEY missing from cloud secrets dashboard.")
-
 st.sidebar.markdown("---")
 st.sidebar.header("📖 Test with Examples")
 
-# Reset when a new sample dropdown choice is made
+# When the selectbox changes, update the text area state directly
+def handle_sample_change():
+    chosen = st.session_state.sample_selector
+    if chosen in SAMPLE_CHATS:
+        st.session_state.input_text = SAMPLE_CHATS[chosen]
+        st.session_state.analysis_result = None  # Clear previous analysis
+
 selected_sample = st.sidebar.selectbox(
     "Choose a sample scenario to load:", 
     list(SAMPLE_CHATS.keys()),
-    on_change=reset_analysis_state
+    key="sample_selector",
+    on_change=handle_sample_change
 )
-
 # 4. System Prompt Design
 SYSTEM_PROMPT = """
 You are an expert psychological profiler and communication safety assistant specialized in Indian dating culture and digital interactions. Your job is to protect young Indian women and college students from digital manipulation, grooming, "sugar-coated" traps, love-bombing, financial scams, or isolation tactics. The input conversation will be provided in Hinglish (a mix of Hindi and English words typed in the Roman script) or visible in visual media. You must deeply understand the contextual meaning of Hinglish slang, expressions, and emotional undertones. Analyze the text/screenshots/videos and format your response EXACTLY as structured below using markdown headers. Keep the explanations simple, using clear language (mix of simple English/Hinglish) so it is universally accessible.
