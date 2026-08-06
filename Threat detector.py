@@ -162,7 +162,7 @@ def log_data_to_sheets(chat_text, threat_rating, user_review):
             pass
 
 # 5. Streamlit Tabs Interface
-tab1, tab2, tab3, tab4 = st.tabs(["📝 Copy-Paste Chat", "📸 Upload Screenshots", "🎥 Upload Videos", "🎵 Upload Audio Voice Notes"])
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["📝 Copy-Paste Chat", "📸 Upload Screenshots", "🎥 Upload Videos", "🎵 Upload Audio", "📄 Upload Chat PDF"])
 
 if "current_chat_content" not in st.session_state:
     st.session_state.current_chat_content = ""
@@ -182,12 +182,17 @@ with tab2:
 with tab3:
     uploaded_videos = st.file_uploader("Upload Screen Recording Videos (MP4/MOV/AVI):", type=["mp4", "mov", "avi"], accept_multiple_files=True, key="input_videos")
     analyze_video_button = st.button("Analyze Videos", type="primary", key="vid_btn")
+
 with tab4:
     uploaded_audios = st.file_uploader("Upload Audio Voice Notes (MP3/WAV/M4A):", type=["mp3", "wav", "m4a"], accept_multiple_files=True, key="input_audios")
     analyze_audio_button = st.button("Analyze Audio Files", type="primary", key="aud_btn")
 
+with tab5:
+    uploaded_pdfs = st.file_uploader("Upload Chat Export Document (PDF):", type=["pdf"], accept_multiple_files=True, key="input_pdfs")
+    analyze_pdf_button = st.button("Analyze PDF Documents", type="primary", key="pdf_btn")
+
 # 6. Processing Execution (Optimized for High-Speed Gemini 3.5)
-if analyze_text_button or analyze_image_button or analyze_video_button or analyze_audio_button:
+if analyze_text_button or analyze_image_button or analyze_video_button or analyze_audio_button or analyze_pdf_button:
     if client is None:
         st.error("❌ Processing Blocked: Please configure a valid GEMINI_API_KEY inside your Streamlit Secrets dashboard first.")
     else:
@@ -231,6 +236,15 @@ if analyze_text_button or analyze_image_button or analyze_video_button or analyz
                         contents_payload.append(genai.types.Part.from_bytes(data=aud_bytes, mime_type=mime_type))
                     response = client.models.generate_content(model=model_to_use, contents=contents_payload)
                     ai_output = response.text
+
+                elif analyze_pdf_button and uploaded_pdfs:
+                    st.session_state.current_chat_content = f"[PDF Reports uploaded: {len(uploaded_pdfs)} files]"
+                    contents_payload.append("Analyze these uploaded chat document files. Extrapolate communication timelines and text records:")
+                    for doc_file in uploaded_pdfs:
+                        doc_bytes = doc_file.read()
+                        contents_payload.append(genai.types.Part.from_bytes(data=doc_bytes, mime_type="application/pdf"))
+                    response = client.models.generate_content(model=model_to_use, contents=contents_payload)
+                    ai_output = response.text
                 
                 if ai_output:
                     st.session_state.analysis_result = ai_output
@@ -238,7 +252,6 @@ if analyze_text_button or analyze_image_button or analyze_video_button or analyz
                     st.warning("Please provide input data before clicking analyze.")
             except Exception as e:
                 st.error(f"An error occurred during generation: {str(e)}")
-
 # 7. Render Output Dashboard from State
 if st.session_state.analysis_result:
     output = st.session_state.analysis_result
