@@ -31,15 +31,30 @@ def reset_analysis_state():
     st.session_state.analysis_result = None
 
 # 3. Sidebar Configuration (Secure Gemini Secrets Check)
+# 3. Sidebar Configuration (Secure Gemini Secrets Check)
+st.sidebar.header("⚙️ Configuration")
+
+# Initialize global fallback variable first
+client = None
+
+if "GEMINI_API_KEY" in st.secrets and st.secrets["GEMINI_API_KEY"].strip() != "":
+    try:
+        client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
+        st.sidebar.success("🔒 System Secure: Gemini 3.5 Key Loaded")
+    except Exception as api_err:
+        st.sidebar.error(f"❌ API Initialization Failed: {str(api_err)}")
+else:
+    st.sidebar.error("❌ Configuration Error: GEMINI_API_KEY missing from cloud secrets dashboard.")
+
 st.sidebar.markdown("---")
 st.sidebar.header("📖 Test with Examples")
 
-# When the selectbox changes, update the text area state directly
+# State callback for the dropdown picker
 def handle_sample_change():
     chosen = st.session_state.sample_selector
     if chosen in SAMPLE_CHATS:
         st.session_state.input_text = SAMPLE_CHATS[chosen]
-        st.session_state.analysis_result = None  # Clear previous analysis
+        st.session_state.analysis_result = None  # Clear old analysis
 
 selected_sample = st.sidebar.selectbox(
     "Choose a sample scenario to load:", 
@@ -173,8 +188,8 @@ with tab3:
 
 # 6. Processing Execution (Optimized for High-Speed Gemini 3.5)
 if analyze_text_button or analyze_image_button or analyze_video_button:
-    if not client:
-        st.error("Please configure GEMINI_API_KEY inside Streamlit Cloud Secrets dashboard settings.")
+    if client is None:
+        st.error("❌ Processing Blocked: Please configure a valid GEMINI_API_KEY inside your Streamlit Secrets dashboard first.")
     else:
         model_to_use = 'gemini-3.5-flash-lite'
         ai_output = ""
@@ -212,7 +227,7 @@ if analyze_text_button or analyze_image_button or analyze_video_button:
                 else:
                     st.warning("Please provide input data before clicking analyze.")
             except Exception as e:
-                st.error(f"An error occurred: {str(e)}")
+                st.error(f"An error occurred during generation: {str(e)}")
 
 # 7. Render Output Dashboard from State
 if st.session_state.analysis_result:
