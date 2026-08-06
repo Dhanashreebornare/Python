@@ -208,7 +208,7 @@ if st.session_state.analysis_result:
     metrics = extract_metrics(output)
     threat_tier = extract_threat_level(output)
     
-        st.write("### 📊 Psychological Risk Profile")
+    st.write("### 📊 Psychological Risk Profile")
     
     y_labels = list(metrics.keys())
     x_values = list(metrics.values())
