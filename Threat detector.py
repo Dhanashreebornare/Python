@@ -238,35 +238,38 @@ if st.session_state.analysis_result:
     
     st.write("### 📊 Psychological Risk Profile")
     
-    y_labels = list(metrics.keys())
-    x_values = list(metrics.values())
+    # Reverse both to ensure standard top-to-bottom metric rendering order
+    y_labels = list(metrics.keys())[::-1]
+    x_values = list(metrics.values())[::-1]
+    
+    # Dynamic high-contrast condition coloring matching the exact score scales
     bar_colors = ['#E53E3E' if v > 60 else '#DD6B20' if v > 30 else '#38A169' for v in x_values]
     
     fig = go.Figure(go.Bar(
-        x=x_values,
-        y=y_labels,
-        orientation='h',
+        x=x_values,      # Quantitative values mapped cleanly to X
+        y=y_labels,      # Categorical text labels mapped cleanly to Y
+        orientation='h', # Explicit horizontal alignment declaration
         marker=dict(
             color=bar_colors,
-            line=dict(color='#2D3748', width=1.5)
+            line=dict(color='#1A202C', width=1.5) # Hard boundaries for scannability
         ),
-        text=[f" <b>{v}%</b>" for v in x_values],
-        textposition='outside'
+        text=[f"<b>{v}%</b>" for v in x_values], # Integrated percentage string tags
+        textposition='outside', # Forcing text placements outside the boundaries
+        cliponaxis=False        # Prevents long text tags from clipping on the margin
     ))
     
     fig.update_layout(
         xaxis=dict(
             title="<b>Risk Level (%)</b>", 
-            range=[0, 115],
-            gridcolor='#E2E8F0',
+            range=[0, 115], # Left space padding for labels
+            gridcolor='#E2E8F0', # Light structural gridlines
             showgrid=True
         ),
         yaxis=dict(
-            autorange="reversed",
-            tickfont=dict(size=12, color='#1A202C', weight='bold')
+            tickfont=dict(size=12, color='#1A202C', weight='bold') # Category label definition
         ),
-        height=340,
-        margin=dict(l=150, r=40, t=20, b=40),
+        height=360,
+        margin=dict(l=180, r=50, t=20, b=40), # Expanded left margin to guarantee text clearance
         plot_bgcolor='white',
         paper_bgcolor='white'
     )
