@@ -16,7 +16,7 @@ import io
 st.set_page_config(page_title="SafeChat AI Analyzer", page_icon="🛡️", layout="centered")
 st.title("🛡️ SafeChat AI Analyzer")
 st.subheader("Manipulation, love-bombing aur sugar-coated red flags ko pehchanein.")
-st.caption("✨ Designed for student safety. Your chats are processed securely and logged safely.")
+st.caption("✨ Designed for communication safety. Your chats are processed securely and logged safely.")
 
 # 2. Pre-loaded Sample Chat Library (Hinglish)
 SAMPLE_CHATS = {
