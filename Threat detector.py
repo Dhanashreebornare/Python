@@ -182,8 +182,6 @@ with tab2:
 with tab3:
     uploaded_videos = st.file_uploader("Upload Screen Recording Videos (MP4/MOV/AVI):", type=["mp4", "mov", "avi"], accept_multiple_files=True, key="input_videos")
     analyze_video_button = st.button("Analyze Videos", type="primary", key="vid_btn")
-
-with tab4:
 with tab4:
     uploaded_audios = st.file_uploader("Upload Audio Voice Notes (MP3/WAV/M4A):", type=["mp3", "wav", "m4a"], accept_multiple_files=True, key="input_audios")
     analyze_audio_button = st.button("Analyze Audio Files", type="primary", key="aud_btn")
