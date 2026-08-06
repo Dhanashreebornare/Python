@@ -167,7 +167,7 @@ if analyze_text_button or analyze_image_button or analyze_video_button:
         ai_output = ""
         contents_payload = [SYSTEM_PROMPT]
         
-                with st.spinner("Processing analysis instantly..."):
+        with st.spinner("Processing analysis instantly..."):
             try:
                 if analyze_text_button and user_text:
                     st.session_state.current_chat_content = user_text
